@@ -47,7 +47,7 @@ try {
 
 
 class HDMIInput {
-    constructor (index, name, EDIDType, EDIDIndex, pw5v, signal, rat, col, hdcp, bit) {
+    constructor (index, name, EDIDType, EDIDIndex, pw5v, signal, rat, col, hdcp, bit, audio) {
         this.index     = index;
         this.name      = name;
         this.edidType  = EDIDType;
@@ -58,6 +58,7 @@ class HDMIInput {
         this.col       = col;
         this.hdcp      = hdcp;
         this.bit       = bit;
+        this.audio     = audio;
     }
 }
 
@@ -74,9 +75,9 @@ class OutputPort {
         this.hdcp          = hdcp;
         this.bit           = bit;
         this.audioIn       = audioIn;
-        this.audioOutHDMI  = audioOutHDMI;
-        this.audioOutIIS   = audioOutIIS;
-        this.audioOutSPDIF = audioOutSPDIF;
+        this.hdmi          = audioOutHDMI;
+        this.iis           = audioOutIIS;
+        this.spdif         = audioOutSPDIF;
     }
 }
 
@@ -141,14 +142,14 @@ class InternalStateConfig {
     constructor () {
         this.edidConfig = new EDIDConfig();
         this.Inputs = [
-            new HDMIInput(1, "HDMI_IN1", "default", 0, 1, 0, 0, 0, 0, 0),
-            new HDMIInput(2, "HDMI_IN2", "default", 0, 1, 0, 0, 0, 0, 0),
-            new HDMIInput(3, "HDMI_IN3", "default", 0, 1, 0, 0, 0, 0, 0),
-            new HDMIInput(4, "HDMI_IN4", "default", 0, 1, 0, 0, 0, 0, 0),
-            new HDMIInput(5, "HDMI_IN5", "default", 0, 1, 0, 0, 0, 0, 0),
-            new HDMIInput(6, "HDMI_IN6", "default", 0, 1, 0, 0, 0, 0, 0),
-            new HDMIInput(7, "HDMI_IN7", "default", 0, 1, 0, 0, 0, 0, 0),
-            new HDMIInput(8, "HDMI_IN8", "default", 0, 1, 0, 0, 0, 0, 0),
+            new HDMIInput(1, "HDMI_IN1", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(2, "HDMI_IN2", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(3, "HDMI_IN3", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(4, "HDMI_IN4", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(5, "HDMI_IN5", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(6, "HDMI_IN6", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(7, "HDMI_IN7", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(8, "HDMI_IN8", "default", 0, 1, 0, 0, 0, 0, 0, 1),
         ];
         this.HDMIOutputs = [
             new OutputPort(1, "HDMI_OUT1", 1, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
@@ -202,60 +203,6 @@ try {
     await storeSaveState(intnernalState);
 }
 
-// {
-//     edidConfig: new EDIDConfig(),
-//     Inputs: [
-//         new HDMIInput(1, "HDMI_IN1", "default", 0, 1, 0, 0, 0, 0, 0),
-//         new HDMIInput(2, "HDMI_IN2", "default", 0, 1, 0, 0, 0, 0, 0),
-//         new HDMIInput(3, "HDMI_IN3", "default", 0, 1, 0, 0, 0, 0, 0),
-//         new HDMIInput(4, "HDMI_IN4", "default", 0, 1, 0, 0, 0, 0, 0),
-//         new HDMIInput(5, "HDMI_IN5", "default", 0, 1, 0, 0, 0, 0, 0),
-//         new HDMIInput(6, "HDMI_IN6", "default", 0, 1, 0, 0, 0, 0, 0),
-//         new HDMIInput(7, "HDMI_IN7", "default", 0, 1, 0, 0, 0, 0, 0),
-//         new HDMIInput(8, "HDMI_IN8", "default", 0, 1, 0, 0, 0, 0, 0),
-//     ],
-//     HDMIOutputs: [
-//         new OutputPort(1, "HDMI_OUT1", 1, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(2, "HDMI_OUT2", 2, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(3, "HDMI_OUT3", 3, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(4, "HDMI_OUT4", 4, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(5, "HDMI_OUT5", 5, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(6, "HDMI_OUT6", 6, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(7, "HDMI_OUT7", 7, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(8, "HDMI_OUT8", 8, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//     ],
-//     HDBTOutputs: [
-//         new OutputPort(1, "HDBT_OUT1", 1, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(2, "HDBT_OUT2", 2, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(3, "HDBT_OUT3", 3, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(4, "HDBT_OUT4", 4, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(5, "HDBT_OUT5", 5, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(6, "HDBT_OUT6", 6, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(7, "HDBT_OUT7", 7, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//         new OutputPort(8, "HDBT_OUT8", 8, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
-//     ],
-//     Scenes: [
-//         "scene01",
-//         "scene02",
-//         "scene03",
-//         "scene04",
-//         "scene05",
-//         "scene06",
-//         "scene07",
-//         "scene08",
-//     ],
-//     Users: [ // Still completely horrified that this is a thing...!
-//         new User("admin", "123456"),
-//         new User("admin1", "123456"),
-//         new User("admin2", "123456"),
-//         new User("admin3", "123456"),
-//         new User("admin4", "123456"),
-//         new User("", ""),
-//         new User("", ""),
-//         new User("", ""),
-//     ]
-// }
-
 const handleVideoCommand = (commandArray) => {
      // operation[0] is the command. The last character will indicate the operation type
     var operation = commandArray[0].charAt(commandArray[0].length-1);
@@ -280,6 +227,48 @@ const setVideoOutputSource = async (output, input) => {
     intnernalState.HDMIOutputs[output - 1].input = input;
     intnernalState.HDBTOutputs[output - 1].input = input;
     console.log("Changed: Input:" + input + " >> Output:" + output);
+    await storeSaveState(intnernalState);
+    return true;
+}
+
+const handleAudioCommand = (commandArray) => {
+    // operation[0] is the command. The last character will indicate the operation type
+   var operation = commandArray[0].charAt(commandArray[0].length-1);
+   var target = commandArray[1].charAt(commandArray[1].length-1);
+   switch (operation) {
+        case "d": //Change Audio state
+            // Set input audio source > enc=0 to mute, 1 to select HDMI, 2 to select spdif. No idea about the analog audio inputs?!?
+            if (commandArray[1].startsWith('in') && commandArray[2].startsWith('enc')) {
+                var audioSource = commandArray[2].charAt(commandArray[2].length-1);
+                setAudioInputSetting(target, audioSource);
+            }
+            if (commandArray[1].startsWith('out')) {
+                var audioTarget = commandArray[2].split("=")[0];
+                var onOff = commandArray[2].split("=")[1];
+                setAudioOutputSetting(target, audioTarget, onOff);
+            }
+            break;
+        case "l": //Operating Lock
+            break;
+        case "s": //Operating Save
+            break;
+   }
+}
+
+const setAudioInputSetting = async (input, source) => {
+    if (input < 1 || input > 8 || input < 1 || input > 8 || source < 0 || source > 2) {
+        return false;
+    }
+    intnernalState.Inputs[input-1].audio = source;
+    await storeSaveState(intnernalState);
+    return true;
+}
+const setAudioOutputSetting = async (output, target, onoff) => {
+    if (output < 1 || output > 8 || output < 1 || output > 8 || onoff < 0 || onoff > 1
+        || ["hdmi","iis","spdif"].includes(target)) {
+        return false;
+    }
+    intnernalState.HDMIOutputs[output-1][target] = onoff;
     await storeSaveState(intnernalState);
     return true;
 }
@@ -361,9 +350,9 @@ const generateStateStatusString = () => {
         outputString += "VO:" + i + "IN:" + intnernalState.HDMIOutputs[i-1].input + ";"
             + "E:" + i + "M:0D:1"  + ";" // Need to figure out what on earth goes here for M and D
             + "AI:" + i + "M:" + intnernalState.HDMIOutputs[i-1].audioIn + ";"
-            + "AO:" + i + "HDMI:" + intnernalState.HDMIOutputs[i-1].audioOutHDMI + ";"
-            + "AO:" + i + "iis:" + intnernalState.HDMIOutputs[i-1].audioOutIIS + ";"
-            + "AO:" + i + "spdif:" + intnernalState.HDMIOutputs[i-1].audioOutSPDIF + ";";
+            + "AO:" + i + "HDMI:" + intnernalState.HDMIOutputs[i-1].hdmi + ";"
+            + "AO:" + i + "iis:" + intnernalState.HDMIOutputs[i-1].iis + ";"
+            + "AO:" + i + "spdif:" + intnernalState.HDMIOutputs[i-1].spdif + ";";
     }
 
     for(var i=1; i<=8; i++){ // Generate the EDID Defaults block
@@ -436,6 +425,7 @@ const generateStateStatusString = () => {
 import express from 'express';
 import stream from 'stream';
 import bodyParser from 'body-parser';
+import internal from 'stream';
 const app = express();
 const port = 3000;
 app.use(bodyParser.text());
@@ -454,38 +444,43 @@ app.get('/all_dat.get*', (req, res) => {
 
 app.post('/video.set', (req, res) => {
     console.log(req.body);
-    let body = req.body.split(" ");
-    console.log(JSON.stringify(body));
+    // Multiple commands can be sent in at once. Each command starts with a #, so split the body by #
+    let commands = req.body.split("#");
+    for (var i=0; i<commands.length; i++){
+        let body = commands[i].split(" ");
+        console.log(JSON.stringify(body));
 
-    switch (true) {
-        case body[0].startsWith("#video_"): // Set video port mapping
-            handleVideoCommand(body);
-            break;
-        case body[0].startsWith("#audio_"): 
-            break;
-        case body[0].startsWith("#edid_"):
-            break;
-        case body[0] === "#lcd":
-            break;
-        case body[0].startsWith("#group"):
-            handleSceneCommand(body);
-            break;
-        case body[0] === "#register":
-            break;
-        case body[0] === "#login":
-            break;
-        case body[0] === "#port": // Rename port
-            break;
-        case body[0] === "#power":
-            break;
-        case body[0] === "#ip":
-            break;
-        case body[0] === "#system":
-            break;
-        case body[0] === "#factory":
-            break;
-        case body[0] === "#cmd":
-            break;
+        switch (true) {
+            case body[0].startsWith("video_"): // Set video port mapping
+                handleVideoCommand(body);
+                break;
+            case body[0].startsWith("audio_"): 
+                handleAudioCommand(body);
+                break;
+            case body[0].startsWith("edid_"):
+                break;
+            case body[0] === "lcd":
+                break;
+            case body[0].startsWith("group"):
+                handleSceneCommand(body);
+                break;
+            case body[0] === "register":
+                break;
+            case body[0] === "login":
+                break;
+            case body[0] === "port": // Rename port
+                break;
+            case body[0] === "power":
+                break;
+            case body[0] === "ip":
+                break;
+            case body[0] === "system":
+                break;
+            case body[0] === "factory":
+                break;
+            // case body[0] === "cmd":
+            //     break;
+        }
     }
     res.end();
 })
