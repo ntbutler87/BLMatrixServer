@@ -1,0 +1,193 @@
+RAW: VO:1IN:1;E:1M:0D:1;AI:1M:1;AO:1HDMI:1;AO:1iis:1;AO:1spdif:1;VO:2IN:1;E:2M:0D:1;AI:2M:1;AO:2HDMI:1;AO:2iis:1;AO:2spdif:1;VO:3IN:2;E:3M:0D:1;AI:3M:1;AO:3HDMI:1;AO:3iis:1;AO:3spdif:1;VO:4IN:8;E:4M:0D:1;AI:4M:1;AO:4HDMI:1;AO:4iis:1;AO:4spdif:1;VO:5IN:8;E:5M:0D:1;AI:5M:1;AO:5HDMI:1;AO:5iis:1;AO:5spdif:1;VO:6IN:3;E:6M:0D:1;AI:6M:1;AO:6HDMI:1;AO:6iis:1;AO:6spdif:1;VO:7IN:1;E:7M:0D:1;AI:7M:1;AO:7HDMI:1;AO:7iis:1;AO:7spdif:1;VO:8IN:8;E:8M:0D:1;AI:8M:1;AO:8HDMI:1;AO:8iis:1;AO:8spdif:1;ded1:3840x2160P60 444 DbV DTS5.1;ded2:3840x2160P60 444 DbV MAT7.1;ded3:3840x2160P60 444 DbV LPCM2.0;ded4:3840x2160P60 444 LPCM2.0;ded5:3840x2160P29 444 LPCM2.0;ded6:3840x2160P60 420 DbV DTS5.1;ded7:3840x2160P60 420 LPCM2.0;ded8:1920x1080P60 444 LPCM2.0;ued1:3840x2160P60 444 DbV DTS5.1;ued2:3840x2160P60 444 DbV MAT7.1;ued3:3840x2160P60 444 DbV LPCM2.0;ued4:3840x2160P60 444 LPCM2.0;ued5:3840x2160P29 444 LPCM2.0;ued6:3840x2160P60 420 DbV DTS5.1;ued7:3840x2160P60 420 LPCM2.0;ued8:1920x1080P60 444 LPCM2.0;ied1:3840x2160P60 444 DbV DTS5.1;ied2:3840x2160P60 444 DbV DTS5.1;ied3:3840x2160P60 444 DbV DTS5.1;ied4:3840x2160P60 444 DbV DTS5.1;ied5:3840x2160P60 444 DbV DTS5.1;ied6:3840x2160P60 444 DbV DTS5.1;ied7:3840x2160P60 444 DbV DTS5.1;ied8:3840x2160P60 444 DbV DTS5.1;oed_hdim1:Unplug;oed_hdim2:Unplug;oed_hdim3:Unplug;oed_hdim4:Unplug;oed_hdim5:Unplug;oed_hdim6:1920x1080P60 444 LPCM2.0;oed_hdim7:1920x1080P60 444 LPCM2.0;oed_hdim8:Unplug;oed_hdbt1:1600x1200P60 444 LPCM2.0;oed_hdbt2:2560x1440P59 444 LPCM2.0;oed_hdbt3:3840x2160P60 420 DbV MAT7.1;oed_hdbt4:3840x2160P60 420 DbV MAT7.1;oed_hdbt5:3840x2160P60 420 DbV MAT7.1;oed_hdbt6:Unplug;oed_hdbt7:Unplug;oed_hdbt8:Unplug;port_i1:VideoPC-Proj;port_i2:VideoPC-FB;port_i3:AudioPC;port_i4:HDMI4-IN;port_i5:Source 5;port_i6:Source 6;port_i7:Source 7;port_i8:Stream;port_ohdmi1:ProjMirror;port_ohdmi2:HDMI 2;port_ohdmi3:HDMI 3;port_ohdmi4:HDMI 4;port_ohdmi5:HDMI 5;port_ohdmi6:AudioPC;port_ohdmi7:ATEM;port_ohdmi8:HDMI 8;port_ohdbt1:Projector;port_ohdbt2:SideStage;port_ohdbt3:Foldback;port_ohdbt4:RearTV;port_ohdbt5:CryRoom;port_ohdbt6:HDBT 6;port_ohdbt7:HDBT 7;port_ohdbt8:HDBT 8;grp1:scene01;grp2:scene02;grp3:scene03;grp4:scene04;grp5:scene05;grp6:scene06;grp7:scene07;grp8:scene08;lod1:admin;lod1:123456;lod2:admin1;lod2:123456;lod3:admin2;lod3:123456;lod4:admin3;lod4:123456;lod5:admin4;lod5:123456;lod6:;lod6:;lod7:;lod7:;lod8:;lod8:;INPORT:pw5v=1,sig=1,rat=0,col=0,hdcp=0,bit=1;pw5v=1,sig=1,rat=1,col=0,hdcp=0,bit=1;pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;pw5v=1,sig=1,rat=0,col=1,hdcp=0,bit=1;OUTHDMIPORT:hpd=1,sig=0,rat=0,col=0,hdcp=0,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;hpd=1,sig=0,rat=0,col=0,hdcp=2,bit=0;hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;OUTHDBTPORT:hpd=1,sig=0,rat=0,col=0,hdcp=0,bit=0;hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0
+
+
+; 0 . 48 = SWInfo ?? Switcher info??
+; VO = Video output. xIN:x seems to denote <output>IN:<input>
+VO:1IN:1;
+E:1M:0D:1;
+AI:1M:1;
+AO:1HDMI:1;
+AO:1iis:1;
+AO:1spdif:1;
+
+VO:2IN:1;
+E:2M:0D:1;
+AI:2M:1;
+AO:2HDMI:1;
+AO:2iis:1;
+AO:2spdif:1;
+
+VO:3IN:2;
+E:3M:0D:1;
+AI:3M:1;
+AO:3HDMI:1;
+AO:3iis:1;
+AO:3spdif:1;
+
+VO:4IN:8;
+E:4M:0D:1;
+AI:4M:1;
+AO:4HDMI:1;
+AO:4iis:1;
+AO:4spdif:1;
+
+VO:5IN:8;
+E:5M:0D:1;
+AI:5M:1;
+AO:5HDMI:1;
+AO:5iis:1;
+AO:5spdif:1;
+
+VO:6IN:3;
+E:6M:0D:1;
+AI:6M:1;
+AO:6HDMI:1;
+AO:6iis:1;
+AO:6spdif:1;
+
+VO:7IN:1;
+E:7M:0D:1;
+AI:7M:1;
+AO:7HDMI:1;
+AO:7iis:1;
+AO:7spdif:1;
+
+VO:8IN:8;
+E:8M:0D:1;
+AI:8M:1;
+AO:8HDMI:1;
+AO:8iis:1;
+AO:8spdif:1;
+
+
+; 48 > 88 EDID Info
+ded1:3840x2160P60 444 DbV DTS5.1;
+ded2:3840x2160P60 444 DbV MAT7.1;
+ded3:3840x2160P60 444 DbV LPCM2.0;
+ded4:3840x2160P60 444 LPCM2.0;
+ded5:3840x2160P29 444 LPCM2.0;
+ded6:3840x2160P60 420 DbV DTS5.1;
+ded7:3840x2160P60 420 LPCM2.0;
+ded8:1920x1080P60 444 LPCM2.0;
+
+ued1:3840x2160P60 444 DbV DTS5.1;
+ued2:3840x2160P60 444 DbV MAT7.1;
+ued3:3840x2160P60 444 DbV LPCM2.0;
+ued4:3840x2160P60 444 LPCM2.0;
+ued5:3840x2160P29 444 LPCM2.0;
+ued6:3840x2160P60 420 DbV DTS5.1;
+ued7:3840x2160P60 420 LPCM2.0;
+ued8:1920x1080P60 444 LPCM2.0;
+
+ied1:3840x2160P60 444 DbV DTS5.1;
+ied2:3840x2160P60 444 DbV DTS5.1;
+ied3:3840x2160P60 444 DbV DTS5.1;
+ied4:3840x2160P60 444 DbV DTS5.1;
+ied5:3840x2160P60 444 DbV DTS5.1;
+ied6:3840x2160P60 444 DbV DTS5.1;
+ied7:3840x2160P60 444 DbV DTS5.1;
+ied8:3840x2160P60 444 DbV DTS5.1;
+oed_hdim1:Unplug;
+oed_hdim2:Unplug;
+oed_hdim3:Unplug;
+oed_hdim4:Unplug;
+oed_hdim5:Unplug;
+oed_hdim6:1920x1080P60 444 LPCM2.0;
+oed_hdim7:1920x1080P60 444 LPCM2.0;
+oed_hdim8:Unplug;
+oed_hdbt1:1600x1200P60 444 LPCM2.0;
+oed_hdbt2:2560x1440P59 444 LPCM2.0;
+oed_hdbt3:3840x2160P60 420 DbV MAT7.1;
+oed_hdbt4:3840x2160P60 420 DbV MAT7.1;
+oed_hdbt5:3840x2160P60 420 DbV MAT7.1;
+oed_hdbt6:Unplug;
+oed_hdbt7:Unplug;
+oed_hdbt8:Unplug;
+
+
+; 88 > 112 = Port Names
+port_i1:VideoPC-Proj;
+port_i2:VideoPC-FB;
+port_i3:AudioPC;
+port_i4:HDMI4-IN;
+port_i5:Source 5;
+port_i6:Source 6;
+port_i7:Source 7;
+port_i8:Stream;
+port_ohdmi1:ProjMirror;
+port_ohdmi2:HDMI 2;
+port_ohdmi3:HDMI 3;
+port_ohdmi4:HDMI 4;
+port_ohdmi5:HDMI 5;
+port_ohdmi6:AudioPC;
+port_ohdmi7:ATEM;
+port_ohdmi8:HDMI 8;
+port_ohdbt1:Projector; 
+port_ohdbt2:SideStage;
+port_ohdbt3:Foldback;
+port_ohdbt4:RearTV;
+port_ohdbt5:CryRoom;
+port_ohdbt6:HDBT 6;
+port_ohdbt7:HDBT 7;
+port_ohdbt8:HDBT 8;
+
+; 112 > 120 = Source Name
+grp1:scene01;
+grp2:scene02;
+grp3:scene03;
+grp4:scene04;
+grp5:scene05;
+grp6:scene06;
+grp7:scene07;
+grp8:scene08;
+
+
+; 120 > 136 = Login Details
+lod1:admin;
+lod1:123456;
+lod2:admin1;
+lod2:123456;
+lod3:admin2;
+lod3:123456;
+lod4:admin3;
+lod4:123456;
+lod5:admin4;
+lod5:123456;
+lod6:;
+lod6:;
+lod7:;
+lod7:;
+lod8:;
+lod8:;
+
+
+; 136 > 144 - Input Info
+INPORT:pw5v=1,sig=1,rat=0,col=0,hdcp=0,bit=1;
+pw5v=1,sig=1,rat=1,col=0,hdcp=0,bit=1;
+pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;
+pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;
+pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;
+pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;
+pw5v=1,sig=0,rat=0,col=0,hdcp=0,bit=0;
+pw5v=1,sig=1,rat=0,col=1,hdcp=0,bit=1;
+
+; 144 > 152 = HDMI Info
+OUTHDMIPORT:hpd=1,sig=0,rat=0,col=0,hdcp=0,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;
+hpd=1,sig=0,rat=0,col=0,hdcp=2,bit=0;
+hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;
+
+
+; 152 > 160 = HDBaseT Info
+OUTHDBTPORT:hpd=1,sig=0,rat=0,col=0,hdcp=0,bit=0;
+hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;
+hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;
+hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;
+hpd=1,sig=1,rat=0,col=0,hdcp=0,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0;
+hpd=0,sig=0,rat=0,col=0,hdcp=2,bit=0

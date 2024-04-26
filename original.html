@@ -1,0 +1,2507 @@
+<!DOCTYPE HTML>  
+<html>
+<head lang='en'>
+	<meta charset='GB2312'>
+	<style type="text/css">
+	#ie6-warning	{
+	   background:rgb(255,255,225) url("/images/201207/warning.gif") no-repeat scroll 3px center;
+	   position:absolute;
+	   top:0;
+	   left:0;
+	   font-size:12px;
+	   color:#333;
+	   width:97%;
+	   padding: 2px 15px 2px 23px;
+	   text-align:left;
+	}
+	#ie6-warning a {
+		text-decoration:none;
+	}
+	</style>
+	<style>
+		html{
+			height: 100%;
+			width:100%;
+		}
+		body{
+			background-color: #F6F6F6;
+			width: 98%;
+			height: 98%;
+			background-repeat: repeat;
+			background-attachment:fixed;/*图像固定或者跟随屏幕滚动 scroll不固定*/
+			min-width:960px;
+			min-height:720px;
+			text-align: center;
+		}
+		#left_mx12b{
+			width: 19%;
+			height: 99%;
+			float: left;
+			border-right: 5px solid #B8B8B8;
+			margin: 10px auto;
+		}
+		.left_nav {
+			height:98%;
+		}
+		.left_nav_font {
+			background:transparent;
+			width:100%;
+			height:60px;
+			margin-left: 0px;
+			margin-top: 0px;
+			border:0;
+			border-left:0px solid #000;/*分割线*dashed虚线 solid实线*/
+			border-right:0px solid #000;
+			border-bottom:1.5px solid #B8B8B8;
+			border-top:1.5px solid #B8B8B8;
+			font-family:"Times New Roman",Georgia,Serif;
+			color:#5A5A5A;
+			text-align:center;
+		}
+		#right_mx12b {
+			width: 80%;
+			height:100%;
+			float: right;
+		}
+		.all_page {
+			width:900px;
+			height:720px;
+			background-color: transparent;
+			margin:120px auto;
+			text-align:center;
+		}
+		.Page_title_font{
+			text-align:center;
+			margin-top:80px;
+			color:#5A5A5A;
+			font-size:38px;
+		}
+		.Page_title_title_font{
+			text-align:center;
+			/*margin-top:50px;*/
+			color:#5A5A5A;
+			font-size:24px;
+			font-family:"Times New Roman",Georgia,Serif;
+		}
+		.output_box{
+			width:410px;
+			height:365px;
+			background-color: #55BBE1;
+			float: left;
+			border: 2px solid transparent;/*外边框css*/
+			border-radius:4px;
+		}
+		.output_button{
+			width:100px;
+			height:30px;
+			background-color: transparent;
+			color:#FFFFFF;
+			border: 2px solid #FFFFFF;/*外边框css*/
+			border-radius:4px;
+		}
+		.edit_output_button{
+			width:48px;
+			height:20px;
+			background-color: transparent;
+			color:#FFFFFF;
+			border: 2px solid #FFFFFF;/*外边框css*/
+			border-radius:4px;
+		}
+		.output_button_name{
+			width:100px;
+			height:30px;
+			background-color: transparent;
+			color:#000000;
+		}
+		.output_button_click{
+			width:100px;
+			height:30px;
+			background-color: #D3D4D6;
+			color:#000;
+			border: 2px solid #FFFFFF;/*外边框css*/
+			border-radius:4px;
+		}
+		.sel_output_button{
+			width:100px;
+			height:30px;
+			background-color: transparent;
+			color:#FFFFFF;
+			border: 2px solid #291670;/*外边框css*/
+			border-radius:4px;
+		}
+		.a_output_button{
+			width:96px;/*96*26*/
+			height:26px;
+			background-color: transparent;
+			color:#FFFFFF;
+			border: 2px solid #FFFFFF;/*外边框css*/
+			border-radius:4px;
+		}
+		.b_output_button{
+			width:73px;/*96*26*/
+			height:28px;
+			text-align: left;
+			background-color: transparent;
+			color:#FFFFFF;
+			border: 2px solid #FFFFFF;/*外边框css*/
+			border-radius:4px;
+
+		}
+		.Scenario_button{
+			width:100px;
+			height:30px;
+			background-color: #55BBE1;
+			color:#FFF;
+			border: 2px solid transparent;/*外边框css*/
+			border-radius:4px;
+			font-size:16px;
+		}
+		.apply_button{
+			width:110px;
+			height:40px;
+			background-color: #55BBE1;	/*#D3D4D6灰色*/
+			color:#FFF;/*000002黑色*/
+			border: 2px solid transparent;/*外边框css*/
+			border-radius:4px;
+			font-size:20px;
+		}
+		.EDID_info_box{
+			width:523px;/*523*/
+			height:30px;
+			background-color: #55BBE1;	/*55BBE1蓝色  D3D4D6灰色*/
+			color:#000992;/*000999深蓝色*/
+			border: 2px solid transparent;/*外边框css*/
+			border-radius:4px;
+		}
+		.IP_box{
+			width:180px;
+			height:30px;
+			background-color: #D3D4D6;
+			color:#5A5A5A;
+			border: 2px solid #72777B;/*外边框css*/
+			border-radius:4px;
+			border: 2px solid transparent;/*外边框css*/
+			border-radius:4px;
+		}
+		.Version_box{
+			width:180px;
+			height:30px;
+			background-color: transparent;
+			color:#5A5A5A;
+			border: 0px solid #72777B;/*外边框css*/
+			border-radius:0px;
+			font-size:19px;
+			font-family:"Times New Roman",Georgia,Serif;
+			text-align:center;
+		}
+		.one_font{
+			font-size:20px;
+			font-family:"Times New Roman",Georgia,Serif;
+			color:#5A5A5A;
+		}
+
+
+		/* .slideThree */
+		.slideThree {
+			width: 80px;
+			height: 26px;
+			background: #333;
+			margin: 20px auto;
+			position: relative;
+			-moz-border-radius: 50px;
+			-webkit-border-radius: 50px;
+			border-radius: 50px;
+			-moz-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
+			-webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
+			box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
+		}
+		.slideThree:after {
+			content: 'ON';
+			color: #00bf00;
+			position: absolute;
+			right: 10px;
+			z-index: 0;
+			font: 12px/26px Arial, sans-serif;
+			font-weight: bold;
+			text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15);
+		}
+		.slideThree:before {
+			content: 'OFF';
+			color: #D3D4D6;
+			position: absolute;
+			left: 10px;
+			z-index: 0;
+			font: 12px/26px Arial, sans-serif;
+			font-weight: bold;
+		}
+		.slideThree label {
+			display: block;
+			width: 88px;/**/
+			height: 20px;/**/
+			cursor: pointer;
+			position: absolute;
+			top: 4px;/*4*/
+			left: 3px;
+			z-index: 1;
+			background: #fcfff4;
+			background: -moz-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+			background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+			background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+			-moz-border-radius: 50px;
+			-webkit-border-radius: 50px;
+			border-radius: 50px;
+			-moz-transition: all 0.4s ease;
+			-o-transition: all 0.4s ease;
+			-webkit-transition: all 0.4s ease;
+			transition: all 0.4s ease;
+			-moz-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+			-webkit-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+			box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+		}
+
+		.slideThree input[type=checkbox] {
+			visibility: hidden;
+		}
+		.slideThree input[type=checkbox]:checked + label {
+			left: 95px;/*95*/
+		}
+
+		.hdmi{
+			width:24px;
+			height:24px;
+			position:relative;
+			top:-14px
+		}
+		.sel_hdmi{
+			width:24px;
+			height:24px;
+			background-Color: #97A6AC;
+			color: #FFF;
+			position:relative;
+			top:-14px
+		}
+		.analog{
+			width:24px;
+			height:24px;
+			position:relative;
+			top:-14px
+		}
+		.sel_analog{
+			width:24px;
+			height:24px;
+			background-Color: #97A6AC;
+			color: #FFF;
+		}
+		.spdifa{
+			width:24px;
+			height:24px;
+		}
+		.sel_spdifa{
+			width:24px;
+			height:24px;
+			background-Color: #97A6AC;
+			color: #FFF;
+		}
+		.spdifb{
+			width:24px;
+			height:24px;
+		}
+		.sel_spdifb{
+			width:24px;
+			height:24px;
+			background-Color: #97A6AC;
+			color: #FFF;
+		}
+
+		/********************************EDID Control 弹出框EDID Edit Page中添加功能**********************/
+		.white_content {
+			display: none;
+			position: absolute;
+			top: 15%;
+			left: 46%;
+			padding: 6px 16px;
+			border: 12px solid #D6E9F1;
+			background-color: white;
+			z-index:1002;
+			overflow: auto;
+		}
+		.black_overlay {
+			display: none;
+			position: absolute;
+			top: 0%;
+			left: 0%;
+			width: 100%;
+			height: 100%;
+			background-color:#f5f5f5;
+			z-index:1001;
+			-moz-opacity: 0.8;
+			opacity:.80;
+			filter: alpha(opacity=80);
+		}
+		.close {
+			float:right;
+			clear:both;
+			width:100%;
+			text-align:right;
+			margin:0 0 6px 0
+		}
+		.white_content{
+			background-color:#55BBE1;
+		}
+		.edit_Scenario_button{
+			width:100px;
+			height:30px;
+			background-color: #D3D4D6;
+			color:#000002;
+			border: 2px solid transparent;/*外边框css*/
+			border-radius:4px;
+			font-size:16px;
+		}
+		.ab_output_button{
+			width:100px;
+			height:30px;
+			background-color: transparent;
+			color:#FFFFFF;
+			border: 2px solid #D3D4D6;/*外边框css*/
+			border-radius:4px;
+
+		}
+		.bgclass{
+			position:absolute;left:0px;top:0px;
+			background-color:#fff;
+			width:100%;  /*宽度设置为100%，这样才能使隐藏背景层覆盖原页面*/
+			height:100%;
+			z-Index:2;}
+		.a_rename_info_box{
+			width:100px;/*523*/
+			height:25px;
+			background-color: #55BBE1;	/*55BBE1蓝色  D3D4D6灰色*/
+			color:#fff;/*000999深蓝色*/
+			border: 2px solid #fff;/*外边框css*/
+			border-radius:4px;
+		}
+		.a_EDID_info_box{
+			width:400px;/*523*/
+			height:30px;
+			background-color: #55BBE1;	/*55BBE1蓝色  D3D4D6灰色*/
+			color:#fff;/*000999深蓝色*/
+			border: 2px solid #fff;/*外边框css*/
+			border-radius:4px;
+		}
+
+		/********************************EDID Control 弹出框EDID Edit Page中添加功能 end**********************/
+		.sign_bgclass  { /*登录界面*/
+			background-color: #55BBE1;
+			height: 718px;/*718*/
+			width: 1270px;/*1270*/
+			border: 5px solid #55BBE1;/*外边框css*/
+			border-radius:10px;
+			margin-right: auto;
+			margin-left: auto;}
+		.sign_ziti	{	/*字体样式*/
+			position: absolute;
+			font-size: 18px;
+			margin-left: 413px;
+			color:#5A5A5A;}
+		.sign_center_text {/*name pass输入框*/
+			float: left;
+			height: 50px;
+			width: 460px;
+			margin-left: 401px;
+			background-color:#D3D4D6;}
+		.sign_username {/*name pass输入框限制*/
+			font-size: 20px;
+			float: left;
+			height: 30px;
+			margin-top: 10px;
+			width: 410px;
+			padding-left:25px;
+			border:0 solid white;
+			background:#b0b0b0;
+			color:#000;
+			background-color:transparent;
+			font-family: Arial, Helvetica, sans-serif;
+			margin-left: 10px;
+			text-align: center;}
+		.sign_login {/*登录按钮*/
+			float: left;
+			height: 68px;
+			width: 220px;
+			margin-left: 513px;
+			margin-top: 44px;
+			background:#A6D042;
+			color:#3C590B;
+			border: 0px solid #192E43;
+			border-radius:5px;
+			font-size: 24px;
+		}
+		.sign {
+			display: block;/*调试开关 设置为none就直接越过登录界面*/
+			position: absolute;
+			height: 99%;
+			width: 99%;
+			background-color: #55BBE1;
+			z-index:1002;
+			overflow: auto;
+		}
+	</style>
+<!--[if lte IE 8]>
+	<div id="ie6-warning">You use the version is too low,The display on this page may vary.For a better experience,We recommend upgrading to Higher version of the
+		<a href="http://www.microsoft.com/china/windows/internet-explorer/" target="_blank">Internet Explorer </a>or the following browser:
+		<a href="http://www.mozillaonline.com/">Firefox</a> /
+		<a href="http://www.google.com/chrome/?hl=zh-CN">Chrome</a> /
+		<a href="http://www.apple.com.cn/safari/">Safari</a> / <a href="http://www.operachina.com/">Opera</a>
+	</div>
+	<script type="text/javascript">
+	function position_fixed(el, eltop, elleft){
+       // check if this is IE6  
+       if(!window.XMLHttpRequest)  
+              window.onscroll = function(){  
+                  el.style.top = (document.documentElement.scrollTop + eltop)+"px";
+                  el.style.left = (document.documentElement.scrollLeft + elleft)+"px";
+       }  
+       else
+           el.style.position = "fixed";
+	}
+    position_fixed(document.getElementById("ie6-warning"),0, 0);
+	</script>
+	<![endif]-->
+	<title>8*16 HDMI2.0 Matrix</title>
+	<link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RUQ1NkJCMDQ5MzdFMTFFNzg4RjRFNzgwM0FERTU0MjQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RUQ1NkJCMDU5MzdFMTFFNzg4RjRFNzgwM0FERTU0MjQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpFRDU2QkIwMjkzN0UxMUU3ODhGNEU3ODAzQURFNTQyNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpFRDU2QkIwMzkzN0UxMUU3ODhGNEU3ODAzQURFNTQyNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PiPBkawAAAJbUExURc/Pz8jIyPv7++Hh4fX19eLi4tfX1+fn57q6us3NzeTk5P39/dHR0fr6+t3d3e7u7tvb28zMzN/f39XV1d7e3uvr6/b29urq6vj4+OPj4+3t7cDAwP7+/ri4uPHx8fz8/Pn5+fT09Ozs7Ojo6NnZ2cfHx76+vtfX1tnZ2Onp6dna2tfW18XFxQT9/fLy8sLCwsLDwsPCw8PDw9LS0sPDwtjY2L29vvPz872+vu/v74qKirGxsLCwsIjDwwD+/tLS0evq64WFhdrZ2tbW1cLDw2KfoBX19Qf8/KG8vOrp6dHR0ma7u6i/vtbW19XW1vf39yLr6zve3nnZ2ZSsrBTz8wX7+4mJiY+Pjzjn57O0s4qdnq63t4mJijHr61y5uD/k5IqJimXGxgr5+YOurne8vLS0tLPFxZycnK6trYi9vZCZmampqaHBwZ2mpizu7hXr60rd3aOjpIPNzaempiDx8Rfx8cXExMXFxKCxsQ3399rZ2ZWWlTDp6cTFxYe6usXExbC1tR7x8VzOzi7P0HaysomIiFm7uoyUlXWkpEfMzHeurk7Hx8LCw5ucm9ra2qurq+nq6tXW1XWmpmzCwszMzXTU1Orr6wP+/pmZmkTMzOfm53GgoIC6urG9vZKRkqWxsT/e3mXY2dbX17OztLq5ube7uzXm5gH9/bPIyIyVll7U1E7a2i3r64LW1nzQ0BL29r/AwDfq6l+zs2fNzYjLy6uzs07g4dHS0oGCggH+/gL+/hX395mbmxb19bGxsTLT01TKypCQkNHS0XyiocTExbi4t6OiowD//////6v47eAAAADJdFJOU///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AETQ350AAAIlSURBVHjaYjhBADCQpoDpBBMQ4VLAxCsvJSalJCYqz8uLRQETt5iDAxcrMzMzqzK7IrcChgIWJWVWEQEVNjY2DQERLnY9NAUSLPxcQirC9gycnJwM24WdhDTlWFAViEvysfEIMh5ZEWRUyyjIo80niaxA3pyfi8+ZgXGtGkfR7i0caoaMDH587FK8CBPk2IXUGVSl82K3rj6ua5u6ZIMqg7qQONwEJkVR1j4eRmmf6cfnpBw/vqDfel0aI4+WJL8EVIGMHLuIsKARh+3x4wEtx48fOFa3d6qRoLCIJzdEgYyCJZeAPaPF4oqk46Er2+KqewOPl6gxegmws3BDFLCIsmow1C+1KU7u7rAKswqP0j2uy6HDYMrKD1FwglecmY3TZFtB8Ix5MY47HBMm2R2vkTXgZGMWg1jBpDeBedEU/Y3HK70Ptro25+9v70qcL6vP6cus6Q8xQQFkQs/C48ftDs9efvz48Zl7CjNkDREmgNxgylA2t/F4adam4yAQ0mQDdIMKzA1gXxxitIjOzE3vBCs4vj7SjNEY7gtoOJhwWGdP3glRsIbDBRgO4txIIekEDEnZfZvB0rsicqQZeaoQIQmMi1lCbMC44GiId3dbtsqDQxo1LuCxaWjGIXtUlkPNhZFhImpsgtODNjA96BjoG5RjpgegAkVgitIS5gGnKGNhLYwUBUuTGmzqbCrY0iQoVbOITsOXqgnmCyJyFlUyLxYAEGAAmbvsX2C0IEoAAAAASUVORK5CYII=" rel="SHORTCUT ICON">
+</head>
+
+<script>
+    /*页面加载完，执行*/
+	window.onload=function() {
+		// document.getElementById("Video").click();	/*页面加载完，默认选中video*/  yl 修复刷新闪烁
+		document.getElementById("Copy").click();
+        window.myold="";									//存放上一次收到的数据
+        window.fresh_web_tag=0;
+        httpGetDate();
+	}
+
+    var buff_all = new Array();	                //存放需要发送的数据 senda
+
+	//需要定义的全局变量
+	var users = new Array();					//存放收到的用户名
+	var users_nu=0;								//记录当前是那组用户登录,便于修改密码
+    var edid_info = new Array();				//存放收到的EDID信息
+
+	//登录页面
+	function login() {
+		var a = document.getElementById("user_name").value;
+		var b = document.getElementById("password").value;
+		var c=0;
+		for(i=0;i<5;i++) {
+			if((users[i][0]==a)&&(users[i][1]==b)) {
+				users_nu=i;
+				var light=document.getElementById("sign");
+				light.style.display='none';
+				c=1;
+			}
+		}
+		if(c==0) {
+			alert("Please enter the correct account and password.");
+		}
+	}
+    //顶部导航切换
+	function click_main(id) {
+		var da = document.getElementById("Video");
+		var db = document.getElementById("Audio");
+		var dc = document.getElementById("EDID");
+		var dd = document.getElementById("Network");
+		var de = document.getElementById("System");
+		var df = document.getElementById("Video_page");
+		var dg = document.getElementById("Audio_page");
+		var dh = document.getElementById("EDID_page");
+		var di = document.getElementById("Network_page");
+		var dj = document.getElementById("System_page");
+		if (id == "Video") {
+			da.style.backgroundColor = "#55BBE1";					da.style.color = "#FFFFFF";  // video切换按钮
+			db.style.background = "";								db.style.color = "";         // audio切换按钮
+			dc.style.background = "";								dc.style.color = "";         // edid切换按钮
+			dd.style.background = "";								dd.style.color = "";         // network切换按钮
+			de.style.background = "";								de.style.color = "";         // system界切换按钮
+
+			df.style.display = "";       //Video_page
+			dg.style.display = "none";   //Audio_page
+			dh.style.display = "none";   //EDID_page
+			di.style.display = "none";   //Network_page
+			dj.style.display = "none";   //System_page
+		} else if (id == "Audio") {
+			da.style.backgroundColor = "";					da.style.color = "";
+			db.style.background = "#55BBE1";				db.style.color = "#FFFFFF";
+			dc.style.background = "";								dc.style.color = "";
+			dd.style.background = "";								dd.style.color = "";
+			de.style.background = "";								de.style.color = "";
+
+			df.style.display = "none";
+			dg.style.display = "";
+			dh.style.display = "none";
+			di.style.display = "none";
+			dj.style.display = "none";
+		} else if (id == "EDID") {
+			da.style.backgroundColor = "";					da.style.color = "";
+			db.style.background = "";								db.style.color = "";
+			dc.style.background = "#55BBE1";				dc.style.color = "#FFFFFF";
+			dd.style.background = "";								dd.style.color = "";
+			de.style.background = "";								de.style.color = "";
+
+			df.style.display = "none";
+			dg.style.display = "none";
+			dh.style.display = "";
+			di.style.display = "none";
+			dj.style.display = "none";
+		} else if (id == "Network") {
+			da.style.backgroundColor = "";					da.style.color = "";
+			db.style.background = "";								db.style.color = "";
+			dc.style.background = "";								dc.style.color = "";
+			dd.style.background = "#55BBE1";				dd.style.color = "#FFFFFF";
+			de.style.background = "";								de.style.color = "";
+
+			df.style.display = "none";
+			dg.style.display = "none";
+			dh.style.display = "none";
+			di.style.display = "";
+			dj.style.display = "none";
+		} else if (id == "System") {
+			da.style.backgroundColor = "";					da.style.color = "";
+			db.style.background = "";								db.style.color = "";
+			dc.style.background = "";								dc.style.color = "";
+			dd.style.background = "";								dd.style.color = "";
+			de.style.background = "#55BBE1";				de.style.color = "#FFFFFF";
+
+			df.style.display = "none";
+			dg.style.display = "none";
+			dh.style.display = "none";
+			di.style.display = "none";
+			dj.style.display = "";
+		} else if (id == "Copy") {
+			document.getElementById("Copy").style.backgroundColor = "#D3D4D6";
+			document.getElementById("Copy").style.color = "#000002";
+			document.getElementById("Inlay").style.backgroundColor = "#55BBE1";
+			document.getElementById("Inlay").style.color = "#FFF";
+
+			document.getElementById("Copy_page").style.display = "";
+			document.getElementById("Inlay_page").style.display = "none";
+		} else if (id == "Inlay") {
+			document.getElementById("Inlay").style.backgroundColor = "#D3D4D6";
+			document.getElementById("Inlay").style.color = "#000002";
+			document.getElementById("Copy").style.backgroundColor = "#55BBE1";
+			document.getElementById("Copy").style.color = "#FFF";
+
+			document.getElementById("Copy_page").style.display = "none";
+			document.getElementById("Inlay_page").style.display = "";
+		}
+	}
+
+	Array.prototype.removeByValue = function(val) {
+		for(var i=0; i<this.length; i++) {
+			if(this[i] == val) {
+				this.splice(i, 1);
+				break;
+			}
+		}
+	}
+
+	var button_buff;
+	var button_buff_ago="";
+	var buff_scenes_a = null;
+	var buff_edid = null;
+	var video_flag=0;
+	var edid_flag=0;
+	var vi_in_bu_flag=0;
+	var ed_hh_bu_flag=0;
+	var ed_du_bu_flag=0;
+
+    //顶部导航切换
+	function AcceptData(id) {
+		switch(id) {
+			case '011': case '012':	case '013': case '021': case '022': case '023':case '031': case '032': case '033':
+				id=id-0;
+				var a = "VO"+id;
+				var buff = document.getElementById(a);
+				if(buff.style.color=="rgb(255, 255, 255)"||buff.style.color=="") {
+					if(a!='VO33') {
+						buff.style.backgroundColor = "#D3D4D6";
+						buff.style.color = "#00000F";
+						document.getElementById('VO33').style.backgroundColor = "transparent";
+						document.getElementById('VO33').style.color = "#FFFFFF";
+						document.getElementById('VO33').value = "All";
+					} else {
+						for(i=1;i<4;i++) {
+							for(j=1;j<4;j++) {
+								document.getElementById("VO"+i+j).style.backgroundColor = "#D3D4D6";
+								document.getElementById("VO"+i+j).style.color = "#00000F";
+							}
+						}
+					}
+				} else {
+					if(a!='VO33') {
+						buff.style.backgroundColor = 'transparent';
+						buff.style.color = "#FFFFFF";
+						document.getElementById('VO33').style.backgroundColor = "transparent";
+						document.getElementById('VO33').style.color = "#FFFFFF";
+						document.getElementById('VO33').value = "All";
+					} else {
+						for(i=1;i<4;i++) {
+							for(j=1;j<4;j++) {
+								document.getElementById("VO"+i+j).style.backgroundColor = "transparent";
+								document.getElementById("VO"+i+j).style.color = "#FFFFFF";
+							}
+						}
+					}
+				}
+				break;
+			//Video中input中显示框的动画效果
+			case '111': case '112': case '113': case '121': case '122': case '123': case '131': case '132':
+				id=id.substr(1);
+				var a = "VI"+id;
+				vi_in_bu_flag=a;
+				var buffa = document.getElementById(a);
+				button_buff=buffa;
+				buffa.style.backgroundColor = "#D3D4D6";
+				buffa.style.color = "#00000F";
+				setTimeout('getbutton()',200);
+				break;
+			//场景保存效果
+			case '01': case '02': case '03': case '04': case '05': case '06': case '07': case '08':
+				id=id-0;
+				for(i=1;i<9;i++) {
+					var a = "S"+i;
+					var buffs = document.getElementById(a);
+					if(id==i) {
+						if(buffs.style.color!="rgb(0, 0, 15)") {
+							buffs.style.backgroundColor = "#D3D4D6";
+							buffs.style.color = "#00000F";
+							buff_scenes_a = i;
+						} else {
+							buffs.style.backgroundColor = '#55BBE1';
+							buffs.style.color = "#FFF";
+						}
+					} else {
+						buffs.style.backgroundColor = '#55BBE1';
+						buffs.style.color = "#FFF";
+					}
+				}
+				break;
+
+			case 'AO111': case 'AO112': case 'AO113': case 'AO114': case 'AO121': case 'AO122':
+			case 'AO123': case 'AO124': case 'AO131': case 'AO132': case 'AO133': case 'AO134':
+			case 'AO211': case 'AO212': case 'AO213': case 'AO214': case 'AO221': case 'AO222':
+			case 'AO223': case 'AO224': case 'AO231': case 'AO232': case 'AO233': case 'AO234':
+			case 'AO311': case 'AO312': case 'AO313': case 'AO314': case 'AO321': case 'AO322':
+			case 'AO323': case 'AO324': case 'AO331': case 'AO332':
+				var buffao = document.getElementById(id);
+				if(buffao.className!="sel_hdmi") {
+					var idl=id.substring(4,5);
+					id = id.substring(0,4);
+					if(id!='AO33') {
+						buffao.className='sel_hdmi';
+						for(i=1;i<3;i++) {
+							var ida = id+i;
+							buffaoa = document.getElementById(ida);
+							if(buffaoa!=buffao) {
+								buffaoa.className='hdmi';
+							}
+						}
+						document.getElementById('AO331').className='hdmi';
+						document.getElementById('AO332').className='hdmi';
+					} else {
+						for(i=1;i<4;i++) {
+							for(j=1;j<4;j++) {
+								document.getElementById("AO"+i+j+idl).className='sel_hdmi';
+								document.getElementById("AO"+i+j+(idl==1?2:1)).className='hdmi';
+							}
+						}
+					}
+				}else{//改变的点
+					if((id!='AO331')&&(id!='AO332')) {
+						buffao.className='hdmi';
+						document.getElementById('AO331').className='hdmi';
+						document.getElementById('AO332').className='hdmi';
+					} else {
+						for(i=1;i<4;i++) {
+							for(j=1;j<4;j++) {
+								for(p=1;p<3;p++) {
+									document.getElementById("AO"+i+j+p).className='hdmi';
+								}
+							}
+						}
+					}
+				}
+				if((document.getElementById('AO111').className=="sel_hdmi")&&
+					(document.getElementById('AO121').className=="sel_hdmi")&&
+					(document.getElementById('AO131').className=="sel_hdmi")&&
+					(document.getElementById('AO211').className=="sel_hdmi")&&
+					(document.getElementById('AO221').className=="sel_hdmi")&&
+					(document.getElementById('AO231').className=="sel_hdmi")&&
+					(document.getElementById('AO311').className=="sel_hdmi")&&
+					(document.getElementById('AO321').className=="sel_hdmi")) {
+					document.getElementById('AO331').className="sel_hdmi";
+				}
+				if((document.getElementById('AO112').className=="sel_hdmi")&&
+					(document.getElementById('AO122').className=="sel_hdmi")&&
+					(document.getElementById('AO132').className=="sel_hdmi")&&
+					(document.getElementById('AO212').className=="sel_hdmi")&&
+					(document.getElementById('AO222').className=="sel_hdmi")&&
+					(document.getElementById('AO232').className=="sel_hdmi")&&
+					(document.getElementById('AO312').className=="sel_hdmi")&&
+					(document.getElementById('AO322').className=="sel_hdmi")) {
+					document.getElementById('AO332').className="sel_hdmi";
+				}
+				break;
+
+			case 'AI111':	case 'AI112':	case 'AI113':	case 'AI121':	case 'AI122':	case 'AI123':	case 'AI131':	case 'AI132':	case 'AI133':
+			case 'AI211':	case 'AI212':	case 'AI213':	case 'AI221':	case 'AI222':	case 'AI223':	case 'AI231':	case 'AI232':	case 'AI233':
+			case 'AI311':	case 'AI312':	case 'AI313':	case 'AI321':	case 'AI322':	case 'AI323':	case 'AI331': case 'AI332':
+				var buffai = document.getElementById(id);
+				var idl=id.substring(4,5);
+				id = id.substring(0,4);
+				if(buffai.className!="sel_hdmi") {
+					if(id!='AI33') {
+						buffai.className='sel_hdmi';
+						document.getElementById('AI331').className='hdmi';
+						document.getElementById('AI332').className='hdmi';
+					} else {
+						for(i=1;i<4;i++) {
+							for(j=1;j<4;j++) {
+								document.getElementById("AI"+i+j+idl).className='sel_hdmi';
+							}
+						}
+					}
+				} else {
+					if(id!='AI33') {
+						buffai.className='hdmi';
+						document.getElementById('AI331').className='hdmi';
+						document.getElementById('AI332').className='hdmi';
+					} else {
+						for(i=1;i<4;i++) {
+							for(j=1;j<4;j++) {
+								document.getElementById("AI"+i+j+idl).className='hdmi';
+							}
+						}
+					}
+				}
+				if((document.getElementById('AI111').className=="sel_hdmi")&&
+					(document.getElementById('AI121').className=="sel_hdmi")&&
+					(document.getElementById('AI131').className=="sel_hdmi")&&
+					(document.getElementById('AI211').className=="sel_hdmi")&&
+					(document.getElementById('AI221').className=="sel_hdmi")&&
+					(document.getElementById('AI231').className=="sel_hdmi")&&
+					(document.getElementById('AI311').className=="sel_hdmi")&&
+					(document.getElementById('AI321').className=="sel_hdmi")) {
+					document.getElementById('AI331').className="sel_hdmi";
+				}
+				if((document.getElementById('AI112').className=="sel_hdmi")&&
+					(document.getElementById('AI122').className=="sel_hdmi")&&
+					(document.getElementById('AI132').className=="sel_hdmi")&&
+					(document.getElementById('AI212').className=="sel_hdmi")&&
+					(document.getElementById('AI222').className=="sel_hdmi")&&
+					(document.getElementById('AI232').className=="sel_hdmi")&&
+					(document.getElementById('AI312').className=="sel_hdmi")&&
+					(document.getElementById('AI322').className=="sel_hdmi")) {
+					document.getElementById('AI332').className="sel_hdmi";
+				}
+				break;
+
+			case 'CI1':		case 'CI2':		case 'CI3':		case 'CI4':		case 'CI5':		case 'CI6':
+			case 'CI7':		case 'CI8':		case 'CI9':
+				var buffci = document.getElementById(id);
+				if(buffci.style.color=="rgb(255, 255, 255)"||buffci.style.color=="") {
+					if(id!='CI9') {
+						buffci.style.backgroundColor = "#D3D4D6";
+						buffci.style.color = "#00000F";
+						var a = parseInt(id.substring(2,3),10)+15;
+						var b = edid_info[a];
+						document.getElementById("txtedid").value=b;
+						document.getElementById('CI9').style.backgroundColor = "transparent";
+						document.getElementById('CI9').style.color = "#FFF";
+						document.getElementById('CI9').value="All";
+					} else {
+						for(i=1;i<10;i++) {
+							document.getElementById("CI"+i).style.backgroundColor = "#D3D4D6";
+							document.getElementById("CI"+i).style.color = "#00000F";
+						}
+					}
+				} else {
+					if(id!='CI9') {
+						buffci.style.backgroundColor = 'transparent';
+						buffci.style.color = "#FFF";
+						document.getElementById('CI9').style.backgroundColor = "transparent";
+						document.getElementById('CI9').style.color = "#FFF";
+						document.getElementById('CI9').value="All";
+					} else {
+						for(i=1;i<10;i++) {
+							document.getElementById("CI"+i).style.backgroundColor = "transparent";
+							document.getElementById("CI"+i).style.color = "#FFF";
+						}
+					}
+				}
+				break;
+						
+					
+			case 'CO1':		case 'CO2':		case 'CO3':		case 'CO4':		case 'CO5':		case 'CO6':
+			case 'CO7':		case 'CO8':		case 'CO9':		case 'CO10':	case 'CO11':	case 'CO12':
+			case 'CO13':	case 'CO14':	case 'CO15':	case 'CO16':
+			var buffco = document.getElementById(id);
+			ed_hh_bu_flag=id;
+			ed_du_bu_flag=0;
+			button_buff=buffco;
+			buffco.style.backgroundColor = "#D3D4D6";
+			buffco.style.color = "#00000F";
+			setTimeout('getbutton()',200);
+			var a = parseInt(id.substring(2),10)+23;
+			var b = edid_info[a];
+			document.getElementById("txtedid").value=b;
+			break;
+
+			case 'DO1':		case 'DO2':		case 'DO3':		case 'DO4':		case 'DO5':		case 'DO6':
+			case 'DO7':		case 'DO8':		case 'DO9':		case 'DO10':	case 'DO11':	case 'DO12':
+			case 'DO13':	case 'DO14':	case 'DO15':	case 'DO16':	case 'DO17':	case 'DO18':
+				var buffdo = document.getElementById(id);
+				ed_du_bu_flag=id
+				ed_hh_bu_flag=0;
+				if(buffdo.value!="Edit") {
+					button_buff=buffdo;
+					buffdo.style.backgroundColor = "#D3D4D6";
+					buffdo.style.color = "#00000F";
+					setTimeout('getbutton()',200);
+					var a = parseInt(id.substring(2),10)-1;
+					var b = edid_info[a];
+					document.getElementById("txtedid").value=b;
+
+				} else {
+					buff_edid =	parseInt(id.substring(2,4),10)-8;
+					//	alert("Please enter the EDID information first.");
+					light.style.display="block";
+				}
+				break;
+							
+			case 'cls1':	case 'cls2':	case 'cls3':	case 'cls4':	case 'cls5':	case 'cls6':	case 'cls7':	case 'cls8':
+			case 'sav1':	case 'sav2':	case 'sav3':	case 'sav4':	case 'sav5':	case 'sav6':	case 'sav7':	case 'sav8':
+				if(document.getElementById(id).className=="output_button") {
+					document.getElementById(id).className="output_button_click";
+				} else{
+					document.getElementById(id).className="output_button";
+				}
+				break;
+
+			case 'EEE1':	case 'EEE2':	case 'EEE3':	case 'EEE4':	case 'EEE5':	case 'EEE6':
+			case 'EEE7':	case 'EEE8':	case 'EEE9':	case 'EEE10':	case 'EEE11':	case 'EEE12':
+			case 'EEE13':	case 'EEE14':	case 'EEE15':	case 'EEE16':
+				if(id!='EEE17'){
+					if(document.getElementById(id).className=="output_button") {
+						for(i=1;i<17;i++){
+							var a = "EEE"+i;
+							document.getElementById(a).className="output_button";
+						}
+						document.getElementById(id).className="output_button_click";
+					} else {
+						document.getElementById(id).className="output_button";
+					}
+				} else{
+					window.location.href="/";/*用来添加烧录文件的button*/
+				}
+				break;
+							
+			case 'user1':	case 'user2':	case 'user3':	case 'user4':
+			case 'user5':	case 'user6':	case 'user7': case 'user8':
+				if(document.getElementById(id).className=="output_button") {
+					for(i=1;i<9;i++){
+						var a = "user"+i;
+						document.getElementById(a).className="output_button";
+					}
+					document.getElementById(id).className="output_button_click";
+				} else {
+					document.getElementById(id).className="output_button";
+				}
+				break;
+		}
+	}
+
+	//定时器执行函数  200ms
+	function getbutton() {
+		if((button_buff_ago!=button_buff)&&(button_buff_ago!="")) {
+			button_buff_ago.style.backgroundColor = 'transparent';
+			button_buff_ago.style.color = "#FFF";
+			button_buff_ago.className='output_button';
+		}
+		button_buff_ago=button_buff;
+	}
+	//定时器执行函数 1s
+	function getTest() {
+		document.getElementById("APPLY01").style.background = "";
+		document.getElementById("APPLY01").style.color = "#FFF";
+		document.getElementById("APPLY02").style.background = "";
+		document.getElementById("APPLY02").style.color = "#FFF";
+		document.getElementById("APPLY03").style.background = "";
+		document.getElementById("APPLY03").style.color = "#FFF";
+		document.getElementById("APPLY11").className = "output_button";
+		document.getElementById("APPLY31").className = "output_button";
+		document.getElementById("Transfer").style.background = "";
+		document.getElementById("Transfer").style.color = "#FFF";
+	}
+
+    //选中变色js
+	function APPLY(id) {
+		switch(id) {
+			case '01':
+				document.getElementById("APPLY01").style.backgroundColor = "#D3D4D6";
+				document.getElementById("APPLY01").style.color = "#00000F";
+				setTimeout('getTest()',1000);
+				/******************自定义发送*****************************/
+	       		 if(buff_scenes_a == null) {
+	        		for(i=1;i<4;i++) {
+		        		if(i!=3) {
+				        	for(j=1;j<4;j++) {
+								var a = "VO"+i+j;
+								var buff = document.getElementById(a);
+								/*解析这段需要进行配合*/
+								if(buff.style.color=="rgb(0, 0, 15)") {
+									//var a = buff.value.substring(1,2);
+									var a = vi_in_bu_flag.substring(2,5);
+									if(a=="11"){
+									    a="1";
+									}else if(a=="12"){
+									    a="2";
+									}else if(a=="13"){
+									    a="3";
+									}else if(a=="21"){
+									    a="4";
+									}else if(a=="22"){
+									    a="5";
+									}else if(a=="23"){
+									    a="6";
+									}else if(a=="31"){
+									    a="7";
+									}else if(a=="32"){
+									    a="8";
+									}
+									var b = buff.value.substring(5,6);
+								    var data = "#video_d out"+b+" matrix="+a;
+								    buff_all = buff_all+data;
+								 }
+				    		}
+			    		} else {
+			    			for(j=1;j<3;j++) {
+								var a = "VO"+i+j;
+								var buff = document.getElementById(a);
+								/*解析这段需要进行配合**/
+								if(buff.style.color=="rgb(0, 0, 15)") {
+									//var a = buff.value.substring(1,2);
+									var a = vi_in_bu_flag.substring(2,5);
+									if(a=="11"){
+									    a="1";
+									}else if(a=="12"){
+									    a="2";
+									}else if(a=="13"){
+									    a="3";
+									}else if(a=="21"){
+									    a="4";
+									}else if(a=="22"){
+									    a="5";
+									}else if(a=="23"){
+									    a="6";
+									}else if(a=="31"){
+									    a="7";
+									}else if(a=="32"){
+									    a="8";
+									}
+									var b = buff.value.substring(5,6);
+								    var data = "#video_d out"+b+" matrix="+a;
+								    buff_all = buff_all+data;
+								 }
+				    		}
+			    		}
+		    		}
+		    		senda(buff_all);
+		    		buff_all="";
+	        	} else{
+	       		    var	data = "#group"+buff_scenes_a+" exe=2";
+	    			senda(data);
+	    			document.getElementById("Transfer").style.backgroundColor = "#55BBE1";
+					document.getElementById("Transfer").style.color = "#FFFFFF";
+	        		buff_scenes_a = null;
+					for(i=1;i<9;i++) {
+						var a = "S"+i;
+						var buffs = document.getElementById(a);
+						buffs.style.backgroundColor = '#55BBE1';
+						buffs.style.color = "#FFF";
+					}
+	       		}
+	       		video_flag=1;
+                break;
+				/*******************自定义发送end****************************/
+			case '11':
+                /*********************rename 发送***************/
+                document.getElementById("APPLY11").className="output_button_click";
+				setTimeout('getTest()',1000);
+				for(i=1;i<9;i++) {
+					var a ="ROM"+i;
+					var b ="RI"+i;
+					var c ="ROB"+i;
+					var buff_rom = document.getElementById(a).value;
+					var buff_ri = document.getElementById(b).value;
+					var buff_rob = document.getElementById(c).value;
+					if(buff_rom!=""){
+						var data ="#port hdmi"+i+" name="+buff_rom;
+						buff_all=buff_all+data;
+					}
+					if(buff_rob!=""){
+						var data ="#port hdbt"+i+" name="+buff_rob;
+						buff_all=buff_all+data;
+					}
+					if(buff_ri!=""){
+						var data ="#port in"+i+" name="+buff_ri;
+						buff_all=buff_all+data;
+					}
+				}
+				senda(buff_all);
+				buff_all="";
+				break;
+				/******************rename 发送 end***************/
+			case '12':
+				if(buff_scenes_a!=null) {
+					document.getElementById("Transfer").style.backgroundColor = "#D3D4D6";
+					document.getElementById("Transfer").style.color = "#00000F";
+					setTimeout('getTest()',1000);
+					var	data = "#group"+buff_scenes_a+" exe=1";
+					senda(data);
+					buff_scenes_a = null;
+					for(i=1;i<9;i++) {
+						var a = "S"+i;
+						var buffs = document.getElementById(a);
+						buffs.style.backgroundColor = '#55BBE1';
+						buffs.style.color = "#FFF";
+					}
+				} else {
+					alert("Please select the scenario to arrive.");
+				}
+				break;	
+				
+			case '02':
+                /******************audio 发送***************/
+                document.getElementById("APPLY02").style.backgroundColor = "#D3D4D6";
+				document.getElementById("APPLY02").style.color = "#00000F";
+				setTimeout('getTest()',1000);
+				for(i=1;i<4;i++){
+					var d=0;
+					var e=0;
+					var h=0;
+					var l=0;//写错一个数字为字母。。。 另页面上的ouput实际ID均以input命名
+					if(i!=3) {
+						for(j=1;j<4;j++){
+							for(z=1;z<3;z++){
+								var a ="AO"+i+j+z;
+								var buff =document.getElementById(a).className;
+								if(buff=="sel_hdmi"){
+									var data ="#audio_d in"+(3*(i-1)+j)+" enc="+z;
+									buff_all=buff_all+data;
+									d=1;
+								}
+							}
+							if(d!=1){
+								var data ="#audio_d in"+(3*(i-1)+j)+" enc=0";
+								buff_all=buff_all+data;
+							}
+							d=0;
+				/***************audio output**********************/
+							var data_aa ="#audio_d out"+(3*(i-1)+j);
+							for(n=1;n<3;n++){
+								var b ="AI"+i+j+n;
+								var buffa =document.getElementById(b).className;
+								if(n==1){
+								    if(buffa=="sel_hdmi"){
+								        data_aa =data_aa+" iis=1";
+								    }else{
+								        data_aa=data_aa+" iis=0";
+								    }
+								}
+								if(n==2){
+								    if(buffa=="sel_hdmi"){
+								        data_aa =data_aa+" spdif=1";
+								    }else{
+								        data_aa=data_aa+" spdif=0";
+								    }
+								}
+								e=1;
+							}
+							buff_all=buff_all+data_aa;
+							if(e!=1){
+								var data ="#audio_d out"+(3*(i-1)+j)+" iis=0 spdif=0";
+								buff_all=buff_all+data;
+							}
+							e=0;
+						}
+					} else {
+						for(j=1;j<3;j++){
+							for(z=1;z<3;z++){
+								var a ="AO"+i+j+z;
+								var buff =document.getElementById(a).className;
+								if(buff=="sel_hdmi"){
+									var data ="#audio_d in"+(3*(i-1)+j)+" enc="+z;
+									buff_all=buff_all+data;
+									h=1;
+								}
+							}
+							if(h!=1){
+								var data ="#audio_d in"+(3*(i-1)+j)+" enc=0";
+								buff_all=buff_all+data;
+							}
+							h=0;
+				/***************audio output**********************/
+							var data_aa ="#audio_d out"+(3*(i-1)+j);
+							for(n=1;n<3;n++){
+								var b ="AI"+i+j+n;
+								var buffa =document.getElementById(b).className;
+								if(n==1){if(buffa=="sel_hdmi"){data_aa =data_aa+" iis=1";}else{data_aa=data_aa+" iis=0";}}
+								if(n==2){if(buffa=="sel_hdmi"){data_aa =data_aa+" spdif=1";}else{data_aa=data_aa+" spdif=0";}}
+								l=1;
+							}
+							buff_all=buff_all+data_aa;
+							if(l!=1){
+								var data ="#audio_d out"+(3*(i-1)+j)+" iis=0 spdif=0";
+								buff_all=buff_all+data;
+							}
+							l=0;
+						}
+					}
+				}
+				senda(buff_all);	
+				buff_all="";
+				/******************audio 发送 end***************/
+				break;	
+
+			case '03':
+				document.getElementById("APPLY03").style.backgroundColor = "#D3D4D6";
+				document.getElementById("APPLY03").style.color = "#00000F";
+				setTimeout('getTest()',1000);
+				/******************自定义发送*****************************/
+				for(i=1;i<9;i++){
+					var a = "CI"+i;
+					var buff = document.getElementById(a);
+					if(buff.style.color=="rgb(0, 0, 15)") {
+						var a = buff.value.substr(buff.value.length-1,1);
+						if(ed_hh_bu_flag!=0) {
+							var d = ed_hh_bu_flag.substring(2,5);
+							if(d<9){
+							    c=2;b=d;
+							}else{
+							    c=3;b=d-8;
+							}
+						} else {
+							var d = ed_du_bu_flag.substring(2,5);
+							if(d<9){c=0;b=d;}else{c=1;b=d-8;}
+						}
+						var data = "#edid_d in"+a+" mode="+c+" data="+b;
+						buff_all = buff_all+data;
+					}
+				}
+				senda(buff_all);
+				buff_all="";
+				/*******************自定义发送end****************************/
+				edid_flag=1;
+				break;
+
+			case '31'://有问题 需要调试
+				document.getElementById("APPLY31").className="output_button_click";
+				setTimeout('getTest()',1000);
+				//"edid_d user1-8 mode=(2-hdmi 3-hdbt) data=1-8"
+				for(i=1;i<9;i++) {
+					var a = "user"+i;
+					if(document.getElementById(a).className=="output_button_click") {
+						document.getElementById(a).className="output_button";
+						for(j=1;j<17;j++) {
+							var b = "EEE"+j;
+							if(document.getElementById(b).className=="output_button_click") {
+								document.getElementById(b).className="output_button";
+								var c;
+								if(j<9){//i 1-8 和  j 1-8 都是从1开始的
+									c = 2;
+								} else {
+									c = 3; //HDBT
+									j-=8;
+								}
+								buff_all="#edid_d user"+i+" mode="+c+" data="+j;
+							}
+						}
+					}
+				}
+
+					
+					
+					
+				/*	var a	= document.getElementById("edidname").value;
+					buff_all= "#edid_d user"+buff_edid+" n:"+a;
+					for(i=1;i<9;i++){
+							var a = "EEE"+i;
+							var b = "user"+i;
+							var buffa = document.getElementById(a).className;
+							var buffb = document.getElementById(b).className;
+							if(buffa!="output_button")
+								{
+									buff_all =buff_all+" o"+i;
+								}
+							if(buffb!="output_button")
+								{
+									buff_all =buff_all+" o"+i;
+								}	
+						document.getElementById(a).className="output_button";
+						document.getElementById(b).className="edit_output_button";
+					} */
+					senda(buff_all);	
+					buff_all="";
+
+				break;
+
+			case '04':
+				break;
+				
+			case '05':
+				var a=document.getElementById("username").value;
+				var b=document.getElementById("newpass").value;
+				var c=document.getElementById("agepass").value;
+				var b_c_match = /^[a-zA-Z0-9_]{6,15}$/; //正则表达式
+				if(!a.match(b_c_match)) {
+					alert("The user name length is 6~15 numbers or letters or underscore,please input again!");
+					break;
+				}
+				if(!b.match(b_c_match) ||!c.match(b_c_match)) {
+					alert("The min password length is 6~15 numbers or letters or underscore.");
+					break;
+				}
+				if(b!=c) {
+					alert("The two passwords do not match.") ;
+					break;
+				}
+				var d=0;
+				for(i=0;i<5;i++) {
+					if(users[i][0]==a) {
+						if(users_nu==i) {
+							d=1;
+						} else {
+							d=0;
+						}
+					} else{
+						d=1;
+					}
+				}
+				if(d==1) {
+					if(a!="") {
+						if(b!="") {
+							//正则表达式的意思:/^ 匹配输入字符的开始位置 a-z A-Z 0-9 任选
+							//{1,} 1到任意长度
+							//$/ 匹配输入字符串的结束位置
+							var usern = /^[a-zA-Z0-9_]{6,15}$/; //正则表达式
+							if (b.match(usern)) {
+								if(b==c) {
+									buff_all="#register"+users_nu+" id="+a+" psd="+b;
+									//alert(buff_all);
+									senda(buff_all);
+									buff_all="";
+									alert("The user login name and password have been successfully changed !");
+									document.getElementById("username").value="";
+									document.getElementById("newpass").value="";
+									document.getElementById("agepass").value="";
+								} else{
+									alert("The password is different twice, please re-enter.");
+								}
+							} else {
+								alert("The min password len is 6~15 numbers or letters or underscore.");
+							}
+						} else{
+							alert("The password must not be empty, Please change another one.");
+						}
+					} else {
+						alert("The user name can not be empty,Please change another one.");
+					}
+				} else {
+					alert("This user name already exists,Please change another one.");
+				}
+				break;
+			}
+	}
+
+	function SynRadio(o) {
+        window.fresh_web_tag==0;
+		var myStr=o;
+		var index = myStr.indexOf(":");
+        //结尾加myold=o;//加上检测 判断数据是否相同
+		if(o!=window.myold&&index!=-1){
+			var sw_info = o.split(";").slice(0,48); 		//存放8组运行消息
+			edid_info = o.split(";").slice(48,88);  		//存放5组x8 EDID具体信息 共计40个EDID信息
+			var port_name = o.split(";").slice(88,112);     //存放3组x8 端口名字	    共计24个
+			var source_name = o.split(";").slice(112,120);	//存放1组x8 场景的名字    共计8个
+			var login_info = o.split(";").slice(120,136);   //存放8组x2 用户名和密码  共计16,但只有前5组共计10个有效
+
+			var input_info = o.split(";").slice(136,144);   //存放input端输入端口的信息      用于判断设备拔插
+			var hdmi_info = o.split(";").slice(144,152);	//存放输出HDMI 端输入端口的信息  用于判断设备拔插
+			var hdbt_info = o.split(";").slice(152,160);	//存放输出HDBT 端输入端口的信息  用于判断设备拔插
+
+			for(i=0;i<48;i++) {
+				var a = sw_info[i].substring(0,2);
+				if(a=="VO") {
+					var b = sw_info[i].split(":");
+					var c = parseInt(b[1],10);
+					var d = parseInt(b[2],10);
+					var e = new Array("VO11","VO12","VO13","VO21","VO22","VO23","VO31","VO32");
+					var f = "0"+d+">>0"+c;
+					var g = e[c-1];
+					document.getElementById(g).value=f;
+					//添加接收到数据后清除选项
+					if(video_flag==1){
+						document.getElementById(g).style.backgroundColor = 'transparent';
+						document.getElementById(g).style.color = "#FFFFFF";
+						document.getElementById('VO33').style.backgroundColor = "transparent";
+						document.getElementById('VO33').style.color = "#FFFFFF";
+						document.getElementById('VO33').value = "All";
+					}
+					if(vi_in_bu_flag!=0){
+						document.getElementById(vi_in_bu_flag).style.backgroundColor = 'transparent';
+						document.getElementById(vi_in_bu_flag).style.color = "#FFFFFF";
+					}
+				}
+				if(a=="E:") {
+					var b = sw_info[i].split(":");
+					var c = parseInt(b[1],10);//端口
+					var d = parseInt(b[2],10);//模式
+					var e = parseInt(b[3],10);//数据
+					var f = new Array("Default","User","HDMI","HDBT");
+					var g ="CI"+c;
+					f = f[d];
+					var h = f+"0"+e+">>0"+c;
+					document.getElementById(g).value=h;
+					//添加接收到数据后清除选项
+					if(edid_flag==1){
+						document.getElementById(g).style.backgroundColor = 'transparent';
+						document.getElementById(g).style.color = "#FFFFFF";
+						document.getElementById('CI9').style.backgroundColor = "transparent";
+						document.getElementById('CI9').style.color = "#FFFFFF";
+						document.getElementById('CI9').value = "All";
+					}
+					if(ed_hh_bu_flag!=0){
+						document.getElementById(ed_hh_bu_flag).style.backgroundColor = 'transparent';
+						document.getElementById(ed_hh_bu_flag).style.color = "#FFFFFF";
+						ed_hh_bu_flag=0;
+					}
+					if(ed_du_bu_flag!=0){
+						document.getElementById(ed_du_bu_flag).style.backgroundColor = 'transparent';
+						document.getElementById(ed_du_bu_flag).style.color = "#FFFFFF";
+						ed_du_bu_flag=0;
+					}
+				}
+				if(a=="AI") {
+					var b = sw_info[i].split(":");
+					var c = parseInt(b[1],10);//1-8
+					var d = parseInt(b[2],10);
+					var e =new Array(["AO111","AO112"],["AO121","AO122"],["AO131","AO132"], ["AO211","AO212"],["AO221","AO222"],["AO231","AO232"],
+ ["AO311","AO312"],["AO321","AO322"]);
+					/*这有点问题*/
+					if(d!=0) {
+						var f =e[c-1][0];
+						document.getElementById(f).className='hdmi';
+						f =e[c-1][1];
+						document.getElementById(f).className='hdmi';
+						f =e[c-1][d-1];
+						document.getElementById(f).className='sel_hdmi';
+					} else {
+						var f =e[c-1][0];
+						document.getElementById(f).className='hdmi';
+						f =e[c-1][1];
+						document.getElementById(f).className='hdmi';
+					}
+					document.getElementById('AO331').className='hdmi';
+					document.getElementById('AO332').className='hdmi';
+				}
+				if(a=="AO") {
+					var b = sw_info[i].split(":");
+					var c = parseInt(b[1],10);
+					var d = parseInt(b[2],10);
+					var e = b[1].substring(1,2);
+					var f = new Array(["AI111","AI112"],["AI121","AI122"],["AI131","AI132"], ["AI211","AI212"],["AI221","AI222"],["AI231","AI232"],
+																		  ["AI311","AI312"],["AI321","AI322"]);
+					if(e=="i") {
+						if(d==1) {
+						    var g =f[c-1][0];
+						    document.getElementById(g).className='sel_hdmi';
+						} else {
+						    var g =f[c-1][0];document.getElementById(g).className='hdmi';
+						}
+					}
+					if(e=="s") {
+						if(d==1) {
+						    var g =f[c-1][1];
+						    document.getElementById(g).className='sel_hdmi';
+						} else {
+						    var g =f[c-1][1];
+						    document.getElementById(g).className='hdmi';
+						}
+					}
+					document.getElementById('AI331').className='hdmi';
+					document.getElementById('AI332').className='hdmi';
+				}
+			}
+
+			if((sw_info[2].substring(6,7))==(sw_info[8].substring(6,7))&&
+				(sw_info[2].substring(6,7))==(sw_info[14].substring(6,7))&&
+				(sw_info[2].substring(6,7))==(sw_info[20].substring(6,7))&&
+				(sw_info[2].substring(6,7))==(sw_info[26].substring(6,7))&&
+				(sw_info[2].substring(6,7))==(sw_info[32].substring(6,7))&&
+				(sw_info[2].substring(6,7))==(sw_info[38].substring(6,7))&&
+				(sw_info[2].substring(6,7))==(sw_info[44].substring(6,7))
+			) {
+				if((sw_info[2].substring(6,7))==1) {
+					document.getElementById('AO331').className='sel_hdmi';
+				}
+				if((sw_info[2].substring(6,7))==2) {
+					document.getElementById('AO332').className='sel_hdmi';
+				}
+			}
+			if((sw_info[4].substring(8,9))==(sw_info[10].substring(8,9))&&
+				(sw_info[4].substring(8,9))==(sw_info[16].substring(8,9))&&
+				(sw_info[4].substring(8,9))==(sw_info[22].substring(8,9))&&
+				(sw_info[4].substring(8,9))==(sw_info[28].substring(8,9))&&
+				(sw_info[4].substring(8,9))==(sw_info[34].substring(8,9))&&
+				(sw_info[4].substring(8,9))==(sw_info[40].substring(8,9))&&
+				(sw_info[4].substring(8,9))==(sw_info[46].substring(8,9))
+			) {
+				if((sw_info[4].substring(8,9))==1)
+				{
+					document.getElementById('AI331').className='sel_hdmi';
+				}
+			}
+			if((sw_info[5].substring(10,11))==(sw_info[11].substring(10,11))&&
+				(sw_info[5].substring(10,11))==(sw_info[17].substring(10,11))&&
+				(sw_info[5].substring(10,11))==(sw_info[23].substring(10,11))&&
+				(sw_info[5].substring(10,11))==(sw_info[29].substring(10,11))&&
+				(sw_info[5].substring(10,11))==(sw_info[35].substring(10,11))&&
+				(sw_info[5].substring(10,11))==(sw_info[41].substring(10,11))&&
+				(sw_info[5].substring(10,11))==(sw_info[47].substring(10,11))
+			) {
+				if((sw_info[5].substring(10,11))==1) {
+					document.getElementById('AI332').className='sel_hdmi';
+				}
+			}
+							
+			//名字解析 显示  这块有点问题 在audio中hdmi与hdbt暂做一起显示
+			//var a = port_name.split(":");
+			//遍历会方便很多
+			var a=new Array(port_name[0].split(":")[1],port_name[1].split(":")[1],port_name[2].split(":")[1],port_name[3].split(":")[1]
+														 ,port_name[4].split(":")[1],port_name[5].split(":")[1],port_name[6].split(":")[1],port_name[7].split(":")[1]
+														 ,port_name[8].split(":")[1],port_name[9].split(":")[1],port_name[10].split(":")[1],port_name[11].split(":")[1]
+														 ,port_name[12].split(":")[1],port_name[13].split(":")[1],port_name[14].split(":")[1],port_name[15].split(":")[1]
+														 ,port_name[16].split(":")[1],port_name[17].split(":")[1],port_name[18].split(":")[1],port_name[19].split(":")[1]
+													 	 ,port_name[20].split(":")[1],port_name[21].split(":")[1],port_name[22].split(":")[1],port_name[23].split(":")[1]);
+			var b =new Array(["VI11","AIN1","CI1"],["VI12","AIN2","CI2"],["VI13","AIN3","CI3"],["VI21","AIN4","CI4"],["VI22","AIN5","CI5"],["VI23","AIN6","CI6"],["VI31","AIN7","CI7"],["VI32","AIN8","CI8"]);//输入
+			var c =new Array(["VO11","AON1"],["VO12","AON2"],["VO13","AON3"],["VO21","AON4"],["VO22","AON5"],["VO23","AON6"],["VO31","AON7"],["VO32","AON8"]);
+			var d =new Array("CO1","CO2","CO3","CO4","CO5","CO6","CO7","CO8","CO9","CO10","CO11","CO12","CO13","CO14","CO15","CO16");
+			for(i=0;i<8;i++) {
+				for(n=0;n<3;n++) {
+					var f =b[i][n];
+					document.getElementById(f).title=a[i];
+				}
+			}
+			for(i=0;i<8;i++) {
+				for(n=0;n<2;n++) {
+					var f =c[i][n];
+					var g = a[i+8]+"&"+a[i+16];
+					document.getElementById(f).title=g;
+				}
+			}
+			for(i=0;i<16;i++)
+			{
+				var f = d[i];
+				document.getElementById(f).title=a[i+8];
+			}
+
+			var input_info_str=new Array(input_info[0].split(",")[1],input_info[1].split(",")[1],input_info[2].split(",")[1],input_info[3].split(",")[1],
+																					 input_info[4].split(",")[1],input_info[5].split(",")[1],input_info[6].split(",")[1],input_info[7].split(",")[1]);
+			for(i=0;i<8;i++) {
+				for(n=0;n<3;n++) {
+					var str = input_info_str[i].substr(input_info_str[i].length-1,1);
+					if(str==1) {
+						var f =b[i][n];
+						document.getElementById(f).style.borderColor="#291670";
+					} else {
+						var f =b[i][n];
+						document.getElementById(f).style.borderColor="#FFF";
+					}
+				}
+			}
+
+			var hdmi_info_str=new Array(hdmi_info[0].split(",")[0],hdmi_info[1].split(",")[0],hdmi_info[2].split(",")[0],hdmi_info[3].split(",")[0],
+																					hdmi_info[4].split(",")[0],hdmi_info[5].split(",")[0],hdmi_info[6].split(",")[0],hdmi_info[7].split(",")[0]);		
+			var hdbt_info_str=new Array(hdbt_info[0].split(",")[0],hdbt_info[1].split(",")[0],hdbt_info[2].split(",")[0],hdbt_info[3].split(",")[0],
+																					hdbt_info[4].split(",")[0],hdbt_info[5].split(",")[0],hdbt_info[6].split(",")[0],hdbt_info[7].split(",")[0]);								
+			for(i=0;i<8;i++) {
+				for(n=0;n<2;n++) {
+					var str1 = hdmi_info_str[i].substr(hdmi_info_str[i].length-1,1);
+					var str2 = hdbt_info_str[i].substr(hdbt_info_str[i].length-1,1);
+					if(str1==1||str2==1) {
+						var f =c[i][n];
+						document.getElementById(f).style.borderColor="#291670";
+					} else {
+						var f =c[i][n];
+						document.getElementById(f).style.borderColor="#FFF";
+					}
+				}
+			}
+			for(i=0;i<16;i++) {
+				var f = d[i];
+				if(i<8) {
+					var str = hdmi_info_str[i].substr(hdmi_info_str[i].length-1,1);
+					if(str==1) {
+						document.getElementById(f).style.borderColor="#291670";
+					} else {
+						document.getElementById(f).style.borderColor="#FFF";
+					}
+				} else {
+					var str = hdbt_info_str[i-8].substr(hdbt_info_str[i-8].length-1,1);
+					if(str==1) {
+						document.getElementById(f).style.borderColor="#291670";
+					} else {
+						document.getElementById(f).style.borderColor="#FFF";
+					}
+				}
+			}
+
+			//	var a = source_name.split(":");
+			var a=new Array(source_name[0].split(":")[1],source_name[1].split(":")[1],source_name[2].split(":")[1],source_name[3].split(":")[1]
+														 ,source_name[4].split(":")[1],source_name[5].split(":")[1],source_name[6].split(":")[1],source_name[7].split(":")[1]);
+			var b =new Array("S1","S2","S3","S4","S5","S6","S7","S8");
+			for(i=0;i<8;i++) {
+				var f =b[i];
+				document.getElementById(f).title=a[i];
+			}
+
+			//登录解析
+			//	var a = login_info.split(":");
+			var a=new Array(login_info[0].split(":")[1],login_info[1].split(":")[1],login_info[2].split(":")[1],login_info[3].split(":")[1]
+													 ,login_info[4].split(":")[1],login_info[5].split(":")[1],login_info[6].split(":")[1],login_info[7].split(":")[1],login_info[8].split(":")[1],login_info[9].split(":")[1]);
+			users=new Array([a[0],a[1]],[a[2],a[3]],[a[4],a[5]],[a[6],a[7]],[a[8],a[9]]);
+
+            window.myold=o;
+			video_flag=0;
+			edid_flag=0;
+		}
+	}
+</script>
+<body>
+	<div id="left_mx12b">
+		<div class="left_nav">
+			<button class="left_nav_font" style="margin-top: 200px;background-color:#55BBE1;color:#FFFFFF" id="Video" onclick="click_main('Video')"><div class="Videoicon" ></div><h1 class="sel_video_text">Video</h1></button>
+			<button class="left_nav_font" id="Audio" onclick="click_main('Audio')"><div class="Audioicon" ></div><h1 class="sel_video_text">Audio</h1></button>
+			<button class="left_nav_font" id="EDID" onclick="click_main('EDID')"><div class="EDIDicon" ></div><h1 class="sel_video_text">EDID</h1></button>
+			<button class="left_nav_font" id="Network" onclick="click_main('Network')"><div class="Networkicon" ></div><h1 class="sel_video_text">Network</h1></button>
+			<button class="left_nav_font" id="System" onclick="click_main('System')"><div class="Systemicon" ></div><h1 class="sel_video_text">System</h1></button>
+	</div>
+	</div>
+	<div id="right_mx12b">
+		<div class="all_page" id="Video_page" style="display: block">
+			<h1 class="Page_title_font">Video Control</h1>
+			<h2 class="Page_title_title_font" style="float: left;width: 100px;margin-left: -12px;">Output</h2><!--<b> <strong>都是加粗 还有字体加宽也可以加粗-->
+			<h2 class="Page_title_title_font" style="float: right;width: 810px;">Input</h2>
+			<div class="output_box" style="margin-top: -16px;">
+				<iframe name='output1_set' style='display:none;'> </iframe>
+				<form method='POST' action='video.set' target='output1_set'>
+					<table cellspacing="25px">
+						<tr>
+							<td><input id="VO11" class="output_button" onclick="AcceptData('011')" name="vo1" value="01>>01" type="button" title=""></input></td>
+							<td><input id="VO12" class="output_button" onclick="AcceptData('012')" name="vo2" value="01>>02" type="button" title=""></input></td>
+							<td><input id="VO13" class="output_button" onclick="AcceptData('013')" name="vo3" value="01>>03" type="button" title=""></input></td>
+						</tr>
+						<tr>
+							<td><input id="VO21" class="output_button" onclick="AcceptData('021')" name="vo4" value="01>>04" type="button" title=""></input></td>
+							<td><input id="VO22" class="output_button" onclick="AcceptData('022')" name="vo5" value="01>>05" type="button" title=""></input></td>
+							<td><input id="VO23" class="output_button" onclick="AcceptData('023')" name="vo6" value="01>>06" type="button" title=""></input></td>
+						</tr>
+						<tr>
+							<td><input id="VO31" class="output_button" onclick="AcceptData('031')" name="vo7" value="01>>07" type="button" title=""></input></td>
+							<td><input id="VO32" class="output_button" onclick="AcceptData('032')" name="vo8" value="01>>08" type="button" title=""></input></td>
+							<td><input id="VO33" class="output_button" onclick="AcceptData('033')" name="vo9" value="All" type="button" title=""></input></td>
+						</tr>
+
+					</table>
+				</form>
+			</div>
+			<div class="output_box" style="margin-left:50px;margin-top: -16px;">
+				<iframe name='output1_set' style='display:none;'> </iframe>
+				<form method='POST' action='video.set' target='output1_set'>
+					<table cellspacing="25px">
+						<tr>
+							<td><input id="VI11" class="output_button" onclick="AcceptData('111')" name="vi1" value="01" type="button" title=""></input></td>
+							<td><input id="VI12" class="output_button" onclick="AcceptData('112')" name="vi2" value="02" type="button" title=""></input></td>
+							<td><input id="VI13" class="output_button" onclick="AcceptData('113')" name="vi3" value="03" type="button" title=""></input></td>
+						</tr>
+						<tr>
+							<td><input id="VI21" class="output_button" onclick="AcceptData('121')" name="vi4" value="04" type="button" title=""></input></td>
+							<td><input id="VI22" class="output_button" onclick="AcceptData('122')" name="vi5" value="05" type="button" title=""></input></td>
+							<td><input id="VI23" class="output_button" onclick="AcceptData('123')" name="vi6" value="06" type="button" title=""></input></td>
+						</tr>
+						<tr>
+							<td><input id="VI31" class="output_button" onclick="AcceptData('131')" name="vi7" value="07" type="button" title=""></input></td>
+							<td><input id="VI32" class="output_button" onclick="AcceptData('132')" name="vi8" value="08" type="button" title=""></input></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<table style="margin-top:460px;margin-left: 6px;" cellspacing="6px">
+				<tr>
+					<td><input id="S1" class="Scenario_button" onclick="AcceptData('01')" name="s 1" value="Preset 1" type="button" title=""></input></td>
+					<td><input id="S2" class="Scenario_button" onclick="AcceptData('02')" name="s 2" value="Preset 2" type="button" title=""></input></td>
+					<td><input id="S3" class="Scenario_button" onclick="AcceptData('03')" name="s 3" value="Preset 3" type="button" title=""></input></td>
+					<td><input id="S4" class="Scenario_button" onclick="AcceptData('04')" name="s 4" value="Preset 4" type="button" title=""></input></td>
+					<td><input id="S5" class="Scenario_button" onclick="AcceptData('05')" name="s 5" value="Preset 5" type="button" title=""></input></td>
+					<td><input id="S6" class="Scenario_button" onclick="AcceptData('06')" name="s 6" value="Preset 6" type="button" title=""></input></td>
+					<td><input id="S7" class="Scenario_button" onclick="AcceptData('07')" name="s 7" value="Preset 7" type="button" title=""></input></td>
+					<td><input id="S8" class="Scenario_button" onclick="AcceptData('08')" name="s 8" value="Preset 8" type="button" title=""></input></td>
+				</tr>
+			</table>
+			<table style="margin-top:-50px; margin-left:116px;" cellspacing="80"><!--250 25-->
+				<tr>
+					<td><input id="Rename_btn" class="apply_button" onclick="show('rename')" value="Rename" type="button"></td>
+					<td><input id="APPLY01" class="apply_button" onclick="APPLY('01')" value="Apply" type="button"></td>
+					<td><input id="Transfer" class="apply_button" onclick="APPLY('12')" value="Save" type="button"></td>
+				</tr>
+			</table>
+			<!--///////////////Rename编辑弹出框////////////////////-->
+			<table id="rename" class="white_content">
+				<tr>
+					<th style="font-size:35px;"  colspan="4">RenamePage</th>
+					<td class="close"><a href="javascript:void(0)" onclick="hide('rename')">&#9746</a></td>
+				</tr>
+				<tr>
+					<td><br></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDMI 01:</td>
+					<td><input id="ROM1" type='text' class="a_rename_info_box" id='txtname1' size='16' maxlength="12" placeholder="New name..." value="" title="Enter a note name"/></input></td>
+					<td class="output_button_name">HDMI 02:</td>
+					<td><input id="ROM2" type='text' class="a_rename_info_box" id='txtname2' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDMI 03:</td>
+					<td><input id="ROM3" type='text' class="a_rename_info_box" id='txtname3' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">HDMI 04:</td>
+					<td><input id="ROM4" type='text' class="a_rename_info_box" id='txtname4' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDMI 05:</input></td>
+					<td><input id="ROM5" type='text' class="a_rename_info_box" id='txtname5' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">HDMI 06:</td>
+					<td><input id="ROM6" type='text' class="a_rename_info_box" id='txtname6' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDMI 07:</td>
+					<td><input id="ROM7" type='text' class="a_rename_info_box" id='txtname7' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">HDMI 08:</td>
+					<td><input id="ROM8" type='text' class="a_rename_info_box" id='txtname8' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDBT 01:</td>
+					<td><input id="ROB1" type='text' class="a_rename_info_box" id='txtname9' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">HDBT 02:</td>
+					<td><input id="ROB2" type='text' class="a_rename_info_box" id='txtname10' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDBT 03:</td>
+					<td><input id="ROB3" type='text' class="a_rename_info_box" id='txtname11' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">HDBT 04:</td>
+					<td><input id="ROB4" type='text' class="a_rename_info_box" id='txtname12' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDBT 05:</td>
+					<td><input id="ROB5" type='text' class="a_rename_info_box" id='txtname13' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">HDBT 06:</td>
+					<td><input id="ROB6" type='text' class="a_rename_info_box" id='txtname14' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">HDBT 07:</td>
+					<td><input id="ROB7" type='text' class="a_rename_info_box" id='txtname15' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">HDBT 08:</td>
+					<td><input id="ROB8" type='text' class="a_rename_info_box" id='txtname16' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">Input 01:</td>
+					<td><input id="RI1" type='text' class="a_rename_info_box" id='txtname17' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">Input 02:</td>
+					<td><input id="RI2" type='text' class="a_rename_info_box" id='txtname18' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">Input 03:</td>
+					<td><input id="RI3" type='text' class="a_rename_info_box" id='txtname19' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">Input 04:</td>
+					<td><input id="RI4" type='text' class="a_rename_info_box" id='txtname20' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">Input 05:</td>
+					<td><input id="RI5" type='text' class="a_rename_info_box" id='txtname21' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">Input 06:</td>
+					<td><input id="RI6" type='text' class="a_rename_info_box" id='txtname22' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td class="output_button_name">Input 07:</td>
+					<td><input id="RI7" type='text' class="a_rename_info_box" id='txtname23' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+					<td class="output_button_name">Input 08:</td>
+					<td><input id="RI8" type='text' class="a_rename_info_box" id='txtname24' size='12' maxlength="12" placeholder="New name..." value=""/></td>
+				</tr>
+				<tr>
+					<td  class="bbd" colspan="4">
+						<!--<button class="edit_Scenario_button" style="margin-left:110px;" input type='submit' onclick="APPLY('11')" value='Save and reset'/>Apply</button>-->
+						<button id="APPLY11" style="margin-left:60px; margin-top:20px;margin-bottom:10px; height: 40px;width: 110px;" class="output_button" onclick="APPLY('11')" value='Save and reset'/>Apply</button>
+					</td>
+				</tr>
+			</table>
+			<!--////////////////////弹出框end/////////////////////-->
+		</div>
+		<div class="all_page" id="Audio_page" style="display: none">
+			<h1 class="Page_title_font">Audio Control</h1>
+			<h2 class="Page_title_title_font" style="float: left;width: 100px;margin-left: -16px;">Input</h2><!--<b> <strong>都是加粗 还有字体加宽也可以加粗-->
+			<h2 class="Page_title_title_font" style="float: right;width: 802px;">Output</h2>
+			<div class="output_box" style="margin-top: -16px">
+				<table cellspacing="22px">
+					<tr>
+						<td>
+							<fieldset id="AIN1" class="b_output_button" title="">
+								<legend >01</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO111" onclick="AcceptData('AO111')">H</button><button class="hdmi" id="AO112" onclick="AcceptData('AO112')">A</button>
+								<!--<button class="spdifa" id="AO113" onclick="AcceptData('AO113')">S</button>
+                                <!--<button class="spdifb" id="AO114" onclick="AcceptData('AO114')">S*</button>-->
+							</fieldset></td>
+						<td>
+							<fieldset id="AIN2" class="b_output_button" title="">
+								<legend>02</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO121" onclick="AcceptData('AO121')">H</button><button class="hdmi" id="AO122" onclick="AcceptData('AO122')">A</button>
+								<!--<button class="spdifa" id="AO123" onclick="AcceptData('AO123')">S</button>
+                                <!--<button class="spdifb" id="AO124" onclick="AcceptData('AO124')">S*</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AIN3" class="b_output_button" title="">
+								<legend>03</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO131" onclick="AcceptData('AO131')">H</button><button class="hdmi" id="AO132" onclick="AcceptData('AO132')">A</button>
+								<!--<button class="spdifa" id="AO133" onclick="AcceptData('AO133')">S</button>
+                                <!--<button class="spdifb" id="AO134" onclick="AcceptData('AO134')">S*</button>-->
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset id="AIN4" class="b_output_button" title="">
+								<legend>04</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO211" onclick="AcceptData('AO211')">H</button><button class="hdmi" id="AO212" onclick="AcceptData('AO212')">A</button>
+								<!--<button class="spdifa" id="AO213" onclick="AcceptData('AO213')">S</button>
+                                <!--<button class="spdifb" id="AO214" onclick="AcceptData('AO214')">S*</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AIN5" class="b_output_button" title="">
+								<legend>05</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO221" onclick="AcceptData('AO221')">H</button><button class="hdmi" id="AO222" onclick="AcceptData('AO222')">A</button>
+								<!--<button class="spdifa" id="AO223" onclick="AcceptData('AO223')">S</button>
+                                <!--<button class="spdifb" id="AO224" onclick="AcceptData('AO224')">S*</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AIN6" class="b_output_button" title="">
+								<legend>06</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO231" onclick="AcceptData('AO231')">H</button><button class="hdmi" id="AO232" onclick="AcceptData('AO232')">A</button>
+								<!--<button class="spdifa" id="AO233" onclick="AcceptData('AO233')">S</button>
+                                <!--<button class="spdifb" id="AO234" onclick="AcceptData('AO234')">S*</button>-->
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset id="AIN7" class="b_output_button" title="">
+								<legend>07</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO311" onclick="AcceptData('AO311')">H</button><button class="hdmi" id="AO312" onclick="AcceptData('AO312')">A</button>
+								<!--<button class="spdifa" id="AO313" onclick="AcceptData('AO313')">S</button>
+                                <!--<button class="spdifb" id="AO314" onclick="AcceptData('AO314')">S*</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AIN8" class="b_output_button" title="">
+								<legend>08</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO321" onclick="AcceptData('AO321')">H</button><button class="hdmi" id="AO322" onclick="AcceptData('AO322')">A</button>
+								<!--<button class="spdifa" id="AO323" onclick="AcceptData('AO323')">S</button>
+                                <!--<button class="spdifb" id="AO324" onclick="AcceptData('AO324')">S*</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AIN9" class="b_output_button" title="">
+								<legend>All</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AO331" onclick="AcceptData('AO331')">H</button><button class="hdmi" id="AO332" onclick="AcceptData('AO332')">A</button>
+								<!--<button class="spdifa" id="AO323" onclick="AcceptData('AO323')">S</button>
+                                <!--<button class="spdifb" id="AO324" onclick="AcceptData('AO324')">S*</button>-->
+							</fieldset>
+						</td>
+					</tr>
+				</table>
+				<!--	</form>-->
+			</div>
+			<div class="output_box" style="margin-left:50px;margin-top: -16px;">
+				<table cellspacing="22px">
+					<tr>
+						<td>
+							<fieldset id="AON1" class="b_output_button" title="">
+								<legend>01</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI111" onclick="AcceptData('AI111')">A</button><button class="hdmi" id="AI112" onclick="AcceptData('AI112')">S</button>
+								<!--<button class="spdifa" id="AI113" onclick="AcceptData('AI113')">S</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AON2" class="b_output_button" title="">
+								<legend>02</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI121" onclick="AcceptData('AI121')">A</button><button class="hdmi" id="AI122" onclick="AcceptData('AI122')">S</button>
+								<!--<button class="spdifa" id="AI123" onclick="AcceptData('AI123')">S</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AON3" class="b_output_button" title="">
+								<legend>03</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI131" onclick="AcceptData('AI131')">A</button><button class="hdmi" id="AI132" onclick="AcceptData('AI132')">S</button>
+								<!--<button class="spdifa" id="AI133" onclick="AcceptData('AI133')">S</button>-->
+							</fieldset>
+						</td>
+
+					</tr>
+					<tr>
+						<td>
+							<fieldset id="AON4" class="b_output_button" title="">
+								<legend>04</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI211" onclick="AcceptData('AI211')">A</button><button class="hdmi" id="AI212" onclick="AcceptData('AI212')">S</button>
+								<!--<button class="spdifa" id="AI213" onclick="AcceptData('AI213')">S</button>--></fieldset></td>
+						<td>
+							<fieldset id="AON5" class="b_output_button" title="">
+								<legend>05</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI221" onclick="AcceptData('AI221')">A</button><button class="hdmi" id="AI222" onclick="AcceptData('AI222')">S</button>
+								<!--<button class="spdifa" id="AI223" onclick="AcceptData('AI223')">S</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AON6" class="b_output_button" title="">
+								<legend>06</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI231" onclick="AcceptData('AI231')">A</button><button class="hdmi" id="AI232" onclick="AcceptData('AI232')">S</button>
+								<!--<button class="spdifa" id="AI233" onclick="AcceptData('AI233')">S</button>-->
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset id="AON7" class="b_output_button" title="">
+								<legend>07</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI311" onclick="AcceptData('AI311')">A</button><button class="hdmi" id="AI312" onclick="AcceptData('AI312')">S</button>
+								<!--<button class="spdifa" id="AI313" onclick="AcceptData('AI313')">S</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AON8" class="b_output_button" title="">
+								<legend>08</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI321" onclick="AcceptData('AI321')">A</button><button class="hdmi" id="AI322" onclick="AcceptData('AI322')">S</button>
+								<!--<button class="spdifa" id="AI323" onclick="AcceptData('AI323')">S</button>-->
+							</fieldset>
+						</td>
+						<td>
+							<fieldset id="AON9" class="b_output_button" title="">
+								<legend>All</legend>
+								<button class="hdmi" style="margin-left:20px;margin-top: 6px;" id="AI331" onclick="AcceptData('AI331')">A</button><button class="hdmi" id="AI332" onclick="AcceptData('AI332')">S</button>
+								<!--<button class="spdifa" id="AI323" onclick="AcceptData('AI323')">S</button>-->
+							</fieldset>
+						</td>
+					</tr>
+
+				</table>
+			</div>
+			<table style="margin-top:10px; margin-left:360px;" cellspacing="25px">
+				<tr>
+					<td>
+						<input id="APPLY02" class="apply_button" onclick="APPLY('02')" name="o 1" value="Apply" type="button">
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="all_page" id="EDID_page" style="display: none">
+			<h1 class="Page_title_font">EDID Control</h1>
+			<h2 class="Page_title_title_font" style="float: left;width: 100px;margin-left: -16px;">Input</h2><!--<b> <strong>都是加粗 还有字体加宽也可以加粗-->
+			<h2 class="Page_title_title_font" style="float: right;width: 802px;">Output</h2>
+			<div class="output_box" style="margin-top: -16px">
+				<iframe name='output1_set' style='display:none;'> </iframe>
+				<form method='POST' action='video.set' target='output1_set'>
+					<table cellspacing="25px">
+						<tr>
+							<td><input id="CI1" class="output_button" onclick="AcceptData('CI1')" name="ei1" value="HDMI 01>>01" type="button" title=""></td>
+							<td><input id="CI2" class="output_button" onclick="AcceptData('CI2')" name="ei2" value="HDMI 01>>02" type="button" title=""></td>
+							<td><input id="CI3" class="output_button" onclick="AcceptData('CI3')" name="ei3" value="HDMI 01>>03" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="CI4" class="output_button" onclick="AcceptData('CI4')" name="ei4" value="HDMI 01>>04" type="button" title=""></td>
+							<td><input id="CI5" class="output_button" onclick="AcceptData('CI5')" name="ei5" value="HDMI 01>>05" type="button" title=""></td>
+							<td><input id="CI6" class="output_button" onclick="AcceptData('CI6')" name="ei6" value="HDMI 01>>06" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="CI7" class="output_button" onclick="AcceptData('CI7')" name="ei7" value="HDMI 01>>07" type="button" title=""></td>
+							<td><input id="CI8" class="output_button" onclick="AcceptData('CI8')" name="ei8" value="HDMI 01>>08" type="button" title=""></td>
+							<td><input id="CI9" class="output_button" onclick="AcceptData('CI9')" name="ei9" value="All" type="button" title=""></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div id="Copy_page" class="output_box" style="margin-left:50px;margin-top: -16px;">
+				<iframe name='output1_set' style='display:none;'> </iframe>
+				<form method='POST' action='video.set' target='output1_set'>
+					<table cellspacing="25px">
+						<tr>
+							<td><input id="CO1" class="output_button" onclick="AcceptData('CO1')" name="eo1" value="HDMI 01" type="button" title=""></td>
+							<td><input id="CO2" class="output_button" onclick="AcceptData('CO2')" name="eo2" value="HDMI 02" type="button" title=""></td>
+							<td><input id="CO3" class="output_button" onclick="AcceptData('CO3')" name="eo3" value="HDMI 03" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="CO4" class="output_button" onclick="AcceptData('CO4')" name="eo4" value="HDMI 04" type="button" title=""></td>
+							<td><input id="CO5" class="output_button" onclick="AcceptData('CO5')" name="eo5" value="HDMI 05" type="button" title=""></td>
+							<td><input id="CO6" class="output_button" onclick="AcceptData('CO6')" name="eo6" value="HDMI 06" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="CO7" class="output_button" onclick="AcceptData('CO7')" name="eo7" value="HDMI 07" type="button" title=""></td>
+							<td><input id="CO8" class="output_button" onclick="AcceptData('CO8')" name="eo8" value="HDMI 08" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="CO9" class="output_button" onclick="AcceptData('CO9')" name="eo9" value="HDBT 01" type="button" title=""></td>
+							<td><input id="CO10" class="output_button" onclick="AcceptData('CO10')" name="eo10" value="HDBT 02" type="button" title=""></td>
+							<td><input id="CO11" class="output_button" onclick="AcceptData('CO11')" name="eo11" value="HDBT 03" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="CO12" class="output_button" onclick="AcceptData('CO12')" name="eo12" value="HDBT 04" type="button" title=""></td>
+							<td><input id="CO13" class="output_button" onclick="AcceptData('CO13')" name="eo13" value="HDBT 05" type="button" title=""></td>
+							<td><input id="CO14" class="output_button" onclick="AcceptData('CO14')" name="eo14" value="HDBT 06" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="CO15" class="output_button" onclick="AcceptData('CO15')" name="eo15" value="HDBT 07" type="button" title=""></td>
+							<td><input id="CO16" class="output_button" onclick="AcceptData('CO16')" name="eo16" value="HDBT 08" type="button" title=""></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div id="Inlay_page" class="output_box" style="margin-left:50px;margin-top: -16px;">
+				<iframe name='output1_set' style='display:none;'> </iframe>
+				<form method='POST' action='video.set' target='output1_set'>
+					<table cellspacing="25px">
+						<tr>
+							<td><input id="DO1" class="output_button" onclick="AcceptData('DO1')" name="ii1" value="Default 1" type="button" title=""></td>
+							<td><input id="DO2" class="output_button" onclick="AcceptData('DO2')" name="ii2" value="Default 2" type="button" title=""></td>
+							<td><input id="DO3" class="output_button" onclick="AcceptData('DO3')" name="ii3" value="Default 3" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="DO4" class="output_button" onclick="AcceptData('DO4')" name="ii4" value="Default 4" type="button" title=""></td>
+							<td><input id="DO5" class="output_button" onclick="AcceptData('DO5')" name="ii5" value="Default 5" type="button" title=""></td>
+							<td><input id="DO6" class="output_button" onclick="AcceptData('DO6')" name="ii6" value="Default 6" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="DO7" class="output_button" onclick="AcceptData('DO7')" name="ii7" value="Default 7" type="button" title=""></td>
+							<td><input id="DO8" class="output_button" onclick="AcceptData('DO8')" name="ii8" value="Default 8" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="DO9" class="output_button" onclick="AcceptData('DO9')" name="ii9" value="User 1" type="button" title=""></td>
+							<td><input id="DO10" class="output_button" onclick="AcceptData('DO10')" name="ii10" value="User 2" type="button" title=""></td>
+							<td><input id="DO11" class="output_button" onclick="AcceptData('DO11')" name="ii11" value="User 3" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="DO12" class="output_button" onclick="AcceptData('DO12')" name="ii12" value="User 4" type="button" title=""></td>
+							<td><input id="DO13" class="output_button" onclick="AcceptData('DO13')" name="ii13" value="User 5" type="button" title=""></td>
+							<td><input id="DO14" class="output_button" onclick="AcceptData('DO14')" name="ii14" value="User 6" type="button" title=""></td>
+						</tr>
+						<tr>
+							<td><input id="DO15" class="output_button" onclick="AcceptData('DO15')" name="ii15" value="User 7" type="button" title=""></td>
+							<td><input id="DO16" class="output_button" onclick="AcceptData('DO16')" name="ii16" value="User 8" type="button" title=""></td>
+							<!--	<td><input id="DO17" class="output_button" onclick="AcceptData('DO17')" name="ii17" value="+" type="button"></td>	-->
+							<!--屏蔽Edit功能-->
+							<td><input id="DO18" class="output_button" onclick="AcceptData('DO18')" name="ii18" value="Edit" type="button" style="display: display;"></td>
+							<!--<td><input id="DO18" class="output_button" onclick="show('light')" name="ii18" value="+" type="button"></input></td>	-->
+						</tr>
+					</table>
+				</form>
+			</div>
+			<!--///////////////EDID编辑弹出框////////////////////-->
+			<div id="light" class="white_content">
+				<div class="close">
+					<a href="javascript:void(0)" onclick="hide('light')">&#9746</a>
+				</div>
+				<h1 style="margin-left:40px;">EDID Edit Page</h1>
+				<table>
+					<tr>
+						<label style="margin-left: -320px;">User option:</label>
+					</tr>
+					<tr>
+						<td><input id="user1" class="output_button" onclick="AcceptData('user1')" value="Uesr 1" type="button"></td>
+						<td><input id="user2" class="output_button" onclick="AcceptData('user2')" value="Uesr 2" type="button"></td>
+						<td><input id="user3" class="output_button" onclick="AcceptData('user3')" value="Uesr 3" type="button"></td>
+						<td><input id="user4" class="output_button" onclick="AcceptData('user4')" value="Uesr 4" type="button"></td>
+					</tr>
+					<tr>
+						<td><input id="user5" class="output_button" onclick="AcceptData('user5')" value="Uesr 5" type="button"></td>
+						<td><input id="user6" class="output_button" onclick="AcceptData('user6')" value="Uesr 6" type="button"></td>
+						<td><input id="user7" class="output_button" onclick="AcceptData('user7')" value="Uesr 7" type="button"></td>
+						<td><input id="user8" class="output_button" onclick="AcceptData('user8')" value="Uesr 8" type="button"></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<label style="margin-left: -320px;">Save option:</label>
+					</tr>
+					<tr>
+						<td><input id="EEE1" class="output_button" onclick="AcceptData('EEE1')" value="HDMI 01" type="button"></td>
+						<td><input id="EEE2" class="output_button" onclick="AcceptData('EEE2')" value="HDMI 02" type="button"></td>
+						<td><input id="EEE3" class="output_button" onclick="AcceptData('EEE3')" value="HDMI 03" type="button"></td>
+						<td><input id="EEE4" class="output_button" onclick="AcceptData('EEE4')" value="HDMI 04" type="button"></td>
+					</tr>
+					<tr>
+						<td><input id="EEE5" class="output_button" onclick="AcceptData('EEE5')" value="HDMI 05" type="button"></td>
+						<td><input id="EEE6" class="output_button" onclick="AcceptData('EEE6')" value="HDMI 06" type="button"></td>
+						<td><input id="EEE7" class="output_button" onclick="AcceptData('EEE7')" value="HDMI 07" type="button"></td>
+						<td><input id="EEE8" class="output_button" onclick="AcceptData('EEE8')" value="HDMI 08" type="button"></td>
+					</tr>
+					<tr>
+						<td><input id="EEE9" class="output_button" onclick="AcceptData('EEE9')"   value="HDBT 01" type="button"></td>
+						<td><input id="EEE10" class="output_button" onclick="AcceptData('EEE10')" value="HDBT 02" type="button"></td>
+						<td><input id="EEE11" class="output_button" onclick="AcceptData('EEE11')" value="HDBT 03" type="button"></td>
+						<td><input id="EEE12" class="output_button" onclick="AcceptData('EEE12')" value="HDBT 04" type="button"></td>
+					</tr>
+					<tr>
+						<td><input id="EEE13" class="output_button" onclick="AcceptData('EEE13')" value="HDBT 05" type="button"></td>
+						<td><input id="EEE14" class="output_button" onclick="AcceptData('EEE14')" value="HDBT 06" type="button"></td>
+						<td><input id="EEE15" class="output_button" onclick="AcceptData('EEE15')" value="HDBT 07" type="button"></td>
+						<td><input id="EEE16" class="output_button" onclick="AcceptData('EEE16')" value="HDBT 08" type="button"></td>
+					</tr>
+				</table>
+				<button  style="width: 110px;height: 40px;margin-top: 20px;margin-bottom: 10px;" id="APPLY31" class="output_button" onclick="APPLY('31')" value='Save and reset'/>Apply</button>
+
+			</div>
+			<!--/////////////弹出框end/////////////////////-->
+			<table style="margin-top:460px;margin-left: 30px;" cellspacing="6px">
+				<tr>
+					<td><input type='text' class="EDID_info_box" id='txtedid' name='ver' size='70' value="EDID Info:4K60Hz@4:4:4 7.1CH" disabled='disabled'/></td>
+					<td><input id="Copy" class="Scenario_button" onclick="click_main('Copy')" value="Copy" type="button"></td>
+					<td><input id="Inlay" class="Scenario_button" onclick="click_main('Inlay')" value="Default & User" type="button" style="width:160px;"></td>
+				</tr>
+			</table>
+			<table style="margin-top:0px; margin-left:360px;" cellspacing="25px">
+				<tr>
+					<td ><input id="APPLY03" class="apply_button" onclick="APPLY('03')" name="o 1" value="Apply" type="button"></td>
+				</tr>
+			</table>
+		</div>
+		<div class="all_page" id="Network_page" style="display: none">
+			<h1 class="Page_title_font">Network Info</h1>
+			<iframe name='output1_set' style='display:none;'> </iframe>
+			<form method='POST' action='ip.set' onsubmit="return network_apply();">
+				<table style="margin-left:220px;" cellspacing="25px">
+					<tr>
+						<td class="one_font" align="left">MAC Address:</td>
+						<td><input type='text' class="IP_box" id='txtMac' name='mac' size='16' disabled='disabled'/></td>
+					</tr>
+					<tr>
+						<td class="one_font" align="left">DHCP:</td>
+						<td class="slideThree">
+							<input type="hidden" id="DHCP" name="DHCP" value="0" />
+							<input type="checkbox" id="slideThree" name="check" onclick="check_dhcp()" checked />
+							<label for="slideThree"></label>
+						</td>
+					</tr>
+					<tr>
+						<td class="one_font" align="left">IP Address:</td>
+						<td><input type='text' class="IP_box" id='txtIp' name='ip' size='16' /></td><!--disabled='disabled'-->
+					</tr>
+					<tr>
+						<td class="one_font" align="left">Net Mask Address:</td>
+						<td><input type='text' class="IP_box" id='txtSub' name='sub' size='16' onfocus="network_auto_setmask('txtSub')"/></td>
+					</tr>
+					<tr>
+						<td class="one_font" align="left">Gate Way Address:</td>
+						<td><input type='text' class="IP_box" id='txtGw' name='gw' size='16' /></td>
+					</tr>
+				</table>
+				<table style="margin-top:10px; margin-left:360px;" cellspacing="25px">
+					<tr>
+						<td>
+							<input id="netpage" class="apply_button" onclick="AcceptData('12');" name="o 1" value="Apply" type="submit" value='Save and reset'>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div class="all_page" id="System_page" style="display: none;">
+			<h1 class="Page_title_font">System Setting</h1>
+			<iframe name='output1_set' style='display:none;'> </iframe>
+			<form method='POST' action='video.set' target='output1_set'>
+				<table style="margin-left:220px;" cellspacing="25px">
+					<tr>
+						<td class="one_font" align="left">User Name:</td>
+						<td>
+							<input type='text' class="IP_box" id='username' name='username' size='16' maxlength="15" value="" title="The min username len is 6~15 numbers or letters or underscore"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="one_font" align="left">New Password:</td>
+						<td>
+							<input type='text' class="IP_box" id='newpass' name='newpass' size='16' maxlength="15" value="" title="The min password len is 6~15 numbers or letters or underscore"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="one_font" align="left">Confirm the Password:</td>
+						<td><input type='text' class="IP_box" id='agepass' name='agepass' size='16' maxlength="15" value=""/></td>
+					</tr>
+				</table>
+			</form>
+			<div align="center" style="color:#B1B6BE;">
+				-----------Version-----------
+				<div>
+					<input id="txtVer" class="Version_box" onclick="AcceptData('99')" name="o 00" value="GUI:10.0.2" type="text">
+				</div>
+				<div>
+					<input id="txthw" class="Version_box" onclick="AcceptData('99')" name="o 00" value="HW:10.0.1" type="text">
+				</div>
+			</div>
+			<table style="margin-top:10px; margin-left:370px;" cellspacing="25px">
+				<tr>
+					<td><input id="meAnswer" class="apply_button" onclick="APPLY('05')" name="o 1" value="Apply" type="button"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!--登录界面-->
+	<div id="sign" class="sign">
+	 	<div class="sign_bgclass">
+			<div class="sign_ziti" style="margin-top: 150px;">User Name</div>
+			<!--name pass输入框-->
+			<div class="sign_center_text" style="margin-top: 185px;">
+				<input name="text" type="text" class="sign_username" id="user_name"  value="" maxlength="16" align="left" /><!--name pass输入框限制-->
+			</div>
+			<div class="sign_ziti" style="margin-top: 273px;">Password</div>
+			<!--name pass输入框-->
+			<div class="sign_center_text" style="margin-top: 69px;">
+				<input name="text" type="password" class="sign_username" id="password"  value="" maxlength="16" align="left"/><!--name pass输入框限制-->
+			</div>
+			<button id="LOGIN" class="sign_login" onClick="login()" value='LOGIN'/>LOGIN</button>
+		</div>
+	</div>
+<!--//////////////////////////////ip限制	   		JS代码//////////////////////////////-->
+<script>
+	//ip=123456789&DHCP=0&check=on&ip=192.168.8.100&mask=255.255.255.0&gw=192.168.8.1&o+1=Apply   提交发送的数据
+    // 检查DHCP选中状态
+    function checkDhcpStat() {
+        var dhcp_send=new AJAX('ip.set',function(){});
+        if(document.getElementById("dhcp").checked){
+            dhcp_send.doPost("#ip dhcp=0");
+        }
+        else{
+            dhcp_send.doPost("#ip dhcp=1");
+        }
+    }
+    //获得焦点,自动设置子网页码
+    function network_auto_setmask(id_mask) {
+        var ip_value=document.getElementById("txtIp").value.split(".");
+        var mask=document.getElementById(id_mask);
+        if(ip_value[0].length==0 || mask.value.length!=0){
+            return;
+        }
+        if(ip_value[0]>=1 && ip_value[0]<127) {
+            mask.value="255.0.0.0";
+        }else if(ip_value[0] >= 128 && ip_value[0]<= 191){
+            mask.value = "255.255.0.0";
+        }else if(ip_value[0] >= 192 && ip_value[0]<= 223){
+            mask.value = "255.255.255.0";
+        }
+    }
+    //正则表达式,检查IP地址的合法性
+    function checkIP(ip)
+    {
+        obj=ip;
+        var exp=/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
+        var reg = obj.match(exp);
+        if(reg==null)
+        {
+            return false;//不合法
+        }
+        else
+        {
+            return true; //合法
+        }
+    }
+    //正则表达式,检查子网掩码的合法性
+    function checkMask(mask)
+    {
+        obj=mask;
+        var exp=/^(254|252|248|240|224|192|128|0)\.0\.0\.0|255\.(254|252|248|240|224|192|128|0)\.0\.0|255\.255\.(254|252|248|240|224|192|128|0)\.0|255\.255\.255\.(254|252|248|240|224|192|128|0)$/;
+        var reg = obj.match(exp);
+        if(reg==null)
+        {
+            return false; //"非法"
+        }
+        else
+        {
+            return true; //"合法"
+        }
+    }
+    //Network界面 发送指令
+    function network_apply() {
+        var static_ip= document.getElementById('txtIp').value;
+        var static_mask= document.getElementById('txtSub').value;
+        var static_gw= document.getElementById('txtGw').value;
+        if (static_ip=='')
+        {
+            // $("#static_ip_error").css("display","block");
+            document.getElementById('txtIp').focus();
+            alert("IP address is incorrect. Please check...");
+            return false;
+        }else if(!checkIP(static_ip))
+        {
+            //$("#static_ip_error").css("display","none");
+            document.getElementById('txtIp').focus();
+            alert("IP address is incorrect. Please check...");
+            return false;
+        }
+        if(static_mask=='')
+        {
+            //$("#static_mask_error").css("display","block");
+            document.getElementById('txtSub').focus();
+            alert("Subnet mask is incorrect, please check...");
+            return false;
+        }else if(!checkMask(static_mask))
+        {
+            //$("#static_mask_error").css("display","none");
+            document.getElementById('txtSub').focus();
+            alert("Subnet mask is incorrect, please check...");
+            return false;
+        }
+        if(static_gw=='')
+        {
+            //$("#static_gw_error").css("display","block");
+            document.getElementById('txtGw').focus();
+            alert("The gateway address is incorrect. Please check...");
+            return false;
+        }else if(!checkIP(static_gw))
+        {
+            //$("#static_gw_error").css("display","none");
+            document.getElementById('txtGw').focus();
+            alert("The gateway address is incorrect. Please check...");
+            return false;
+        }
+
+        if(static_ip == static_mask || static_mask == static_gw  || static_ip == static_gw)
+        {
+            alert('Address input error...');
+            return false; //3个地址不能相同
+        }
+
+        var static_ip_arr = new Array;
+        var static_mask_arr = new Array;
+        var static_gw_arr = new Array;
+
+        static_ip_arr = static_ip.split(".");
+        static_mask_arr = static_mask.split(".");
+        static_gw_arr = static_gw.split(".");
+
+        var res0 = parseInt(static_ip_arr[0]) & parseInt(static_mask_arr[0]);
+        var res1 = parseInt(static_ip_arr[1]) & parseInt(static_mask_arr[1]);
+        var res2 = parseInt(static_ip_arr[2]) & parseInt(static_mask_arr[2]);
+        var res3 = parseInt(static_ip_arr[3]) & parseInt(static_mask_arr[3]);
+
+        var res0_gw = parseInt(static_gw_arr[0]) & parseInt(static_mask_arr[0]);
+        var res1_gw = parseInt(static_gw_arr[1]) & parseInt(static_mask_arr[1]);
+        var res2_gw = parseInt(static_gw_arr[2]) & parseInt(static_mask_arr[2]);
+        var res3_gw = parseInt(static_gw_arr[3]) & parseInt(static_mask_arr[3]);
+
+        if(res0==res0_gw && res1==res1_gw && res2==res2_gw  && res3==res3_gw)
+        {
+            // network_send.doPost("#ip dhcp=0 ip="+static_ip+" mask="+static_mask+" gw="+static_gw);
+			return true;
+        }else{
+            document.getElementById('txtIp').focus();
+            alert('The IP address does not match the subnet mask or gateway address...');//IP地址与子网掩码、网关地址不匹配
+            return false;
+        }
+    }
+	function check_dhcp(){
+	    var u = document.getElementById('DHCP').value;
+		if(u=='1') {
+				document.getElementById('DHCP').value=0;
+				document.getElementById('txtIp').disabled = false;
+				document.getElementById('txtGw').disabled = false;
+				document.getElementById('txtSub').disabled = false;
+	       	}
+	    else {
+				document.getElementById('DHCP').value=1;
+				document.getElementById('txtIp').disabled = true;
+				document.getElementById('txtGw').disabled = true;
+				document.getElementById('txtSub').disabled = true;
+	       	}
+	}
+	// var submitBtn = document.getElementById("netpage");
+	// submitBtn.onclick = function () {
+	// 	var ipaddr=document.getElementById("txtIp").value;
+	// 	var subaddr=document.getElementById("txtSub").value;
+	// 	var gwpaddr=document.getElementById("txtGw").value;
+	// 	var re = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+	// 	ipaddry= ipaddr.split('.');
+	// 	subaddry= subaddr.split('.');
+	// 	gwpaddry= gwpaddr.split('.');
+	// 	if ((re.test(ipaddr))&&(re.test(subaddr))&&(re.test(gwpaddr))) {
+	// 		var partsd = new Array(ipaddr.split("."),subaddr.split("."),gwpaddr.split("."));
+	// 		for(j=0;j<3;j++) {
+	// 			parts=partsd[j];
+	// 			for (var i=0; i<parts.length; i++) {
+	// 				if(j==0) {
+	// 					if((parseInt(parseFloat(parts[0])) > 254)||(parseInt(parseFloat(parts[0])) < 1)) {
+	// 						alert("NOTE:\n      The last item of ip is not a valid value, please specify a value between 1 and 254.");
+	// 						return false;
+	// 					}
+	// 					if((parseInt(parseFloat(parts[1])) > 254)||(parseInt(parseFloat(parts[1])) < 1)) {
+	// 						alert("NOTE:\n      The last item of ip is not a valid value, please specify a value between 1 and 254.");
+	// 						return false;
+	// 					}
+	// 					if((parseInt(parseFloat(parts[2])) > 254)||(parseInt(parseFloat(parts[2])) < 0)) {
+	// 						alert("NOTE:\n      The last item of ip is not a valid value, please specify a value between 0 and 254.");
+	// 						return false;
+	// 					}
+	// 					if((parseInt(parseFloat(parts[3])) > 254)||(parseInt(parseFloat(parts[3])) < 0)) {
+	// 						alert("NOTE:\n      The last item of ip is not a valid value, please specify a value between 1 and 254.");
+	// 						return false;
+	// 					}
+	// 					/*
+	// 					if((parseInt(parseFloat(parts[i])) > 254)||(parseInt(parseFloat(parts[i])) < 1)){
+	// 						alert("NOTE:\n      IP is not a valid value, please specify a value between 1 and 254.");
+	// 						return false;
+	// 						}
+	// 					if(parseInt(parseFloat(parts[3])) < 2){
+	// 						alert("NOTE:\n      The last item of ip is not a valid value, please specify a value between 2 and 254.");
+	// 						return false;
+	// 						}
+	// 						*/
+	// 				}
+	// 				if (parseInt(parseFloat(parts[i])) > 255) {
+	// 					alert("NOTE:\n      Is not a valid value, Please specify a value between 0 and 255.");
+	// 					return false;
+	// 				}
+	// 			}
+	// 		}
+	// 		for(p=0;p<4;p++) {
+	// 			if((parseInt(ipaddry[p])&parseInt(subaddry[p])) != (parseInt(gwpaddry[p])&parseInt(subaddry[p]))) {
+	// 				var r =  confirm("NOTE:\n      There may be errors in the current settings. Continue?");
+	// 				// if(!confirm("NOTE:\n      There may be errors in the current settings. Continue?"))
+	// 				if(r==true) {
+	// 					return true;
+	// 					//	window.event.returnValue = false;
+	// 				} else {
+	// 					return false;
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	else {
+	// 		alert("NOTE:\n      Please enter the correct IP address");
+	// 		return false;
+	// 	}
+	// }
+</script>
+<!--//////////////////////////////ip callback 	JS代码//////////////////////////////-->
+<script>
+    function settingsCallback(o) {
+        //	if ($('txtVer')) $('txtVer').value = o.ver;
+        if ($('txtMac')) $('txtMac').value = o.mac;
+        if ($('txtIp')) $('txtIp').value = o.ip;
+        if ($('txtSub')) $('txtSub').value = o.sub;
+        if ($('txtGw')) $('txtGw').value = o.gw;
+        //	if ($('txtDns')) $('txtDns').value = o.dns;
+        //	if ($('txthdcp')) $('txthdcp').value = o.hdcp;
+        if((o.hdcp)=="1") {
+            if(document.getElementById('slideThree').checked){
+                document.getElementById('slideThree').click();
+            }
+        }
+        else {
+            if (!document.getElementById('slideThree').checked) {
+                document.getElementById('slideThree').click();
+            }
+        }
+    }
+</script>
+<!--//////////////////////////////发送数据函数 	JS代码//////////////////////////////-->
+<script>
+    /**原12*/
+    function httpGetDate() {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open('GET', 'all_dat.get' + new Date().getTime(), true);
+        xmlHttp.send();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4) {
+                if (xmlHttp.status == 200) {
+                    SynRadio(xmlHttp.responseText);
+                } else {
+                    window.fresh_web_tag++;
+                    if (window.fresh_web_tag == 12) {
+                        location.href = '/';
+                    }
+                }
+            }
+        }
+        setTimeout('httpGetDate()', 1000);
+    }
+
+    function senda(data){
+        var xhr=null;
+        if(window.XMLHttpRequest){
+            xhr=new XMLHttpRequest();
+        }else{
+            xhr=new ActiveXObject('Microsoft.XMLHTTP');
+        }
+        var url="video.set";
+        xhr.open('post',url,false);
+        var param=data;
+        xhr.send(param);
+        xhr=null;
+    }
+
+    function httpGet(theUrl) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( 'GET', theUrl, false );
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+</script>
+<!--//////////////////////////////全局通用函数 	JS代码//////////////////////////////-->
+<script>
+    function show(tag){
+        var light=document.getElementById(tag);
+        light.style.display='block';
+    }
+
+    function hide(tag){
+        var light=document.getElementById(tag);
+        light.style.display='none';
+    }
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+</script>
+<!--////////////////////////////enter点击登录 	JS代码/////////////////////////////-->
+<script type="text/javascript">
+        document.onkeydown = function (e) {
+            if (!e) e = window.event;
+            if ((e.keyCode || e.which) == 13) {
+                document.getElementById('LOGIN').click();
+            }
+        }
+</script>
+<script type='text/javascript' src='ip.get'></script>
+
+</body>
+</html>
+
+
+
+
+
+
+ 
