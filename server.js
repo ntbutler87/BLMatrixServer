@@ -243,9 +243,9 @@ const handleAudioCommand = (commandArray) => {
                 setAudioInputSetting(target, audioSource);
             }
             if (commandArray[1].startsWith('out')) {
-                var audioTarget = commandArray[2].split("=")[0];
-                var onOff = commandArray[2].split("=")[1];
-                setAudioOutputSetting(target, audioTarget, onOff);
+                var iis = commandArray[2].split("=")[1];
+                var spdif = commandArray[3].split("=")[1];
+                setAudioOutputSetting(target, iis, spdif);
             }
             break;
         case "l": //Operating Lock
@@ -263,12 +263,12 @@ const setAudioInputSetting = async (input, source) => {
     await storeSaveState(intnernalState);
     return true;
 }
-const setAudioOutputSetting = async (output, target, onoff) => {
-    if (output < 1 || output > 8 || output < 1 || output > 8 || onoff < 0 || onoff > 1
-        || ["hdmi","iis","spdif"].includes(target)) {
+const setAudioOutputSetting = async (output, iisOnOff, spdifOnOff) => {
+    if (output < 1 || output > 8 || output < 1 || output > 8 || iisOnOff < 0 || iisOnOff > 1 || spdifOnOff < 0 || spdifOnOff > 1) {
         return false;
     }
-    intnernalState.HDMIOutputs[output-1][target] = onoff;
+    intnernalState.HDMIOutputs[output-1].iis = iisOnOff;
+    intnernalState.HDMIOutputs[output-1].spdif = spdifOnOff;
     await storeSaveState(intnernalState);
     return true;
 }
@@ -333,6 +333,28 @@ const renameScene = async (scene, name) => {
     return true;
 }
 
+const handlePortRename = async (commandArray) => {
+    // commandArray[1] is the target type and numer (e.g. in1 or hdmi4).
+   var targetType = commandArray[1].substring(0,commandArray[0].length-2);
+   var targetPort = commandArray[1].charAt(commandArray[1].length-1);
+   if (targetPort < 1 || targetPort > 8){ return false;}
+   if(!["in","hdmi","hdbt"].includes(targetType) || !commandArray[2].startsWith("name")) {
+    return false;
+   }
+   if (commandArray[2].split("=")[0] !== "name") {return false};
+   let newName = commandArray[2].split("=")[1].replace(/[^\u0000-\u007E]/g, "").substring(0,15);
+   var target = "Inputs";
+   switch (targetType){
+        case "in":   target = "Inputs";       break;
+        case "hdmi": target = "HDMIOutputs"; break;
+        case "hdbt": target = "HDBTOutputs"; break;
+        default: return false;
+   }
+   intnernalState[target][targetPort-1].name = newName;
+   await storeSaveState(intnernalState);
+   return true;
+}
+
 const changeUserLogin = async (userIndex, userName, password) => {
     const regex = /^[a-zA-Z0-9_]{0,15}$/;
     if ( userIndex < 0 || userIndex >= 5 || !userName.test(regex) || !password.test(regex)) {
@@ -349,7 +371,7 @@ const generateStateStatusString = () => {
     for(var i=1; i<=8; i++){ // Generate the Video Output status block
         outputString += "VO:" + i + "IN:" + intnernalState.HDMIOutputs[i-1].input + ";"
             + "E:" + i + "M:0D:1"  + ";" // Need to figure out what on earth goes here for M and D
-            + "AI:" + i + "M:" + intnernalState.HDMIOutputs[i-1].audioIn + ";"
+            + "AI:" + i + "M:" + intnernalState.Inputs[i-1].audio + ";"
             + "AO:" + i + "HDMI:" + intnernalState.HDMIOutputs[i-1].hdmi + ";"
             + "AO:" + i + "iis:" + intnernalState.HDMIOutputs[i-1].iis + ";"
             + "AO:" + i + "spdif:" + intnernalState.HDMIOutputs[i-1].spdif + ";";
@@ -469,6 +491,7 @@ app.post('/video.set', (req, res) => {
             case body[0] === "login":
                 break;
             case body[0] === "port": // Rename port
+                handlePortRename(body);
                 break;
             case body[0] === "power":
                 break;
