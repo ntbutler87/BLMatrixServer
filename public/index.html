@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BL-8X8 Matrix Visualizer</title>
+    <style>
+        :root {
+            --bg:      #0d0d12;
+            --surf:    #14141c;
+            --surf2:   #1c1c28;
+            --surf3:   #242434;
+            --bdr:     #2c2c3e;
+            --bdr2:    #3c3c52;
+            --txt:     #dcdcf0;
+            --txt2:    #8080a0;
+            --txt3:    #4a4a60;
+            --green:   #30c060;
+            --red:     #f04040;
+            --blue:    #4080ff;
+
+            --c1: #e74c3c;
+            --c2: #e67e22;
+            --c3: #f1c40f;
+            --c4: #2ecc71;
+            --c5: #1abc9c;
+            --c6: #3498db;
+            --c7: #9b59b6;
+            --c8: #e91e63;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--txt);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 13px;
+        }
+
+        /* ── HEADER ── */
+        .hdr {
+            background: var(--surf);
+            border-bottom: 1px solid var(--bdr);
+            padding: 0 20px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .hdr-title { font-size: 15px; font-weight: 700; }
+        .hdr-sub   { font-size: 10px; color: var(--txt3); font-family: monospace; letter-spacing: .5px; }
+        .hdr-sep   { flex: 1; }
+        .status    { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--txt2); }
+        .led {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--txt3);
+            transition: background .3s, box-shadow .3s;
+        }
+        .led.on  { background: var(--green); box-shadow: 0 0 6px var(--green); animation: blink 2s ease-in-out infinite; }
+        .led.err { background: var(--red); }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+        .btn {
+            background: var(--surf3); border: 1px solid var(--bdr);
+            color: var(--txt2); padding: 5px 12px; border-radius: 5px;
+            cursor: pointer; font-size: 11px; font-family: inherit;
+            text-decoration: none; display: inline-block;
+            transition: background .12s, color .12s;
+        }
+        .btn:hover { background: var(--bdr); color: var(--txt); }
+
+        /* ── PAGE ── */
+        .page { padding: 20px; max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+        .sec-lbl {
+            font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; color: var(--txt3); margin-bottom: 10px;
+        }
+
+        /* ── INPUT CARDS ── */
+        .cards8 { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+
+        .in-card {
+            background: var(--surf2);
+            border: 1px solid var(--bdr);
+            border-top: 3px solid var(--c);
+            border-radius: 8px;
+            padding: 10px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+        }
+        .in-icon {
+            width: 44px; height: 44px; border-radius: 8px;
+            background: color-mix(in srgb, var(--c) 12%, var(--surf3));
+            display: flex; align-items: center; justify-content: center;
+        }
+        .in-icon svg, .out-thumb svg { fill: var(--c); }
+        .in-icon svg { width: 28px; height: 28px; }
+        .in-num  { font-size: 10px; font-weight: 700; color: var(--c); font-family: monospace; }
+        .in-name { font-size: 10px; color: var(--txt2); text-align: center; word-break: break-all; }
+
+        /* ── MATRIX ── */
+        .mx-wrap {
+            background: var(--surf); border: 1px solid var(--bdr); border-radius: 10px; padding: 16px;
+        }
+        .mx {
+            display: grid;
+            grid-template-columns: 90px repeat(8, 1fr);
+            gap: 3px;
+        }
+        .mx-corner { /* spacer */ }
+        .mx-chdr {
+            text-align: center; padding: 5px 2px; border-radius: 4px;
+            background: var(--surf2); font-size: 10px; font-weight: 700;
+            font-family: monospace; color: var(--c, var(--txt2));
+        }
+        .mx-rhdr {
+            padding: 4px 8px; border-radius: 4px; background: var(--surf2);
+            display: flex; flex-direction: column; justify-content: center; gap: 1px;
+            min-height: 38px;
+        }
+        .mx-rhdr .rl  { font-size: 10px; font-weight: 700; font-family: monospace; color: var(--txt2); }
+        .mx-rhdr .rn  { font-size: 9px; color: var(--txt3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mx-cell {
+            min-height: 38px; border-radius: 4px;
+            background: var(--surf2); border: 1px solid transparent;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background .1s, border-color .1s, transform .08s;
+        }
+        .mx-cell:hover:not(.active) { background: var(--surf3); border-color: var(--bdr2); }
+        .mx-cell:active { transform: scale(.88); }
+        .mx-cell.active {
+            background: color-mix(in srgb, var(--c) 18%, var(--surf3));
+            border-color: color-mix(in srgb, var(--c) 55%, transparent);
+        }
+        /* Active cell whose row has a pending change — will be un-routed on commit */
+        .mx-cell.active.replaced { opacity: .28; }
+        .mx-cell.active.replaced .mx-dot { box-shadow: none; }
+        /* Cell queued as a pending change */
+        .mx-cell.pending {
+            background: color-mix(in srgb, var(--c) 12%, var(--surf3));
+            border: 1px dashed color-mix(in srgb, var(--c) 65%, transparent);
+            animation: pending-pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes pending-pulse {
+            0%,100% { border-color: color-mix(in srgb, var(--c) 65%, transparent); }
+            50%      { border-color: var(--c); }
+        }
+        .mx-dot { width: 9px; height: 9px; border-radius: 50%; display: none; }
+        .mx-cell.active .mx-dot { display: block; background: var(--c); box-shadow: 0 0 8px var(--c); }
+        .mx-cell.pending .mx-dot { display: block; background: transparent; border: 2px solid var(--c); box-shadow: none; }
+        .mx-cell:not(.active):not(.pending):hover .mx-dot { display: block; background: var(--txt3); width: 5px; height: 5px; }
+
+        /* ── COMMIT BAR ── */
+        .sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .sec-hdr .sec-lbl { margin-bottom: 0; }
+        .commit-bar { display: none; align-items: center; gap: 8px; }
+        .commit-bar.visible { display: flex; }
+        .commit-count { font-size: 11px; color: var(--txt2); font-family: monospace; }
+        .btn-commit {
+            background: color-mix(in srgb, var(--blue) 20%, var(--surf3));
+            border-color: var(--blue); color: var(--blue);
+        }
+        .btn-commit:hover { background: color-mix(in srgb, var(--blue) 35%, var(--surf3)); }
+
+        /* ── OUTPUT CARDS ── */
+        .out-card {
+            background: var(--surf2); border: 1px solid var(--bdr);
+            border-bottom: 3px solid var(--c, var(--txt3));
+            border-radius: 8px; padding: 10px 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .out-thumb {
+            width: 44px; height: 44px; border-radius: 8px;
+            background: color-mix(in srgb, var(--c, var(--txt3)) 12%, var(--surf3));
+            display: flex; align-items: center; justify-content: center;
+        }
+        .out-thumb svg { width: 28px; height: 28px; fill: var(--c, var(--txt3)); }
+        .out-src  { font-size: 10px; font-weight: 700; color: var(--c, var(--txt3)); font-family: monospace; }
+        .out-num  { font-size: 10px; color: var(--txt2); font-family: monospace; }
+        .out-name { font-size: 10px; color: var(--txt3); text-align: center; word-break: break-all; }
+
+        /* ── FRONT PANEL ── */
+        .panel {
+            background: linear-gradient(160deg, #2a2a32 0%, #18181e 60%, #121218 100%);
+            border: 1px solid #353540;
+            border-top: 1px solid #484854;
+            border-radius: 6px;
+            box-shadow: 0 2px 0 rgba(255,255,255,.04) inset, 0 -1px 0 rgba(0,0,0,.5) inset, 0 6px 24px rgba(0,0,0,.4);
+            padding: 14px 18px;
+            display: grid;
+            grid-template-columns: 110px 1fr 3fr;
+            gap: 20px; align-items: center;
+        }
+        .pb-name  { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #b8b8c8; }
+        .pb-model { font-size: 8px; letter-spacing: 1.5px; color: #50505e; font-family: monospace; margin-top: 2px; }
+        .pb-8x8   { font-size: 22px; font-weight: 900; color: #3a3a48; margin-top: 8px; }
+
+        .p-rows { display: flex; flex-direction: column; gap: 10px; }
+        .p-row  { display: flex; align-items: center; gap: 6px; }
+        .p-lbl  { font-size: 8px; font-weight: 700; letter-spacing: 1px; color: #404050; font-family: monospace; width: 20px; flex-shrink: 0; }
+        .p-btns { display: flex; gap: 5px; }
+
+        .pb { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
+        .pb-led {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #0f0f12; border: 1px solid #2a2a30;
+            transition: background .15s, box-shadow .15s;
+        }
+        .pb-led.lit { background: var(--c); border-color: var(--c); box-shadow: 0 0 7px var(--c), 0 0 14px color-mix(in srgb, var(--c) 40%, transparent); }
+        .pb-face {
+            width: 34px; height: 22px;
+            background: linear-gradient(180deg, #28282e, #1a1a20);
+            border: 1px solid #333340; border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700; font-family: monospace; color: #606070;
+            box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 2px 3px rgba(0,0,0,.4);
+            transition: all .1s;
+        }
+        .pb:hover .pb-face { background: linear-gradient(180deg, #36363e, #28282e); color: #a0a0b0; border-color: #454552; }
+        .pb:active .pb-face { background: linear-gradient(180deg, #18181e, #28282e); }
+        .pb.sel .pb-face {
+            background: linear-gradient(180deg, #363618, #28280c);
+            border-color: #aaaa40; color: #e0e060;
+            box-shadow: 0 0 8px rgba(200,200,40,.3) inset, 0 1px 0 rgba(255,255,255,.04) inset;
+        }
+
+        .p-disp {
+            background: #060609; border: 1px solid #1a1a22; border-radius: 5px;
+            padding: 10px 12px; font-family: 'Courier New', monospace;
+            box-shadow: 0 0 20px rgba(20,80,200,.08) inset;
+        }
+        .pd-lbl  { font-size: 8px; color: #202030; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+        .pd-line { font-size: 10px; color: #1060cc; letter-spacing: .5px; line-height: 1.9; min-height: 19px; text-shadow: 0 0 8px rgba(20,100,220,.7); }
+        .pd-line.dim { color: #0a2850; text-shadow: none; }
+
+        /* ── SCENES ── */
+        .sc-card {
+            background: var(--surf2); border: 1px solid var(--bdr);
+            border-radius: 8px; padding: 10px 8px; text-align: center;
+        }
+        .sc-name { font-size: 10px; color: var(--txt); margin-bottom: 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sc-btns { display: flex; gap: 4px; }
+        .sc-btn {
+            flex: 1; background: var(--surf3); border: 1px solid var(--bdr);
+            color: var(--txt2); padding: 4px 0; border-radius: 4px;
+            cursor: pointer; font-size: 9px; font-family: inherit; transition: all .12s;
+        }
+        .sc-btn.recall:hover { background: color-mix(in srgb, var(--blue) 15%, var(--surf3)); border-color: var(--blue); color: var(--blue); }
+        .sc-btn.save:hover   { background: color-mix(in srgb, var(--green) 15%, var(--surf3)); border-color: var(--green); color: var(--green); }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--surf3); border: 1px solid var(--bdr2);
+            border-radius: 7px; padding: 9px 14px; font-size: 12px;
+            opacity: 0; transform: translateY(8px); transition: all .2s;
+            z-index: 999; pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: none; }
+        .toast.ok  { border-color: var(--green); }
+        .toast.err { border-color: var(--red); }
+    </style>
+</head>
+<body>
+
+<header class="hdr">
+    <div>
+        <div class="hdr-title">Matrix Visualizer</div>
+        <div class="hdr-sub">BrightLink BL-8X8-HDBT-HD20</div>
+    </div>
+    <div class="hdr-sep"></div>
+    <div class="status">
+        <div class="led" id="led"></div>
+        <span id="status-txt">Connecting…</span>
+    </div>
+    <span id="ts" style="font-size:10px;color:var(--txt3);font-family:monospace;"></span>
+    <button class="btn" onclick="poll()">Refresh</button>
+    <a class="btn" href="/original.html" target="_blank">Legacy UI</a>
+</header>
+
+<div class="page">
+
+    <section>
+        <div class="sec-lbl">Input Sources</div>
+        <div class="cards8" id="in-row"></div>
+    </section>
+
+    <section>
+        <div class="sec-lbl">Output Displays</div>
+        <div class="cards8" id="out-row"></div>
+    </section>
+
+    <section>
+        <div class="sec-lbl">Device Front Panel</div>
+        <div class="panel">
+            <div>
+                <div class="pb-name">BrightLink</div>
+                <div class="pb-model">BL-8X8-HDBT-HD20</div>
+                <div class="pb-8x8">8×8</div>
+                <div class="pb-model" style="color:#303040;">HDMI MATRIX</div>
+            </div>
+            <div class="p-disp">
+                <div class="pd-lbl">Status</div>
+                <div class="pd-line" id="pd1">READY</div>
+                <div class="pd-line dim" id="pd2">SELECT OUTPUT</div>
+            </div>
+            <div class="p-rows">
+                <div class="p-row">
+                    <div class="p-lbl">IN</div>
+                    <div class="p-btns" id="p-in"></div>
+                </div>
+                <div class="p-row">
+                    <div class="p-lbl">OUT</div>
+                    <div class="p-btns" id="p-out"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="sec-hdr">
+            <div class="sec-lbl">Routing Matrix — click cells to queue changes</div>
+            <div class="commit-bar" id="commit-bar">
+                <span class="commit-count" id="commit-count"></span>
+                <button class="btn" onclick="discardChanges()">Discard</button>
+                <button class="btn btn-commit" onclick="commitChanges()">Commit Changes</button>
+            </div>
+        </div>
+        <div class="mx-wrap"><div class="mx" id="mx"></div></div>
+    </section>
+
+    <section>
+        <div class="sec-lbl">Scenes</div>
+        <div class="cards8" id="scenes"></div>
+    </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+const COLORS = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c','#3498db','#9b59b6','#e91e63'];
+
+// Inline SVG icons, one per input (main shape has no fill attr → inherits CSS fill: var(--c))
+const ICONS = [
+    // 1 – Desktop monitor
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="7" width="36" height="24" rx="2.5"/>
+        <rect x="9" y="10" width="30" height="17" rx="1" fill="rgba(0,0,0,.22)"/>
+        <rect x="20" y="31" width="8" height="5" fill="rgba(0,0,0,.25)"/>
+        <rect x="14" y="36" width="20" height="3" rx="1.5" fill="rgba(0,0,0,.2)"/>
+    </svg>`,
+    // 2 – Laptop
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="7" y="8" width="34" height="21" rx="2"/>
+        <rect x="9" y="11" width="30" height="15" rx="1" fill="rgba(0,0,0,.22)"/>
+        <path d="M3 31 Q5 29 7 29 H41 Q43 29 45 31 L45 35 Q45 37 43 37 H5 Q3 37 3 35 Z"/>
+        <rect x="17" y="29" width="14" height="2.5" rx="1.5" fill="rgba(0,0,0,.2)"/>
+    </svg>`,
+    // 3 – Game controller
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 22 C10 15 14 12 19 12 L29 12 C34 12 38 15 38 22 L37 28 C36 34 31 36 27 35 L24 37 L21 35 C17 36 12 34 11 28 Z"/>
+        <rect x="14" y="22" width="6" height="2.5" rx="1" fill="rgba(0,0,0,.3)"/>
+        <rect x="16" y="20" width="2.5" height="6" rx="1" fill="rgba(0,0,0,.3)"/>
+        <circle cx="31" cy="21" r="2" fill="rgba(0,0,0,.3)"/>
+        <circle cx="34.5" cy="23.5" r="2" fill="rgba(0,0,0,.3)"/>
+        <circle cx="27.5" cy="23.5" r="2" fill="rgba(0,0,0,.3)"/>
+        <circle cx="31" cy="26" r="2" fill="rgba(0,0,0,.3)"/>
+    </svg>`,
+    // 4 – Video camera
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="14" width="28" height="20" rx="3"/>
+        <path d="M31 20 L44 15 L44 33 L31 28 Z"/>
+        <circle cx="16" cy="24" r="6" fill="rgba(0,0,0,.2)"/>
+        <circle cx="16" cy="24" r="3.5" fill="rgba(0,0,0,.2)"/>
+        <circle cx="16" cy="24" r="1.5" fill="rgba(0,0,0,.15)"/>
+        <rect x="5" y="10" width="6" height="4" rx="1" fill="rgba(0,0,0,.2)"/>
+    </svg>`,
+    // 5 – Streaming stick
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="15" width="32" height="18" rx="9"/>
+        <path d="M17 24 Q20 19 24 19 Q28 19 31 24" stroke="rgba(0,0,0,.3)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M20 24 Q22 21.5 24 21.5 Q26 21.5 28 24" stroke="rgba(0,0,0,.3)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="24" cy="26.5" r="2" fill="rgba(0,0,0,.3)"/>
+    </svg>`,
+    // 6 – Disc player
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="15" width="42" height="18" rx="3"/>
+        <rect x="10" y="20" width="20" height="8" rx="1.5" fill="rgba(0,0,0,.2)"/>
+        <circle cx="38" cy="24" r="4" fill="rgba(0,0,0,.2)"/>
+        <circle cx="38" cy="24" r="1.5" fill="rgba(0,0,0,.2)"/>
+        <rect x="5" y="20" width="3" height="8" rx="1" fill="rgba(0,0,0,.15)"/>
+    </svg>`,
+    // 7 – Set-top / cable box
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="13" width="40" height="22" rx="3"/>
+        <rect x="8" y="18" width="20" height="12" rx="2" fill="rgba(0,0,0,.2)"/>
+        <rect x="8" y="21" width="20" height="3" rx="1" fill="rgba(0,0,0,.15)"/>
+        <rect x="8" y="26" width="12" height="2.5" rx="1" fill="rgba(0,0,0,.12)"/>
+        <circle cx="36" cy="22" r="3" fill="rgba(0,0,0,.2)"/>
+        <circle cx="36" cy="30" r="3" fill="rgba(0,0,0,.2)"/>
+    </svg>`,
+    // 8 – Server / NAS
+    `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="7"  width="36" height="9" rx="2"/>
+        <rect x="6" y="19" width="36" height="9" rx="2"/>
+        <rect x="6" y="31" width="36" height="9" rx="2"/>
+        <circle cx="36" cy="11.5" r="2" fill="rgba(0,0,0,.25)"/>
+        <circle cx="36" cy="23.5" r="2" fill="rgba(0,0,0,.25)"/>
+        <circle cx="36" cy="35.5" r="2" fill="rgba(0,0,0,.25)"/>
+        <rect x="9" y="9.5"  width="18" height="4" rx="1" fill="rgba(0,0,0,.2)"/>
+        <rect x="9" y="21.5" width="18" height="4" rx="1" fill="rgba(0,0,0,.2)"/>
+        <rect x="9" y="33.5" width="18" height="4" rx="1" fill="rgba(0,0,0,.2)"/>
+    </svg>`,
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let appState  = null;  // parsed state object
+let selOutput = null;  // 1-based index of the output selected on the front panel
+let selInput  = null;  // 1-based index of the input selected on the front panel
+let pending   = {};    // queued routing changes: outputIndex → inputIndex
+
+// ── STATE STRING PARSER ──────────────────────────────────────────────────────
+// Parses the semicolon-delimited string returned by GET /all_dat.get
+function parseStateStr(raw) {
+    const s = {
+        routing:     {},   // outputIndex(1-8) → inputIndex(1-8)
+        inputNames:  {},   // inputIndex → name string
+        outputNames: {},   // outputIndex → name string
+        sceneNames:  {},   // sceneIndex → name string
+    };
+
+    const parts = raw.split(';');
+    for (const part of parts) {
+        const p = part.trim();
+        if (!p) continue;
+
+        let m;
+
+        // Video routing:  VO:1IN:3
+        if ((m = p.match(/^VO:(\d+)IN:(\d+)$/))) {
+            s.routing[+m[1]] = +m[2];
+            continue;
+        }
+        // Input port names:  port_i1:HDMI_IN1
+        if ((m = p.match(/^port_i(\d+):(.+)$/))) {
+            s.inputNames[+m[1]] = m[2];
+            continue;
+        }
+        // HDMI output names:  port_ohdmi1:HDMI_OUT1
+        if ((m = p.match(/^port_ohdmi(\d+):(.+)$/))) {
+            s.outputNames[+m[1]] = m[2];
+            continue;
+        }
+        // Scene names:  grp1:scene01
+        if ((m = p.match(/^grp(\d+):(.*)$/))) {
+            s.sceneNames[+m[1]] = m[2];
+            continue;
+        }
+    }
+
+    return s;
+}
+
+// ── FETCH ────────────────────────────────────────────────────────────────────
+let lastSnapshot = null;  // JSON string of previous state; used to detect changes
+
+async function poll() {
+    try {
+        const r = await fetch('/all_dat.get');
+        if (!r.ok) throw new Error(r.status);
+        const text = await r.text();
+        const newState = parseStateStr(text);
+        const snapshot = JSON.stringify(newState);
+
+        setLed('on', 'Connected');
+        document.getElementById('ts').textContent = new Date().toLocaleTimeString();
+
+        if (snapshot !== lastSnapshot) {
+            lastSnapshot = snapshot;
+            appState = newState;
+            render();
+        }
+    } catch (e) {
+        setLed('err', 'Disconnected');
+    }
+}
+
+// ── SEND COMMANDS ────────────────────────────────────────────────────────────
+async function route(out, inp) {
+    try {
+        await fetch('/video.set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: `video_d out${out} matrix=${inp}`
+        });
+        toast(`IN${inp} → OUT${out}`, 'ok');
+        await poll();
+    } catch (e) { toast('Command failed', 'err'); }
+}
+
+async function sceneCmd(n, action) {
+    try {
+        await fetch('/video.set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: `group${n} exe=${action}`
+        });
+        toast(action === 1 ? `Scene ${n} saved` : `Scene ${n} recalled`, 'ok');
+        await poll();
+    } catch (e) { toast('Command failed', 'err'); }
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+    if (!appState) return;
+    renderInputs();
+    renderMatrix();
+    renderOutputs();
+    renderPanel();
+    renderScenes();
+    updateCommitBar();
+}
+
+function c(n)    { return COLORS[(n - 1) % 8]; }   // 1-based → color
+function icon(n) { return ICONS[(n - 1) % 8]; }    // 1-based → SVG string
+
+function renderInputs() {
+    document.getElementById('in-row').innerHTML = Array.from({ length: 8 }, (_, i) => {
+        const n = i + 1;
+        const name = appState.inputNames[n] || `HDMI_IN${n}`;
+        return `<div class="in-card" style="--c:${c(n)}">
+            <div class="in-icon">${icon(n)}</div>
+            <div class="in-num">IN ${n}</div>
+            <div class="in-name">${esc(name)}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderMatrix() {
+    let h = '<div class="mx-corner"></div>';
+
+    // Column headers (inputs)
+    for (let i = 1; i <= 8; i++) {
+        h += `<div class="mx-chdr" style="--c:${c(i)}">IN${i}</div>`;
+    }
+
+    // Rows (outputs)
+    for (let o = 1; o <= 8; o++) {
+        const currentSrc = appState.routing[o] || 1;
+        const pendingSrc = pending[o];                      // undefined if no queued change
+        const hasPending = pendingSrc !== undefined;
+        const name = appState.outputNames[o] || `HDMI_OUT${o}`;
+        h += `<div class="mx-rhdr"><div class="rl">OUT${o}</div><div class="rn">${esc(name)}</div></div>`;
+        for (let i = 1; i <= 8; i++) {
+            const isActive   = currentSrc === i;
+            const isPending  = hasPending && pendingSrc === i;
+            const isReplaced = isActive && hasPending;      // active cell being replaced
+            const cls = isPending  ? 'mx-cell pending'
+                      : isReplaced ? 'mx-cell active replaced'
+                      : isActive   ? 'mx-cell active'
+                                   : 'mx-cell';
+            const tip = isPending  ? `Queued: IN${i} → OUT${o} (click to cancel)`
+                      : isReplaced ? `Currently routed — will be replaced (click to cancel pending)`
+                                   : `Queue: IN${i} → OUT${o}`;
+            h += `<div class="${cls}" style="--c:${c(i)}"
+                onclick="queueRoute(${o},${i})" title="${tip}">
+                <div class="mx-dot"></div>
+            </div>`;
+        }
+    }
+
+    document.getElementById('mx').innerHTML = h;
+}
+
+function renderOutputs() {
+    document.getElementById('out-row').innerHTML = Array.from({ length: 8 }, (_, i) => {
+        const o    = i + 1;
+        const src  = appState.routing[o] || 1;
+        const name = appState.outputNames[o] || `HDMI_OUT${o}`;
+        return `<div class="out-card" style="--c:${c(src)}">
+            <div class="out-thumb">${icon(src)}</div>
+            <div class="out-src">← IN${src}</div>
+            <div class="out-num">OUT ${o}</div>
+            <div class="out-name">${esc(name)}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderPanel() {
+    // Input buttons (top row — LED lit with input color; amber when selected)
+    document.getElementById('p-in').innerHTML = Array.from({ length: 8 }, (_, i) => {
+        const n = i + 1;
+        const sel = selInput === n ? 'sel' : '';
+        return `<div class="pb ${sel}" onclick="panelIn(${n})">
+            <div class="pb-led lit" style="--c:${c(n)}"></div>
+            <div class="pb-face">IN${n}</div>
+        </div>`;
+    }).join('');
+
+    // Output buttons (bottom row — LED color = current source input color; amber when selected)
+    document.getElementById('p-out').innerHTML = Array.from({ length: 8 }, (_, i) => {
+        const n   = i + 1;
+        const src = appState.routing[n] || 1;
+        const sel = selOutput === n ? 'sel' : '';
+        return `<div class="pb ${sel}" onclick="panelOut(${n})">
+            <div class="pb-face">O${n}</div>
+            <div class="pb-led lit" style="--c:${c(src)}"></div>
+        </div>`;
+    }).join('');
+
+    updateDisplay();
+}
+
+function renderScenes() {
+    document.getElementById('scenes').innerHTML = Array.from({ length: 8 }, (_, i) => {
+        const n    = i + 1;
+        const name = appState.sceneNames[n] || `scene${String(n).padStart(2,'0')}`;
+        return `<div class="sc-card">
+            <div class="sc-name">${esc(name)}</div>
+            <div class="sc-btns">
+                <button class="sc-btn recall" onclick="sceneCmd(${n},2)">Recall</button>
+                <button class="sc-btn save"   onclick="sceneCmd(${n},1)">Save</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── MATRIX QUEUE & COMMIT ────────────────────────────────────────────────────
+function queueRoute(o, i) {
+    const currentSrc = appState.routing[o] || 1;
+    if (pending[o] === i || (currentSrc === i && pending[o] === undefined)) {
+        // Clicking the pending cell, or the already-active cell with nothing queued → no-op / cancel
+        delete pending[o];
+    } else if (currentSrc === i && pending[o] !== undefined) {
+        // Clicking the dimmed active cell cancels the pending change for this row
+        delete pending[o];
+    } else {
+        pending[o] = i;
+    }
+    renderMatrix();
+    updateCommitBar();
+}
+
+async function commitChanges() {
+    const entries = Object.entries(pending);
+    if (entries.length === 0) return;
+    const body = entries.map(([out, inp]) => `video_d out${out} matrix=${inp}`).join('#');
+    try {
+        await fetch('/video.set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body
+        });
+        const n = entries.length;
+        toast(`${n} routing change${n > 1 ? 's' : ''} committed`, 'ok');
+        pending = {};
+        updateCommitBar();
+        await poll();
+    } catch (e) { toast('Commit failed', 'err'); }
+}
+
+function discardChanges() {
+    pending = {};
+    renderMatrix();
+    updateCommitBar();
+}
+
+function updateCommitBar() {
+    const count = Object.keys(pending).length;
+    const bar = document.getElementById('commit-bar');
+    document.getElementById('commit-count').textContent =
+        count > 0 ? `${count} pending change${count > 1 ? 's' : ''}` : '';
+    bar.classList.toggle('visible', count > 0);
+}
+
+// ── FRONT PANEL INTERACTION ──────────────────────────────────────────────────
+// Either side can be pressed first; the second press completes the routing.
+function panelOut(n) {
+    if (selInput !== null) {
+        // Input already chosen — complete the route
+        const i = selInput;
+        selInput = null; selOutput = null;
+        route(n, i);
+    } else {
+        // Toggle output selection; clear any stale input selection
+        selInput  = null;
+        selOutput = selOutput === n ? null : n;
+        renderPanel();
+    }
+}
+
+function panelIn(n) {
+    if (selOutput !== null) {
+        // Output already chosen — complete the route
+        const o = selOutput;
+        selInput = null; selOutput = null;
+        route(o, n);
+    } else {
+        // Toggle input selection; clear any stale output selection
+        selOutput = null;
+        selInput  = selInput === n ? null : n;
+        renderPanel();
+    }
+}
+
+function updateDisplay() {
+    const pd1 = document.getElementById('pd1');
+    const pd2 = document.getElementById('pd2');
+    if (selOutput && appState) {
+        const src = appState.routing[selOutput] || 1;
+        pd1.textContent = `OUT${selOutput} SELECTED`;
+        pd1.classList.remove('dim');
+        pd2.textContent = `NOW: IN${src}  —  PICK INPUT`;
+        pd2.classList.remove('dim');
+    } else if (selInput) {
+        pd1.textContent = `IN${selInput} SELECTED`;
+        pd1.classList.remove('dim');
+        pd2.textContent = 'PICK OUTPUT TO ROUTE TO';
+        pd2.classList.remove('dim');
+    } else {
+        pd1.textContent = 'READY';
+        pd1.classList.remove('dim');
+        pd2.textContent = 'SELECT INPUT OR OUTPUT';
+        pd2.classList.add('dim');
+    }
+}
+
+// ── UTILITIES ────────────────────────────────────────────────────────────────
+function setLed(type, txt) {
+    document.getElementById('led').className = 'led ' + type;
+    document.getElementById('status-txt').textContent = txt;
+}
+
+let _tt;
+function toast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(_tt);
+    _tt = setTimeout(() => { t.className = 'toast'; }, 2500);
+}
+
+function esc(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+poll();
+setInterval(poll, 1000);
+</script>
+</body>
+</html>
