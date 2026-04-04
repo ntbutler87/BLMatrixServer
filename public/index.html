@@ -286,6 +286,8 @@
         <div class="cards8" id="in-row"></div>
     </section>
 
+    <div id="conn-strip" style="position:relative;height:1px;overflow:visible;pointer-events:none;"></div>
+
     <section>
         <div class="sec-lbl">Output Displays</div>
         <div class="cards8" id="out-row"></div>
@@ -518,10 +520,38 @@ function render() {
     renderInputs();
     renderMatrix();
     renderOutputs();
+    renderConnectors();
     renderPanel();
     renderScenes();
     updateCommitBar();
 }
+
+function renderConnectors() {
+    const strip = document.getElementById('conn-strip');
+    const inCards  = Array.from(document.getElementById('in-row').children);
+    const outCards = Array.from(document.getElementById('out-row').children);
+    if (!inCards.length || !outCards.length || !appState) { strip.innerHTML = ''; return; }
+
+    const sr = strip.getBoundingClientRect();
+    const lines = [];
+
+    for (let o = 0; o < 8; o++) {
+        const srcIdx = (appState.routing[o + 1] || 1) - 1;  // 0-based input index
+        const ir = inCards[srcIdx].getBoundingClientRect();
+        const or_ = outCards[o].getBoundingClientRect();
+
+        const x1 = (ir.left + ir.width  / 2 - sr.left).toFixed(1);
+        const y1 = (ir.bottom - sr.top).toFixed(1);
+        const x2 = (or_.left + or_.width / 2 - sr.left).toFixed(1);
+        const y2 = (or_.top  - sr.top).toFixed(1);
+
+        lines.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${COLORS[srcIdx]}" stroke-width="1.5" opacity="0.4" stroke-linecap="round"/>`);
+    }
+
+    strip.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" style="position:absolute;overflow:visible;">${lines.join('')}</svg>`;
+}
+
+window.addEventListener('resize', () => { if (appState) renderConnectors(); });
 
 function c(n)    { return COLORS[(n - 1) % 8]; }   // 1-based → color
 function icon(n) { return ICONS[(n - 1) % 8]; }    // 1-based → SVG string
