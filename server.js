@@ -429,8 +429,8 @@ const generateStateStatusString = () => {
         outputString += "hdcp=" + intnernalState.HDMIOutputs[i-1].hdcp + ","; 
         outputString += "bit="  + intnernalState.HDMIOutputs[i-1].bit + ";"; 
     }
-    // Generate the HDCP Output info block
-    outputString += "OUTHDMIPORT:"
+    // Generate the HDBT Output info block
+    outputString += "OUTHDBTPORT:"
     for(var i=1; i<=8; i++){
         outputString += "hpd="  + intnernalState.HDBTOutputs[i-1].hpd + ",";
         outputString += "sig="  + intnernalState.HDBTOutputs[i-1].signal + ",";
@@ -448,20 +448,25 @@ import express from 'express';
 import stream from 'stream';
 import bodyParser from 'body-parser';
 import internal from 'stream';
+import cors from 'cors';
 const app = express();
 const port = 3000;
 app.use(bodyParser.text());
+app.use(express.static('public'));
+app.use(cors())
 
 app.get('/', async (req, res) => {
     res.writeHeader(200, {"Content-Type": 'text/html'});
-    res.write(await readFile('./original.html'));
+    res.write(await readFile('./public/original.html'));
     res.end();
 })
 
+// app.get('/all_dat.get*', cors(), (req, res) => {
 app.get('/all_dat.get*', (req, res) => {
     let status = generateStateStatusString();
     // let status = 'OK';
     res.send(status);
+    // console.log('sent status');
 })
 
 app.post('/video.set', (req, res) => {
