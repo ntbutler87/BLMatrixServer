@@ -517,6 +517,39 @@ app.get('/ip.get', (req, res) => {
     res.send("");
 })
 
+// ── HARDWARE PROXY ────────────────────────────────────────────────────────────
+// Forwards requests to a real hardware unit, avoiding browser CORS restrictions.
+// The target base URL is passed as the `target` query parameter, e.g.:
+//   GET /hw-proxy/all_dat.get?target=http%3A%2F%2F192.168.1.100
+//   POST /hw-proxy/video.set?target=http%3A%2F%2F192.168.1.100
+
+app.get('/hw-proxy/all_dat.get', async (req, res) => {
+    const target = req.query.target;
+    if (!target) return res.status(400).send('Missing target parameter');
+    try {
+        const r = await fetch(`${target}/all_dat.get`);
+        const text = await r.text();
+        res.send(text);
+    } catch (e) {
+        res.status(502).send(`Proxy error: ${e.message}`);
+    }
+});
+
+app.post('/hw-proxy/video.set', async (req, res) => {
+    const target = req.query.target;
+    if (!target) return res.status(400).send('Missing target parameter');
+    try {
+        await fetch(`${target}/video.set`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: req.body,
+        });
+        res.end();
+    } catch (e) {
+        res.status(502).send(`Proxy error: ${e.message}`);
+    }
+});
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Example app listening on port ${port}. Open on http://localhost:${port}`);
 })

@@ -260,6 +260,20 @@
         .toast.show { opacity: 1; transform: none; }
         .toast.ok  { border-color: var(--green); }
         .toast.err { border-color: var(--red); }
+
+        /* ── TARGET INPUT ── */
+        .target-wrap {
+            display: flex; align-items: center; gap: 6px;
+        }
+        .target-lbl { font-size: 10px; color: var(--txt3); white-space: nowrap; }
+        .target-input {
+            background: var(--surf2); border: 1px solid var(--bdr);
+            color: var(--txt); padding: 4px 8px; border-radius: 5px;
+            font-size: 11px; font-family: monospace; width: 160px;
+            outline: none;
+        }
+        .target-input:focus { border-color: var(--bdr2); }
+        .target-input.hw-active { border-color: var(--blue); color: var(--blue); }
     </style>
 </head>
 <body>
@@ -270,6 +284,13 @@
         <div class="hdr-sub">BrightLink BL-8X8-HDBT-HD20</div>
     </div>
     <div class="hdr-sep"></div>
+    <div class="target-wrap">
+        <span class="target-lbl">Device IP</span>
+        <input class="target-input" id="target-input" type="text"
+               placeholder="emulator (local)"
+               title="Leave blank to control the local emulator. Enter a hardware unit IP (e.g. 192.168.1.100) to control real hardware via proxy."
+               oninput="onTargetChange()">
+    </div>
     <div class="status">
         <div class="led" id="led"></div>
         <span id="status-txt">Connecting…</span>
@@ -343,6 +364,33 @@
 <script>
 // ── CONSTANTS ────────────────────────────────────────────────────────────────
 const COLORS = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c','#3498db','#9b59b6','#e91e63'];
+
+// ── TARGET DEVICE ─────────────────────────────────────────────────────────────
+// hwTarget: base URL of real hardware (e.g. "http://192.168.1.100"), or null for emulator.
+// When set, all requests are sent through the server-side proxy at /hw-proxy/* which
+// avoids browser CORS restrictions against the hardware unit.
+let hwTarget = null;
+
+function onTargetChange() {
+    const raw = document.getElementById('target-input').value.trim();
+    const inp = document.getElementById('target-input');
+    if (raw) {
+        // Normalise: add http:// if no scheme present
+        hwTarget = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`;
+        inp.classList.add('hw-active');
+    } else {
+        hwTarget = null;
+        inp.classList.remove('hw-active');
+    }
+    lastSnapshot = null; // force re-render after target change
+    poll();
+}
+
+// Returns the URL to use for a given path, routing through the proxy for hardware units.
+function apiUrl(path) {
+    if (!hwTarget) return path;
+    return `/hw-proxy${path}?target=${encodeURIComponent(hwTarget)}`;
+}
 
 // Inline SVG icons, one per input (main shape has no fill attr → inherits CSS fill: var(--c))
 const ICONS = [
@@ -470,7 +518,7 @@ let lastSnapshot = null;  // JSON string of previous state; used to detect chang
 
 async function poll() {
     try {
-        const r = await fetch('/all_dat.get');
+        const r = await fetch(apiUrl('/all_dat.get'));
         if (!r.ok) throw new Error(r.status);
         const text = await r.text();
         const newState = parseStateStr(text);
@@ -492,7 +540,7 @@ async function poll() {
 // ── SEND COMMANDS ────────────────────────────────────────────────────────────
 async function route(out, inp) {
     try {
-        await fetch('/video.set', {
+        await fetch(apiUrl('/video.set'), {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: `video_d out${out} matrix=${inp}`
@@ -504,7 +552,7 @@ async function route(out, inp) {
 
 async function sceneCmd(n, action) {
     try {
-        await fetch('/video.set', {
+        await fetch(apiUrl('/video.set'), {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: `group${n} exe=${action}`
