@@ -1,0 +1,764 @@
+<title>BL-8X8 Matrix Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+:root {
+    --ground:   #f2f4f5;
+    --panel:    #ffffff;
+    --panel-2:  #e9edee;
+    --rule:     #d2d9db;
+    --rule-2:   #bcc6c9;
+    --ink:      #131b1e;
+    --ink-2:    #45565b;
+    --ink-3:    #6d7f85;
+    --accent:   #0b6f80;
+    --accent-2: #e6f2f4;
+    --ok:       #216e45;
+    --ok-bg:    #e2f0e7;
+    --no:       #9d3320;
+    --no-bg:    #f7e6e2;
+    --hold:     #8a5a10;
+    --hold-bg:  #f6ecda;
+    --shadow:   0 1px 2px rgba(19, 27, 30, .06), 0 8px 24px -18px rgba(19, 27, 30, .5);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --ground:   #0e1416;
+        --panel:    #151d20;
+        --panel-2:  #1c2529;
+        --rule:     #2a3639;
+        --rule-2:   #3a4a4e;
+        --ink:      #e2e9ea;
+        --ink-2:    #a3b3b7;
+        --ink-3:    #798a8f;
+        --accent:   #56c1d2;
+        --accent-2: #14313a;
+        --ok:       #6cc491;
+        --ok-bg:    #16302351;
+        --no:       #e59180;
+        --no-bg:    #35191355;
+        --hold:     #d9ac62;
+        --hold-bg:  #33260f66;
+        --shadow:   0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
+    }
+}
+:root[data-theme="dark"] {
+    --ground:   #0e1416;
+    --panel:    #151d20;
+    --panel-2:  #1c2529;
+    --rule:     #2a3639;
+    --rule-2:   #3a4a4e;
+    --ink:      #e2e9ea;
+    --ink-2:    #a3b3b7;
+    --ink-3:    #798a8f;
+    --accent:   #56c1d2;
+    --accent-2: #14313a;
+    --ok:       #6cc491;
+    --ok-bg:    #16302351;
+    --no:       #e59180;
+    --no-bg:    #35191355;
+    --hold:     #d9ac62;
+    --hold-bg:  #33260f66;
+    --shadow:   0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+* { box-sizing: border-box; }
+body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, .ui { font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+code, kbd, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+/* ── SHELL ─────────────────────────────────────────────── */
+.masthead {
+    border-bottom: 1px solid var(--rule);
+    background: var(--panel);
+}
+.masthead-in {
+    max-width: 1180px; margin: 0 auto; padding: 34px 28px 30px;
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 40px;
+}
+.eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent);
+}
+h1 {
+    font-size: clamp(28px, 4vw, 40px); font-weight: 600; letter-spacing: -.02em;
+    line-height: 1.1; margin: 8px 0 0; text-wrap: balance;
+}
+.standfirst {
+    margin: 12px 0 0; max-width: 62ch; color: var(--ink-2);
+    font-size: 17px;
+}
+.masthead-meta {
+    margin-left: auto; display: grid; gap: 4px;
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--ink-3);
+    text-align: right;
+}
+.masthead-meta b { color: var(--ink-2); font-weight: 500; }
+
+.shell {
+    max-width: 1180px; margin: 0 auto; padding: 0 28px 96px;
+    display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px;
+    align-items: start;
+}
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+
+/* ── CONTENTS RAIL ─────────────────────────────────────── */
+.rail { position: sticky; top: 0; padding: 40px 0; }
+@media (max-width: 900px) {
+    .rail { position: static; padding: 28px 0 0; }
+    .rail ol { columns: 2; column-gap: 24px; }
+}
+.rail h2 {
+    font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600; margin: 0 0 12px;
+}
+.rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.rail a {
+    display: grid; grid-template-columns: 22px 1fr; gap: 4px;
+    padding: 5px 8px 5px 0; border-radius: 4px;
+    font-family: "IBM Plex Sans", sans-serif; font-size: 13.5px; line-height: 1.3;
+    color: var(--ink-2); text-decoration: none;
+}
+.rail a span { color: var(--ink-3); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
+.rail a:hover { color: var(--accent); }
+.rail a:hover span { color: var(--accent); }
+.rail a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rail a.key { color: var(--ink); font-weight: 500; }
+
+/* ── FLOW ──────────────────────────────────────────────── */
+main { padding: 40px 0 0; min-width: 0; }
+section { padding: 0 0 8px; scroll-margin-top: 20px; }
+section + section { margin-top: 44px; padding-top: 40px; border-top: 1px solid var(--rule); }
+h2.sec {
+    font-size: 23px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 6px;
+    display: flex; align-items: baseline; gap: 12px; text-wrap: balance;
+}
+h2.sec em {
+    font-family: "IBM Plex Mono", monospace; font-style: normal;
+    font-size: 12px; font-weight: 500; color: var(--accent);
+    padding-top: 3px;
+}
+h3 {
+    font-size: 15px; font-weight: 600; margin: 30px 0 8px; letter-spacing: -.005em;
+}
+h3 .mono { font-weight: 500; font-size: 14px; }
+p { margin: 0 0 14px; max-width: 68ch; }
+p.lead { color: var(--ink-2); }
+ul, ol.body { max-width: 68ch; margin: 0 0 14px; padding-left: 20px; }
+li { margin-bottom: 6px; }
+li::marker { color: var(--ink-3); }
+strong { font-weight: 600; }
+a { color: var(--accent); }
+
+code {
+    font-size: .875em; background: var(--panel-2); color: var(--ink);
+    padding: 1px 5px; border-radius: 3px; border: 1px solid var(--rule);
+    white-space: nowrap;
+}
+pre {
+    margin: 0 0 18px; padding: 16px 18px; overflow-x: auto;
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+    border-radius: 4px; box-shadow: var(--shadow);
+    font-size: 12.5px; line-height: 1.65;
+}
+pre code { background: none; border: 0; padding: 0; white-space: pre; font-size: inherit; }
+.cmt { color: var(--ink-3); }
+
+/* ── TABLES ────────────────────────────────────────────── */
+.scroll { overflow-x: auto; margin: 0 0 20px; border-radius: 4px; box-shadow: var(--shadow); }
+table {
+    border-collapse: collapse; width: 100%; background: var(--panel);
+    font-family: "IBM Plex Sans", sans-serif; font-size: 13.5px; line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+}
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+thead th {
+    font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600;
+    color: var(--ink-3); background: var(--panel-2); white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: 0; }
+td .mono, th .mono { font-size: 12.5px; }
+td code { white-space: pre; }
+.nowrap { white-space: nowrap; }
+
+/* segment-map table: fixed-width index column */
+.map td:first-child, .map th:first-child { font-family: "IBM Plex Mono", monospace; white-space: nowrap; }
+
+/* ── CHIPS ─────────────────────────────────────────────── */
+.chip {
+    display: inline-block; font-family: "IBM Plex Sans", sans-serif;
+    font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+    border: 1px solid currentColor;
+}
+.chip.ok   { color: var(--ok);   background: var(--ok-bg); }
+.chip.no   { color: var(--no);   background: var(--no-bg); }
+.chip.hold { color: var(--hold); background: var(--hold-bg); }
+
+/* ── CALLOUTS ──────────────────────────────────────────── */
+.note {
+    margin: 0 0 20px; padding: 16px 18px; border-radius: 4px;
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+    box-shadow: var(--shadow);
+}
+.note.warn { border-left-color: var(--no); }
+.note p:last-child { margin-bottom: 0; }
+.note .label {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 10.5px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3);
+    display: block; margin-bottom: 6px;
+}
+.note.warn .label { color: var(--no); }
+
+/* ── VERDICT CARDS ─────────────────────────────────────── */
+.verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 0 0 22px; }
+.verdict {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 16px 18px; box-shadow: var(--shadow);
+    display: grid; gap: 8px; align-content: start;
+}
+.verdict .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.verdict .field { font-family: "IBM Plex Mono", monospace; font-size: 15px; font-weight: 600; }
+.verdict p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+
+/* ── PORT EVIDENCE PANEL ───────────────────────────────── */
+.panelgrid {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 4px;
+    box-shadow: var(--shadow); padding: 18px; margin: 0 0 20px; overflow-x: auto;
+}
+.panelgrid .cap {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-bottom: 14px;
+}
+.pgrid {
+    display: grid; grid-template-columns: 130px repeat(8, minmax(46px, 1fr));
+    gap: 4px; min-width: 560px;
+}
+.pgrid .rl {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--ink-2);
+    display: flex; align-items: center; padding-right: 8px;
+}
+.pgrid .hd {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3);
+    text-align: center; padding-bottom: 2px;
+}
+.cell {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 500;
+    text-align: center; padding: 5px 0; border-radius: 3px;
+    border: 1px solid var(--rule); color: var(--ink-3); background: var(--panel-2);
+}
+.cell.hi { color: var(--ok); background: var(--ok-bg); border-color: currentColor; font-weight: 600; }
+.cell.lo { color: var(--no); background: var(--no-bg); border-color: color-mix(in srgb, var(--no) 35%, transparent); }
+.pgrid .sep { grid-column: 1 / -1; height: 1px; background: var(--rule); margin: 7px 0; }
+.legend {
+    display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px;
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; color: var(--ink-2);
+}
+
+footer {
+    max-width: 1180px; margin: 0 auto; padding: 0 28px 60px;
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; color: var(--ink-3);
+    border-top: 1px solid var(--rule); padding-top: 20px; margin-top: 20px;
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<header class="masthead">
+    <div class="masthead-in">
+        <div>
+            <div class="eyebrow">Reverse-engineered protocol reference</div>
+            <h1>BrightLink BL-8X8-HDBT-HD20</h1>
+            <p class="standfirst">The HTTP interface of an 8&times;8 HDMI&nbsp;2.0 / HDBaseT matrix switcher: two endpoints, one 160-segment status string, and several fields that mean the opposite of what their names suggest.</p>
+        </div>
+        <div class="masthead-meta">
+            <div><b>Derived from</b> the device's own web UI</div>
+            <div><b>Verified against</b> a live-unit capture</div>
+            <div><b>Ports</b> 8 in &middot; 8 HDMI out &middot; 8 HDBT out</div>
+        </div>
+    </div>
+</header>
+
+<div class="shell">
+<nav class="rail" aria-label="Contents">
+    <h2>Contents</h2>
+    <ol>
+        <li><a href="#s1"><span>1</span>Transport</a></li>
+        <li><a href="#s2"><span>2</span>Control commands</a></li>
+        <li><a href="#s3"><span>3</span>State response</a></li>
+        <li><a href="#s4" class="key"><span>4</span>What's plugged in</a></li>
+        <li><a href="#s5"><span>5</span>Parsing recipes</a></li>
+        <li><a href="#s6"><span>6</span>Gotchas</a></li>
+        <li><a href="#s7"><span>7</span>Reading the stock UI</a></li>
+        <li><a href="#s8"><span>8</span>Emulator conformance</a></li>
+    </ol>
+</nav>
+
+<main>
+
+<section id="evidence" aria-label="Evidence">
+    <p class="lead">Every rule below is traceable to one of three artefacts. Anything that isn't is marked <span class="chip hold">unconfirmed</span>.</p>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Evidence</th><th>What it settles</th></tr></thead>
+            <tbody>
+                <tr><td class="nowrap"><code>public/original.html</code></td><td>The device's own web UI, captured from a live unit — command wire format (<code>APPLY()</code>), response parsing (<code>SynRadio()</code>), and which fields the firmware's own UI trusts</td></tr>
+                <tr><td class="nowrap"><code>all_dat.get.sample</code></td><td>A real response captured from a live unit — segment counts, ordering, observed field values</td></tr>
+                <tr><td class="nowrap"><code>server.js</code></td><td>The emulator implementing this spec; used to verify the parse rules round-trip</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="s1">
+    <h2 class="sec">Transport <em>1</em></h2>
+    <p>Plain HTTP/1.1 on port 80. <strong>No authentication of any kind</strong> — every endpoint answers any client that can reach the device. The web UI's login screen is cosmetic: it downloads the credential list from <code>all_dat.get</code> and compares in JavaScript.</p>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Method</th><th>Path</th><th>Purpose</th><th>Response</th></tr></thead>
+            <tbody>
+                <tr><td class="mono nowrap">GET</td><td class="nowrap"><code>/all_dat.get&lt;cachebuster&gt;</code></td><td>Read the entire device state</td><td>One line, 160 <code>;</code>-separated segments</td></tr>
+                <tr><td class="mono nowrap">POST</td><td class="nowrap"><code>/video.set</code></td><td>Send one or more control commands</td><td>Empty body, <code>200</code></td></tr>
+                <tr><td class="mono nowrap">POST</td><td class="nowrap"><code>/ip.set</code></td><td>Network configuration</td><td>Empty body, <code>200</code></td></tr>
+                <tr><td class="mono nowrap">GET</td><td class="nowrap"><code>/ip.get</code></td><td>Network info as executable JavaScript</td><td>JS calling <code>settingsCallback({mac, ip, sub, gw, hdcp})</code></td></tr>
+                <tr><td class="mono nowrap">GET</td><td class="nowrap"><code>/</code></td><td>The device web UI</td><td>HTML</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>1.1 &nbsp;The cache-buster is part of the path, not a query string</h3>
+    <pre><code>xmlHttp.open('GET', 'all_dat.get' + new Date().getTime(), true);</code></pre>
+    <p>That produces <code>GET /all_dat.get1712345678901</code> — <strong>no <code>?</code></strong>. The firmware prefix-matches the path. A bare <code>GET /all_dat.get</code> also works. Any emulator or proxy must match the path as a prefix.</p>
+
+    <h3>1.2 &nbsp;Polling model</h3>
+    <p>The stock UI polls once per second and re-renders <strong>only when the full response text differs from the previous one</strong>:</p>
+    <pre><code>if (o != window.myold &amp;&amp; index != -1) { <span class="cmt">…parse…</span> ; window.myold = o; }
+setTimeout('httpGetDate()', 1000);</code></pre>
+    <p>There is no push, no long-poll, no event stream. Twelve consecutive failed polls make the stock UI reload the page.</p>
+
+    <h3>1.3 &nbsp;Commands are fire-and-forget</h3>
+    <p><code>POST /video.set</code> returns an empty <code>200</code> whether the command was understood, malformed, or out of range. <strong>There is no acknowledgement and no error channel.</strong> To confirm any change, re-read <code>all_dat.get</code> and compare. Content-Type is ignored by the device — the stock UI sends XHR's default <code>text/plain</code>.</p>
+</section>
+
+<section id="s2">
+    <h2 class="sec">Control commands <em>2 &nbsp;POST /video.set</em></h2>
+
+    <h3>2.1 &nbsp;Framing</h3>
+    <p>A request body is one or more commands, <strong>each introduced by <code>#</code></strong>, concatenated with no other separator:</p>
+    <pre><code>#video_d out1 matrix=3#video_d out2 matrix=3#video_d out7 matrix=8</code></pre>
+    <ul>
+        <li>Fields within a command are separated by <strong>single spaces</strong>.</li>
+        <li>Arguments are <code>key=value</code>, except the leading command token and its target.</li>
+        <li>The leading <code>#</code> on the first command is conventional; tolerate its absence.</li>
+        <li>Values are decimal, 1-based, never zero-padded — <code>out8</code>, not <code>out08</code>.</li>
+        <li>Port names are the only free-text values, and they may contain spaces (2.6).</li>
+    </ul>
+
+    <h3>2.2 &nbsp;Command token grammar</h3>
+    <p>The command token reads <code>&lt;group&gt;_&lt;op&gt;</code>, and <strong>the last character is the operation</strong>:</p>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Suffix</th><th>Meaning</th><th>Seen in stock UI</th></tr></thead>
+            <tbody>
+                <tr><td><code>d</code></td><td>data — set / change a value</td><td>Yes, everywhere</td></tr>
+                <tr><td><code>l</code></td><td>lock</td><td>No — inferred from firmware parsing</td></tr>
+                <tr><td><code>s</code></td><td>save</td><td>No — inferred from firmware parsing</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>Only <code>_d</code> is exercised by the stock UI; <code>l</code> and <code>s</code> are <span class="chip hold">unconfirmed</span>. <code>group&lt;N&gt;</code>, <code>port</code>, <code>register&lt;N&gt;</code> and <code>ip</code> do not follow the suffix convention.</p>
+
+    <h3>2.3 &nbsp;Command reference</h3>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Command</th><th>Range</th><th>Effect</th></tr></thead>
+            <tbody>
+                <tr><td><code>video_d out&lt;N&gt; matrix=&lt;M&gt;</code></td><td class="nowrap">N, M = 1–8</td><td>Route input M to output N. <strong>HDMI output N and HDBT output N always switch together</strong> — they are one logical output.</td></tr>
+                <tr><td><code>audio_d in&lt;N&gt; enc=&lt;E&gt;</code></td><td class="nowrap">N = 1–8<br>E = 0/1/2</td><td>Audio source for input N: <code>0</code> mute, <code>1</code> HDMI embedded, <code>2</code> analog.</td></tr>
+                <tr><td><code>audio_d out&lt;N&gt; iis=&lt;A&gt; spdif=&lt;S&gt;</code></td><td class="nowrap">N = 1–8<br>A, S = 0/1</td><td>Audio output enables for output N. <code>iis</code> is the analog / I²S output, <code>spdif</code> the coax/optical one. The stock UI always sends both flags together, in this order.</td></tr>
+                <tr><td><code>edid_d in&lt;N&gt; mode=&lt;M&gt; data=&lt;D&gt;</code></td><td class="nowrap">N = 1–8<br>M = 0–3<br>D = 1–8</td><td>Assign an EDID to input N (see 2.4).</td></tr>
+                <tr><td><code>edid_d user&lt;N&gt; mode=&lt;M&gt; data=&lt;D&gt;</code></td><td class="nowrap">N = 1–8<br>M = 2 or 3<br>D = 1–8</td><td>Copy the EDID read from HDMI output D (<code>mode=2</code>) or HDBT output D (<code>mode=3</code>) into user EDID slot N.</td></tr>
+                <tr><td><code>group&lt;N&gt; exe=&lt;E&gt;</code></td><td class="nowrap">N = 1–8<br>E = 0/1/2</td><td>Scene: <code>1</code> save current routing into scene N, <code>2</code> recall scene N, <code>0</code> clear scene N (<span class="chip hold">unconfirmed</span> — the stock UI never sends <code>exe=0</code>).</td></tr>
+                <tr><td><code>port in&lt;N&gt; name=&lt;text&gt;</code></td><td class="nowrap">N = 1–8</td><td>Rename input N.</td></tr>
+                <tr><td><code>port hdmi&lt;N&gt; name=&lt;text&gt;</code></td><td class="nowrap">N = 1–8</td><td>Rename HDMI output N.</td></tr>
+                <tr><td><code>port hdbt&lt;N&gt; name=&lt;text&gt;</code></td><td class="nowrap">N = 1–8</td><td>Rename HDBT output N.</td></tr>
+                <tr><td><code>register&lt;N&gt; id=&lt;user&gt; psd=&lt;pass&gt;</code></td><td class="nowrap"><strong>N = 0–4</strong></td><td>Set credentials for user slot N. This index is <strong>0-based</strong>, unlike every other index in the API.</td></tr>
+                <tr><td><code>ip dhcp=&lt;0|1&gt;</code></td><td>—</td><td>Sent to <strong><code>/ip.set</code></strong>, not <code>/video.set</code>. <code>dhcp=1</code> enables DHCP.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>Not observed being sent by the stock UI, but accepted by the firmware's dispatcher — all <span class="chip hold">unconfirmed</span>: <code>lcd</code>, <code>power</code>, <code>system</code>, <code>factory</code>.</p>
+
+    <h3>2.4 &nbsp;EDID modes</h3>
+    <p><code>mode</code> selects which table <code>data</code> indexes into, and <code>data</code> is 1-based:</p>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>mode</th><th>Table</th><th>Response block</th><th>Meaning</th></tr></thead>
+            <tbody>
+                <tr><td><code>0</code></td><td>Default</td><td><code>ded1</code>–<code>ded8</code></td><td>Built-in preset EDIDs</td></tr>
+                <tr><td><code>1</code></td><td>User</td><td><code>ued1</code>–<code>ued8</code></td><td>User-defined EDIDs</td></tr>
+                <tr><td><code>2</code></td><td>HDMI</td><td><code>oed_hdim1</code>–<code>8</code></td><td>Copy the EDID of the display on HDMI output <em>data</em></td></tr>
+                <tr><td><code>3</code></td><td>HDBT</td><td><code>oed_hdbt1</code>–<code>8</code></td><td>Copy the EDID of the display on HDBT output <em>data</em></td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>The current assignment for each input is reported back in the <code>E:</code> field, and the resulting EDID string in <code>ied&lt;N&gt;</code>.</p>
+
+    <h3>2.5 &nbsp;Network configuration</h3>
+    <p>Two shapes are used by the stock UI, both to <code>POST /ip.set</code>: command text as a DHCP toggle (<code>#ip dhcp=0</code> / <code>#ip dhcp=1</code>), and a conventional urlencoded form POST with fields <code>mac</code>, <code>DHCP</code>, <code>check</code>, <code>ip</code>, <code>sub</code>, <code>gw</code>. A commented-out line in the firmware UI suggests the command form also accepts <code>#ip dhcp=0 ip=&lt;addr&gt; mask=&lt;mask&gt; gw=&lt;addr&gt;</code> — <span class="chip hold">unconfirmed</span>, it is not the path the shipped UI takes.</p>
+
+    <h3>2.6 &nbsp;Name values</h3>
+    <ul>
+        <li>Names may contain <strong>spaces</strong> — <code>#port hdmi2 name=Side Stage TV</code> is one command with a three-word value. A parser that splits the whole command on spaces and reads only the token after <code>name=</code> silently truncates to the first word.</li>
+        <li>Names must not contain <code>;</code>, <code>:</code> or <code>#</code> — those are response and command delimiters, and the format has no escaping.</li>
+        <li>The stock UI limits entry to <strong>12 characters</strong>, but the firmware stores more: a live unit was observed holding <code>Presentation PC 1</code> (17). The true limit is <span class="chip hold">unconfirmed</span>.</li>
+        <li>Non-ASCII is not supported.</li>
+    </ul>
+
+    <h3>2.7 &nbsp;Batching</h3>
+    <p>Every stock UI "Apply" button batches: it walks its widgets, appends <code>#…</code> for each change, and sends one POST. Batches of 8–24 commands are routine — the audio page always sends all 24. There is no observed size limit.</p>
+</section>
+
+<section id="s3">
+    <h2 class="sec">State response <em>3 &nbsp;GET /all_dat.get</em></h2>
+    <p>One line of ASCII. <strong>Exactly 160 <code>;</code>-separated segments, with no trailing separator.</strong> Segment position is fixed — the stock UI slices by index, not by key:</p>
+    <pre><code>var sw_info     = o.split(";").slice(0, 48);     <span class="cmt">// switch + audio state</span>
+    edid_info   = o.split(";").slice(48, 88);    <span class="cmt">// 5 × 8 EDID entries</span>
+var port_name   = o.split(";").slice(88, 112);   <span class="cmt">// 3 × 8 port names</span>
+var source_name = o.split(";").slice(112, 120);  <span class="cmt">// scene names</span>
+var login_info  = o.split(";").slice(120, 136);  <span class="cmt">// 8 × (user, pass)</span>
+var input_info  = o.split(";").slice(136, 144);  <span class="cmt">// input port status</span>
+var hdmi_info   = o.split(";").slice(144, 152);  <span class="cmt">// HDMI output status</span>
+var hdbt_info   = o.split(";").slice(152, 160);  <span class="cmt">// HDBT output status</span></code></pre>
+
+    <h3>3.1 &nbsp;Segment map</h3>
+    <div class="scroll">
+        <table class="map">
+            <thead><tr><th>Segments</th><th>Block</th><th>Contents</th></tr></thead>
+            <tbody>
+                <tr><td>0–47</td><td>Switch &amp; audio</td><td>8 groups of 6: <code>VO:</code>, <code>E:</code>, <code>AI:</code>, <code>AO:…HDMI</code>, <code>AO:…iis</code>, <code>AO:…spdif</code></td></tr>
+                <tr><td>48–55</td><td><code>ded1</code>–<code>ded8</code></td><td>Default EDID presets</td></tr>
+                <tr><td>56–63</td><td><code>ued1</code>–<code>ued8</code></td><td>User EDID slots</td></tr>
+                <tr><td>64–71</td><td><code>ied1</code>–<code>ied8</code></td><td>EDID currently presented on each <strong>input</strong></td></tr>
+                <tr><td>72–79</td><td><code>oed_hdim1</code>–<code>8</code></td><td>EDID read from each <strong>HDMI output</strong>'s display</td></tr>
+                <tr><td>80–87</td><td><code>oed_hdbt1</code>–<code>8</code></td><td>EDID read from each <strong>HDBT output</strong>'s display</td></tr>
+                <tr><td>88–95</td><td><code>port_i1</code>–<code>8</code></td><td>Input names</td></tr>
+                <tr><td>96–103</td><td><code>port_ohdmi1</code>–<code>8</code></td><td>HDMI output names</td></tr>
+                <tr><td>104–111</td><td><code>port_ohdbt1</code>–<code>8</code></td><td>HDBT output names</td></tr>
+                <tr><td>112–119</td><td><code>grp1</code>–<code>grp8</code></td><td>Scene names</td></tr>
+                <tr><td>120–135</td><td><code>lod1</code>–<code>lod8</code></td><td>Credentials — two segments per user (3.6)</td></tr>
+                <tr><td>136–143</td><td><code>INPORT:</code></td><td>Input port status (3.7)</td></tr>
+                <tr><td>144–151</td><td><code>OUTHDMIPORT:</code></td><td>HDMI output port status (3.7)</td></tr>
+                <tr><td>152–159</td><td><code>OUTHDBTPORT:</code></td><td>HDBT output port status (3.7)</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>Parsing by key is safer than slicing by index and gives the same result for every field except the three status blocks, whose ports 2–8 carry no key (3.7).</p>
+
+    <h3>3.2 &nbsp;Switch &amp; audio block <span class="mono">(0–47)</span></h3>
+    <p>Six segments repeat for each index <em>i</em> = 1…8. <strong>The index means different things in different fields of the same group</strong> — the single most misleading part of the format:</p>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Field</th><th>Index refers to</th><th>Meaning</th></tr></thead>
+            <tbody>
+                <tr><td><code>VO:&lt;o&gt;IN:&lt;i&gt;</code></td><td class="nowrap"><strong>output</strong> <em>o</em></td><td>Output <em>o</em> is sourcing input <em>i</em>. Applies to HDMI output <em>o</em> and HDBT output <em>o</em> alike.</td></tr>
+                <tr><td><code>E:&lt;n&gt;M:&lt;mode&gt;D:&lt;slot&gt;</code></td><td class="nowrap"><strong>input</strong> <em>n</em></td><td>Input <em>n</em>'s EDID assignment: mode 0–3 per 2.4, slot 1–8 within that table.</td></tr>
+                <tr><td><code>AI:&lt;n&gt;M:&lt;m&gt;</code></td><td class="nowrap"><strong>input</strong> <em>n</em></td><td>Audio source for input <em>n</em>: <code>0</code> mute, <code>1</code> HDMI embedded, <code>2</code> analog.</td></tr>
+                <tr><td><code>AO:&lt;o&gt;HDMI:&lt;v&gt;</code></td><td class="nowrap"><strong>output</strong> <em>o</em></td><td>HDMI audio-out flag. The stock UI parses this segment and then <strong>discards it</strong> — it drives no widget. Purpose <span class="chip hold">unconfirmed</span>.</td></tr>
+                <tr><td><code>AO:&lt;o&gt;iis:&lt;v&gt;</code></td><td class="nowrap"><strong>output</strong> <em>o</em></td><td>Analog / I²S audio out enabled.</td></tr>
+                <tr><td><code>AO:&lt;o&gt;spdif:&lt;v&gt;</code></td><td class="nowrap"><strong>output</strong> <em>o</em></td><td>S/PDIF audio out enabled.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p><code>"VO:1IN:3".split(":")</code> yields <code>["VO", "1IN", "3"]</code>; the firmware UI relies on <code>parseInt("1IN", 10) === 1</code>. A regex is clearer and equivalent. <code>VO:</code> is the <strong>only</strong> routing source of truth — there is no separate HDMI/HDBT routing field, because there is no separate HDMI/HDBT routing.</p>
+
+    <h3>3.3 &nbsp;EDID blocks <span class="mono">(48–87)</span></h3>
+    <p>All five are human-readable capability summaries, not raw EDID bytes — <code>3840x2160P60 444 DbV DTS5.1</code> is resolution/refresh, chroma subsampling, Dolby Vision, audio format.</p>
+    <ul>
+        <li><code>ded1</code>–<code>ded8</code> — fixed built-in presets, observed identical across units.</li>
+        <li><code>ued1</code>–<code>ued8</code> — user slots, writable via <code>edid_d user&lt;N&gt;</code>.</li>
+        <li><code>ied1</code>–<code>ied8</code> — the EDID input <em>N</em> is <strong>currently presenting to its source</strong>. Derived: it resolves <code>E:&lt;n&gt;M:…D:…</code> through the table that mode selects.</li>
+        <li><code>oed_hdim1</code>–<code>8</code> and <code>oed_hdbt1</code>–<code>8</code> — EDID read back from the display on each output.</li>
+        <li><strong><code>oed_hdim</code> is misspelled in the firmware</strong> (<code>hdim</code>, not <code>hdmi</code>). Match it exactly.</li>
+        <li><strong><code>Unplug</code> in an <code>oed_*</code> field means no display is attached</strong> to that output port — a second, independent connection indicator (see 4).</li>
+    </ul>
+
+    <h3>3.4 &nbsp;Port names <span class="mono">(88–111)</span></h3>
+    <p>HDMI output <em>N</em> and HDBT output <em>N</em> have <strong>separate names</strong> even though they switch as one. The stock UI shows them joined with <code>&amp;</code> on the video page. Empty names are possible; a name is everything after the first <code>:</code> to the next <code>;</code>.</p>
+
+    <h3>3.5 &nbsp;Scene names <span class="mono">(112–119)</span></h3>
+    <p><code>grp1</code>–<code>grp8</code>. The stock UI displays these as tooltips only and provides no way to rename a scene — no rename command for scenes was observed. Whether one exists is <span class="chip hold">unconfirmed</span>.</p>
+
+    <h3>3.6 &nbsp;Credentials <span class="mono">(120–135)</span></h3>
+    <p><strong>Two consecutive segments share the same key</strong> — username first, then password:</p>
+    <pre><code>lod1:admin;lod1:123456;lod2:admin1;lod2:123456;…lod8:;lod8:;</code></pre>
+    <p>Eight slots, of which the stock UI only ever uses the first five. Empty slots are <code>lodN:;lodN:;</code>. A key-based parser building a map silently loses the username to the password — read them positionally: even offset = username, odd offset = password.</p>
+    <div class="note warn">
+        <span class="label">Security</span>
+        <p>Every username and password on the device is served in plaintext to any unauthenticated client that can <code>GET /all_dat.get</code>. The login screen is enforced entirely in browser JavaScript against this list. Treat this device as having <strong>no access control</strong>: it belongs on a management VLAN rather than any network untrusted clients reach, and its credentials should never be reused anywhere else.</p>
+    </div>
+
+    <h3>3.7 &nbsp;Port status blocks <span class="mono">(136–159)</span></h3>
+    <p>Three blocks of 8 ports. Each port is a comma-separated list of <code>key=value</code> pairs; <strong>ports are separated by <code>;</code> like every other segment</strong>, so a block occupies 8 segments and only the <em>first</em> carries the block label:</p>
+    <pre><code>INPORT:pw5v=1,sig=1,rat=0,col=0,hdcp=0,bit=1;pw5v=1,sig=1,…;<span class="cmt">…(6 more)…</span>
+OUTHDMIPORT:hpd=1,sig=0,rat=0,col=0,hdcp=0,bit=0;hpd=0,…
+OUTHDBTPORT:hpd=1,sig=0,rat=0,col=0,hdcp=0,bit=0;hpd=1,…</code></pre>
+    <p>Consequence: you cannot find port 4's status by looking for a key. Locate the block label, then take the following 8 <code>;</code>-separated segments in order — 5.1 has a parser.</p>
+
+    <h4 class="ui"><strong>Input fields</strong> <code>INPORT</code></h4>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Field</th><th>Meaning</th><th>Confidence</th></tr></thead>
+            <tbody>
+                <tr><td><code>pw5v</code></td><td>+5&nbsp;V rail present on the port</td><td>Certain by name; <strong>useless as a connection test</strong> (see 4)</td></tr>
+                <tr><td><code>sig</code></td><td>Valid video signal detected from the source</td><td><strong>Certain</strong> — the field the stock UI uses</td></tr>
+                <tr><td><code>rat</code></td><td>Aspect / rate class of the incoming signal</td><td><span class="chip hold">unconfirmed</span></td></tr>
+                <tr><td><code>col</code></td><td>Colour space / colour depth class</td><td><span class="chip hold">unconfirmed</span></td></tr>
+                <tr><td><code>hdcp</code></td><td>HDCP state of the incoming stream</td><td><span class="chip hold">unconfirmed</span></td></tr>
+                <tr><td><code>bit</code></td><td>Bit depth, or a "data valid" flag</td><td><span class="chip hold">unconfirmed</span>; tracks <code>sig</code> in all observed samples</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="ui"><strong>Output fields</strong> <code>OUTHDMIPORT</code>, <code>OUTHDBTPORT</code></h4>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Field</th><th>Meaning</th><th>Confidence</th></tr></thead>
+            <tbody>
+                <tr><td><code>hpd</code></td><td><strong>Hot-plug detect — a display is attached</strong></td><td><strong>Certain</strong> — the field the stock UI uses</td></tr>
+                <tr><td><code>sig</code></td><td>Output actively transmitting a signal</td><td>Likely; <strong>not</strong> a proxy for "connected" (see 4)</td></tr>
+                <tr><td><code>rat</code>, <code>col</code>, <code>bit</code></td><td>As above</td><td><span class="chip hold">unconfirmed</span></td></tr>
+                <tr><td><code>hdcp</code></td><td>HDCP state. Observed as <code>2</code> on every port with <code>hpd=0</code>, <code>0</code> on ports with <code>hpd=1</code></td><td>Partial: <code>2</code> co-occurs with "no sink"</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>The stock UI reads exactly two of these fields — input <code>sig</code> and output <code>hpd</code> — and ignores <code>rat</code>, <code>col</code>, <code>hdcp</code> and <code>bit</code> entirely.</p>
+</section>
+
+<section id="s4">
+    <h2 class="sec">Detecting what is actually plugged in <em>4</em></h2>
+    <p class="lead">This is the part that is easiest to get wrong, and getting it wrong produces exactly one symptom: <strong>a UI that reports nothing is connected while pictures are visibly on screen.</strong></p>
+
+    <div class="verdicts">
+        <div class="verdict">
+            <div class="top"><span class="field">sig</span><span class="chip ok">use — inputs</span></div>
+            <p>An input has a source when <code>sig == 1</code>. This is what the stock UI highlights on.</p>
+        </div>
+        <div class="verdict">
+            <div class="top"><span class="field">pw5v</span><span class="chip no">never — inputs</span></div>
+            <p>Reads <code>1</code> on all eight inputs of the captured unit, including ports with nothing plugged in.</p>
+        </div>
+        <div class="verdict">
+            <div class="top"><span class="field">hpd</span><span class="chip ok">use — outputs</span></div>
+            <p>An output has a display when <code>hpd == 1</code>. Corroborated by <code>oed_* != "Unplug"</code>.</p>
+        </div>
+        <div class="verdict">
+            <div class="top"><span class="field">sig</span><span class="chip no">never — outputs</span></div>
+            <p>Reads <code>0</code> on output ports that are working normally, including ports driving a live display.</p>
+        </div>
+    </div>
+
+    <h3>4.1 &nbsp;Inputs — use <span class="mono">sig</span>, never <span class="mono">pw5v</span></h3>
+    <p>The stock UI highlights an input when <code>sig == 1</code>:</p>
+    <pre><code><span class="cmt">// input_info[i].split(",")[1] is "sig=1"; it tests the last character</span>
+var str = input_info_str[i].substr(input_info_str[i].length - 1, 1);
+if (str == 1) { <span class="cmt">/* highlight port as live */</span> }</code></pre>
+    <p>In the captured sample, <code>pw5v</code> reads <code>1</code> on all eight inputs — including ports named <em>Unused</em> with nothing plugged in — while <code>sig</code> reads <code>1</code> on exactly the three ports with a live source:</p>
+
+    <div class="panelgrid">
+        <div class="cap">Captured unit — input ports</div>
+        <div class="pgrid">
+            <div class="rl"></div>
+            <div class="hd">IN 1</div><div class="hd">IN 2</div><div class="hd">IN 3</div><div class="hd">IN 4</div>
+            <div class="hd">IN 5</div><div class="hd">IN 6</div><div class="hd">IN 7</div><div class="hd">IN 8</div>
+
+            <div class="rl">pw5v</div>
+            <div class="cell">1</div><div class="cell">1</div><div class="cell">1</div><div class="cell">1</div>
+            <div class="cell">1</div><div class="cell">1</div><div class="cell">1</div><div class="cell">1</div>
+
+            <div class="rl">sig</div>
+            <div class="cell hi">1</div><div class="cell hi">1</div><div class="cell lo">0</div><div class="cell lo">0</div>
+            <div class="cell lo">0</div><div class="cell lo">0</div><div class="cell lo">0</div><div class="cell hi">1</div>
+
+            <div class="sep"></div>
+            <div class="rl">port name</div>
+            <div class="cell">PC 1</div><div class="cell">PC 2</div><div class="cell">Audio</div><div class="cell">Cable</div>
+            <div class="cell">Unused</div><div class="cell">Unused</div><div class="cell">Unused</div><div class="cell">Stream</div>
+        </div>
+        <div class="legend">
+            <span><span class="chip ok">sig = 1</span> a source is connected and sending video</span>
+            <span><span class="chip no">pw5v</span> says only that the port's 5&nbsp;V rail is up — always 1 here</span>
+        </div>
+    </div>
+
+    <h3>4.2 &nbsp;Outputs — use <span class="mono">hpd</span>, never <span class="mono">sig</span></h3>
+    <p>The stock UI highlights an output when <strong>either</strong> the HDMI <strong>or</strong> the HDBT half asserts <code>hpd</code>:</p>
+    <pre><code><span class="cmt">// hdmi_info[i].split(",")[0] is "hpd=1"; likewise hdbt_info</span>
+if (str1 == 1 || str2 == 1) { <span class="cmt">/* highlight output as connected */</span> }</code></pre>
+    <p>On the EDID page, where the HDMI and HDBT halves are shown separately, each is tested against its own <code>hpd</code>. <strong>Output <code>sig</code> is <code>0</code> on ports that are working normally.</strong> In the captured sample five HDBT outputs are driving displays and only four report <code>sig=1</code>; every HDMI output but one reports <code>sig=0</code> despite two having displays attached:</p>
+
+    <div class="panelgrid">
+        <div class="cap">Captured unit — output ports</div>
+        <div class="pgrid">
+            <div class="rl"></div>
+            <div class="hd">1</div><div class="hd">2</div><div class="hd">3</div><div class="hd">4</div>
+            <div class="hd">5</div><div class="hd">6</div><div class="hd">7</div><div class="hd">8</div>
+
+            <div class="rl">HDMI hpd</div>
+            <div class="cell hi">1</div><div class="cell lo">0</div><div class="cell lo">0</div><div class="cell lo">0</div>
+            <div class="cell lo">0</div><div class="cell hi">1</div><div class="cell hi">1</div><div class="cell lo">0</div>
+
+            <div class="rl">HDMI sig</div>
+            <div class="cell">0</div><div class="cell">0</div><div class="cell">0</div><div class="cell">0</div>
+            <div class="cell">0</div><div class="cell">0</div><div class="cell">1</div><div class="cell">0</div>
+
+            <div class="rl">oed_hdim</div>
+            <div class="cell lo">—</div><div class="cell lo">—</div><div class="cell lo">—</div><div class="cell lo">—</div>
+            <div class="cell lo">—</div><div class="cell hi">EDID</div><div class="cell hi">EDID</div><div class="cell lo">—</div>
+
+            <div class="sep"></div>
+
+            <div class="rl">HDBT hpd</div>
+            <div class="cell hi">1</div><div class="cell hi">1</div><div class="cell hi">1</div><div class="cell hi">1</div>
+            <div class="cell hi">1</div><div class="cell lo">0</div><div class="cell lo">0</div><div class="cell lo">0</div>
+
+            <div class="rl">HDBT sig</div>
+            <div class="cell">0</div><div class="cell">1</div><div class="cell">1</div><div class="cell">1</div>
+            <div class="cell">1</div><div class="cell">0</div><div class="cell">0</div><div class="cell">0</div>
+
+            <div class="rl">oed_hdbt</div>
+            <div class="cell hi">EDID</div><div class="cell hi">EDID</div><div class="cell hi">EDID</div><div class="cell hi">EDID</div>
+            <div class="cell hi">EDID</div><div class="cell lo">—</div><div class="cell lo">—</div><div class="cell lo">—</div>
+        </div>
+        <div class="legend">
+            <span><span class="chip ok">EDID</span> a real EDID string was read back</span>
+            <span><span class="chip no">—</span> the field reads <code>Unplug</code></span>
+        </div>
+    </div>
+
+    <p>Reading <code>sig</code> as "connected" would report <strong>5 of 16 output ports live when 8 actually are</strong>. That is the bug behind "the app says nothing is connected but the projector is showing fine".</p>
+
+    <h3>4.3 &nbsp;Recommended test</h3>
+    <div class="note">
+        <span class="label">Rule</span>
+        <p class="mono">output N has a display &nbsp;⟺&nbsp; hpd == 1 &nbsp;OR&nbsp; oed_* != "Unplug"</p>
+    </div>
+    <p><code>hpd</code> and the <code>oed_*</code> EDID readback are independent signals and agree on 15 of 16 ports in the sample. The exception is HDMI output 1 — <code>hpd=1</code> but <code>oed_hdim1:Unplug</code> — consistent with a cable present whose EDID could not be read, a state worth surfacing differently from "nothing connected" if the UI has room for it.</p>
+    <p>For a per-logical-output indicator, the way the stock video page shows it, OR the HDMI and HDBT halves. For diagnostics, show them separately: the two halves of one output genuinely differ, and that difference is usually what a technician needs to see.</p>
+</section>
+
+<section id="s5">
+    <h2 class="sec">Parsing recipes <em>5</em></h2>
+
+    <h3>5.1 &nbsp;Port status blocks</h3>
+    <pre><code><span class="cmt">// Ports 2-8 carry no key, so the block must be read positionally from the raw string.</span>
+function parsePortBlock(raw, key) {          <span class="cmt">// 'INPORT' | 'OUTHDMIPORT' | 'OUTHDBTPORT'</span>
+    const at = raw.indexOf(key + ':');
+    if (at === -1) return {};
+    const ports = {};
+    raw.slice(at + key.length + 1).split(';').slice(0, 8).forEach((seg, i) =&gt; {
+        const fields = {};
+        for (const pair of seg.split(',')) {
+            const [k, v] = pair.split('=');
+            if (k) fields[k.trim()] = parseInt(v, 10);
+        }
+        ports[i + 1] = fields;               <span class="cmt">// 1-based port number</span>
+    });
+    return ports;
+}</code></pre>
+
+    <h3>5.2 &nbsp;Everything else</h3>
+    <p>Split on <code>;</code> and match each segment by key:</p>
+    <pre><code>/^VO:(\d+)IN:(\d+)$/          <span class="cmt">// routing:      [output, input]</span>
+/^E:(\d+)M:(\d+)D:(\d+)$/     <span class="cmt">// input EDID:   [input, mode, slot]</span>
+/^AI:(\d+)M:(\d+)$/           <span class="cmt">// input audio:  [input, mode]</span>
+/^AO:(\d+)(HDMI|iis|spdif):(\d+)$/
+/^port_i(\d+):(.*)$/          <span class="cmt">// input name</span>
+/^port_ohdmi(\d+):(.*)$/      <span class="cmt">// HDMI output name</span>
+/^port_ohdbt(\d+):(.*)$/      <span class="cmt">// HDBT output name</span>
+/^grp(\d+):(.*)$/             <span class="cmt">// scene name</span>
+/^oed_hdim(\d+):(.*)$/        <span class="cmt">// HDMI sink EDID — note the firmware's misspelling</span>
+/^oed_hdbt(\d+):(.*)$/        <span class="cmt">// HDBT sink EDID</span></code></pre>
+    <p>Use <code>(.*)</code>, not <code>(.+)</code>, for name and EDID fields: empty values occur.</p>
+
+    <h3>5.3 &nbsp;Change detection</h3>
+    <p>Compare the whole raw response string against the previous one before re-parsing, as the stock UI does. A 1&nbsp;Hz poll of a 3.3&nbsp;KB string is cheap; re-rendering on every poll is not.</p>
+</section>
+
+<section id="s6">
+    <h2 class="sec">Gotchas checklist <em>6</em></h2>
+    <ol class="body">
+        <li><code>oed_hdim</code> is misspelled in the firmware. Preserve it exactly.</li>
+        <li>Status blocks are positional — only the first of 8 ports carries the block label.</li>
+        <li><code>lod&lt;N&gt;</code> appears twice per user — username, then password.</li>
+        <li>The response has no trailing <code>;</code> — it splits into exactly 160 segments, not 161.</li>
+        <li>The cache-buster is glued to the path, with no <code>?</code>.</li>
+        <li>Index meaning changes within a group — <code>VO:</code>/<code>AO:</code> are output-indexed, <code>E:</code>/<code>AI:</code> input-indexed, in the same repeating six segments.</li>
+        <li>HDMI and HDBT outputs switch as one but have separate names, EDIDs and connection status.</li>
+        <li><code>register&lt;N&gt;</code> is 0-based; every other index in the API is 1-based.</li>
+        <li>Port names may contain spaces — don't split the command on whitespace and read one token.</li>
+        <li>Commands are never acknowledged — poll to confirm.</li>
+        <li><code>pw5v</code> (inputs) and <code>sig</code> (outputs) are the wrong connection fields.</li>
+        <li>No authentication anywhere, and credentials sit in the state response in plaintext.</li>
+    </ol>
+</section>
+
+<section id="s7">
+    <h2 class="sec">Reading the stock UI's source <em>7 &nbsp;original.html</em></h2>
+    <p>The element IDs in the firmware's own web page invert what they name, which is the main reason this API is easy to misread. When cross-checking against that file:</p>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>DOM id</th><th>Actually is</th><th>Driven by</th></tr></thead>
+            <tbody>
+                <tr><td><code>VO11</code>–<code>VO32</code></td><td>Outputs 1–8, in a 3-wide grid (<code>VO33</code> is "All")</td><td><code>VO:</code></td></tr>
+                <tr><td><code>VI11</code>–<code>VI32</code></td><td>Inputs 1–8</td><td>—</td></tr>
+                <tr><td><code>CI1</code>–<code>CI8</code></td><td>Inputs 1–8, EDID page</td><td><code>E:</code>, <code>ied&lt;N&gt;</code></td></tr>
+                <tr><td><code>CO1</code>–<code>CO8</code></td><td>HDMI outputs 1–8, EDID page</td><td><code>oed_hdim&lt;N&gt;</code></td></tr>
+                <tr><td><code>CO9</code>–<code>CO16</code></td><td>HDBT outputs 1–8, EDID page</td><td><code>oed_hdbt&lt;N&gt;</code></td></tr>
+                <tr><td><code>DO1</code>–<code>DO8</code></td><td>Default EDID presets 1–8</td><td><code>ded&lt;N&gt;</code></td></tr>
+                <tr><td><code>DO9</code>–<code>DO16</code></td><td>User EDID slots 1–8</td><td><code>ued&lt;N&gt;</code></td></tr>
+                <tr><td><code><strong>AO111</strong></code>–<code>AO322</code></td><td><strong>Audio <em>inputs</em></strong> 1–8 — buttons <code>H</code> = HDMI, <code>A</code> = analog</td><td><code>AI:</code></td></tr>
+                <tr><td><code><strong>AI111</strong></code>–<code>AI322</code></td><td><strong>Audio <em>outputs</em></strong> 1–8 — buttons <code>A</code> = analog/I²S, <code>S</code> = S/PDIF</td><td><code>AO:</code></td></tr>
+                <tr><td><code>AIN1</code>–<code>AIN8</code></td><td>Audio input fieldsets</td><td><code>AI:</code></td></tr>
+                <tr><td><code>AON1</code>–<code>AON8</code></td><td>Audio output fieldsets</td><td><code>AO:</code></td></tr>
+                <tr><td><code>S1</code>–<code>S8</code></td><td>Scenes 1–8</td><td><code>grp&lt;N&gt;</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p>The <code>AO</code>/<code>AI</code> inversion is in the DOM ids only. <strong>The wire format is consistent</strong>: <code>AI:</code> is audio input, <code>AO:</code> is audio output.</p>
+    <p>Other landmarks in that file: <code>SynRadio()</code> (line ~1326) parses the state string, <code>APPLY()</code> (~947) builds every command, <code>senda()</code> (~2451) posts them, <code>httpGetDate()</code> (~2432) is the poll loop.</p>
+</section>
+
+<section id="s8">
+    <h2 class="sec">Emulator conformance <em>8 &nbsp;server.js</em></h2>
+    <p>The emulator in this repo implements the above. Known deliberate gaps:</p>
+    <div class="scroll">
+        <table>
+            <thead><tr><th>Area</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr><td><code>video_d</code>, <code>audio_d</code>, <code>edid_d</code>, <code>group</code>, <code>port</code>, <code>register</code></td><td>Implemented</td></tr>
+                <tr><td><code>group&lt;N&gt; exe=0</code> (clear scene)</td><td>Accepted, no-op — real behaviour unconfirmed</td></tr>
+                <tr><td><code>_l</code> (lock) and <code>_s</code> (save) operations</td><td>Accepted, no-op</td></tr>
+                <tr><td><code>lcd</code>, <code>power</code>, <code>system</code>, <code>factory</code></td><td>Accepted, no-op</td></tr>
+                <tr><td><code>GET /ip.get</code></td><td>Returns an empty body; the real device returns JavaScript calling <code>settingsCallback(...)</code>, so the stock UI's Network tab stays blank against the emulator</td></tr>
+                <tr><td><code>POST /ip.set</code></td><td>Not implemented</td></tr>
+                <tr><td>Port status (<code>pw5v</code>, <code>sig</code>, <code>hpd</code>, …)</td><td>Stored and reported, but static — the emulator has no simulated cable events</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+    Reverse-engineered from the device's captured web UI and a live-unit state capture. Fields marked unconfirmed have no evidence behind them beyond the firmware accepting the syntax.
+</footer>
