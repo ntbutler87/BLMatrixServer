@@ -99,6 +99,19 @@
         .in-num  { font-size: 10px; font-weight: 700; color: var(--c); font-family: monospace; }
         .in-name { font-size: 10px; color: var(--txt2); text-align: center; word-break: break-all; }
 
+        /* ── PORT STATUS TAGS ── */
+        .tags { display: flex; gap: 3px; }
+        .tag {
+            font-family: monospace; font-size: 8px; font-weight: 700; letter-spacing: .4px;
+            padding: 1px 5px; border-radius: 999px;
+            border: 1px solid var(--bdr2); color: var(--txt3);
+        }
+        .tag.on {
+            color: var(--green);
+            border-color: color-mix(in srgb, var(--green) 45%, transparent);
+            background:   color-mix(in srgb, var(--green) 12%, transparent);
+        }
+
         /* ── MATRIX ── */
         .mx-wrap {
             background: var(--surf); border: 1px solid var(--bdr); border-radius: 10px; padding: 16px;
@@ -297,6 +310,7 @@
     </div>
     <span id="ts" style="font-size:10px;color:var(--txt3);font-family:monospace;"></span>
     <button class="btn" onclick="poll()">Refresh</button>
+    <a class="btn" href="/simple.html" target="_blank">Simple UI</a>
     <a class="btn" href="/original.html" target="_blank">Legacy UI</a>
 </header>
 
@@ -473,12 +487,39 @@ let pending   = {};    // queued routing changes: outputIndex → inputIndex
 
 // ── STATE STRING PARSER ──────────────────────────────────────────────────────
 // Parses the semicolon-delimited string returned by GET /all_dat.get
+// Reads one of the trailing status blocks (INPORT / OUTHDMIPORT / OUTHDBTPORT).
+// The block header names port 1 only; ports 2-8 follow as bare ';'-separated
+// segments, so the whole block has to be read from the raw string, not from a
+// per-segment loop. Each segment is `key=value` pairs separated by commas.
+function parsePortBlock(raw, key) {
+    const at = raw.indexOf(key + ':');
+    if (at === -1) return {};
+    const ports = {};
+    raw.slice(at + key.length + 1).split(';').slice(0, 8).forEach((seg, i) => {
+        const fields = {};
+        for (const pair of seg.split(',')) {
+            const [k, v] = pair.split('=');
+            if (k) fields[k.trim()] = parseInt(v, 10);
+        }
+        ports[i + 1] = fields;
+    });
+    return ports;
+}
+
 function parseStateStr(raw) {
     const s = {
         routing:     {},   // outputIndex(1-8) → inputIndex(1-8)
         inputNames:  {},   // inputIndex → name string
-        outputNames: {},   // outputIndex → name string
+        outputNames: {},   // outputIndex → name string (HDMI output names)
+        hdbtNames:   {},   // outputIndex → name string (HDBT output names)
         sceneNames:  {},   // sceneIndex → name string
+        hdmiEdid:    {},   // outputIndex → EDID read from the HDMI sink, or "Unplug"
+        hdbtEdid:    {},   // outputIndex → EDID read from the HDBT sink, or "Unplug"
+        // Port status blocks: {pw5v,sig,rat,col,hdcp,bit} for inputs,
+        //                     {hpd,sig,rat,col,hdcp,bit} for outputs.
+        inStatus:    parsePortBlock(raw, 'INPORT'),
+        hdmiStatus:  parsePortBlock(raw, 'OUTHDMIPORT'),
+        hdbtStatus:  parsePortBlock(raw, 'OUTHDBTPORT'),
     };
 
     const parts = raw.split(';');
@@ -503,14 +544,48 @@ function parseStateStr(raw) {
             s.outputNames[+m[1]] = m[2];
             continue;
         }
+        // HDBT output names:  port_ohdbt1:HDBT_OUT1
+        if ((m = p.match(/^port_ohdbt(\d+):(.+)$/))) {
+            s.hdbtNames[+m[1]] = m[2];
+            continue;
+        }
         // Scene names:  grp1:scene01
         if ((m = p.match(/^grp(\d+):(.*)$/))) {
             s.sceneNames[+m[1]] = m[2];
             continue;
         }
+        // Sink EDID:  oed_hdim1:1920x1080P60 444 LPCM2.0  (reads "Unplug" with no sink).
+        // "oed_hdim" is misspelled in the device firmware — match it exactly.
+        if ((m = p.match(/^oed_hdim(\d+):(.*)$/))) {
+            s.hdmiEdid[+m[1]] = m[2];
+            continue;
+        }
+        if ((m = p.match(/^oed_hdbt(\d+):(.*)$/))) {
+            s.hdbtEdid[+m[1]] = m[2];
+            continue;
+        }
     }
 
     return s;
+}
+
+// ── PORT STATUS HELPERS ──────────────────────────────────────────────────────
+// A source is live when the input reports sig=1. pw5v only says the port's +5V
+// rail is up and reads 1 even on empty ports, so it cannot stand in for this.
+function inputLive(n) {
+    return appState?.inStatus[n]?.sig === 1;
+}
+
+// A display is attached when the output asserts hot-plug detect (hpd=1) — the
+// same test the stock web UI makes. Output sig=0 is normal on a working port,
+// so sig must NOT be used here. The sink EDID block corroborates hpd: it reads
+// "Unplug" when nothing is connected.
+function outputSink(o) {
+    const edidSays = (v) => v !== undefined && v !== 'Unplug';
+    return {
+        hdmi: appState?.hdmiStatus[o]?.hpd === 1 || edidSays(appState?.hdmiEdid[o]),
+        hdbt: appState?.hdbtStatus[o]?.hpd === 1 || edidSays(appState?.hdbtEdid[o]),
+    };
 }
 
 // ── FETCH ────────────────────────────────────────────────────────────────────
@@ -608,10 +683,14 @@ function renderInputs() {
     document.getElementById('in-row').innerHTML = Array.from({ length: 8 }, (_, i) => {
         const n = i + 1;
         const name = appState.inputNames[n] || `HDMI_IN${n}`;
+        const live = inputLive(n);
         return `<div class="in-card" style="--c:${c(n)}">
             <div class="in-icon">${icon(n)}</div>
             <div class="in-num">IN ${n}</div>
             <div class="in-name">${esc(name)}</div>
+            <div class="tags" title="${live ? 'Source signal detected (sig=1)' : 'No source signal (sig=0)'}">
+                <div class="tag ${live ? 'on' : ''}">${live ? 'SIGNAL' : 'NO SIG'}</div>
+            </div>
         </div>`;
     }).join('');
 }
@@ -657,11 +736,17 @@ function renderOutputs() {
         const o    = i + 1;
         const src  = appState.routing[o] || 1;
         const name = appState.outputNames[o] || `HDMI_OUT${o}`;
-        return `<div class="out-card" style="--c:${c(src)}">
+        const hdbt = appState.hdbtNames[o]   || `HDBT_OUT${o}`;
+        const sink = outputSink(o);
+        return `<div class="out-card" style="--c:${c(src)}" title="HDMI: ${esc(name)}&#10;HDBT: ${esc(hdbt)}">
             <div class="out-thumb">${icon(src)}</div>
             <div class="out-src">← IN${src}</div>
             <div class="out-num">OUT ${o}</div>
             <div class="out-name">${esc(name)}</div>
+            <div class="tags" title="Display attached (hot-plug detect)">
+                <div class="tag ${sink.hdmi ? 'on' : ''}">HDMI</div>
+                <div class="tag ${sink.hdbt ? 'on' : ''}">HDBT</div>
+            </div>
         </div>`;
     }).join('');
 }
@@ -726,7 +811,7 @@ async function commitChanges() {
     if (entries.length === 0) return;
     const body = entries.map(([out, inp]) => `video_d out${out} matrix=${inp}`).join('#');
     try {
-        await fetch('/video.set', {
+        await fetch(apiUrl('/video.set'), {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body

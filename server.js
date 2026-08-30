@@ -1,4 +1,6 @@
 import { readFile, writeFile } from 'fs/promises';
+import { resolve } from 'path';
+import Database from 'better-sqlite3';
 class StoredScenesDefaults {
     constructor () {
         this.scenes = [
@@ -13,6 +15,16 @@ class StoredScenesDefaults {
         ]
     }
 }
+
+// ── Controller settings DB ────────────────────────────────────────────────────
+const controllerDb = new Database('./controller.db');
+controllerDb.exec(`
+    CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS labels   (type TEXT NOT NULL, idx INTEGER NOT NULL, name TEXT NOT NULL, PRIMARY KEY (type, idx));
+`);
+const _seed = controllerDb.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
+_seed.run('matrix_ip',   '');
+_seed.run('matrix_port', '80');
 
 const scenesFilePath = './scenes.json';
 const saveStateFilePath = './saveState.json';
@@ -46,12 +58,19 @@ try {
 }
 
 
+// EDID source modes, as used by the E: block and the `edid_d` command:
+//   0 = Default (built-in preset table, ded1-8)
+//   1 = User    (user-defined table, ued1-8)
+//   2 = HDMI    (copy the EDID read from HDMI output N,  oed_hdim1-8)
+//   3 = HDBT    (copy the EDID read from HDBT output N,  oed_hdbt1-8)
+const EDID_MODE = { DEFAULT: 0, USER: 1, HDMI: 2, HDBT: 3 };
+
 class HDMIInput {
-    constructor (index, name, EDIDType, EDIDIndex, pw5v, signal, rat, col, hdcp, bit, audio) {
+    constructor (index, name, edidMode, edidData, pw5v, signal, rat, col, hdcp, bit, audio) {
         this.index     = index;
         this.name      = name;
-        this.edidType  = EDIDType;
-        this.edidIndex = EDIDIndex;
+        this.edidMode  = edidMode; // 0-3, see EDID_MODE
+        this.edidData  = edidData; // 1-8: slot within the table selected by edidMode
         this.pw5v      = pw5v;
         this.signal    = signal;
         this.rat       = rat;
@@ -142,14 +161,14 @@ class InternalStateConfig {
     constructor () {
         this.edidConfig = new EDIDConfig();
         this.Inputs = [
-            new HDMIInput(1, "HDMI_IN1", "default", 0, 1, 0, 0, 0, 0, 0, 1),
-            new HDMIInput(2, "HDMI_IN2", "default", 0, 1, 0, 0, 0, 0, 0, 1),
-            new HDMIInput(3, "HDMI_IN3", "default", 0, 1, 0, 0, 0, 0, 0, 1),
-            new HDMIInput(4, "HDMI_IN4", "default", 0, 1, 0, 0, 0, 0, 0, 1),
-            new HDMIInput(5, "HDMI_IN5", "default", 0, 1, 0, 0, 0, 0, 0, 1),
-            new HDMIInput(6, "HDMI_IN6", "default", 0, 1, 0, 0, 0, 0, 0, 1),
-            new HDMIInput(7, "HDMI_IN7", "default", 0, 1, 0, 0, 0, 0, 0, 1),
-            new HDMIInput(8, "HDMI_IN8", "default", 0, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(1, "HDMI_IN1", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(2, "HDMI_IN2", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(3, "HDMI_IN3", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(4, "HDMI_IN4", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(5, "HDMI_IN5", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(6, "HDMI_IN6", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(7, "HDMI_IN7", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
+            new HDMIInput(8, "HDMI_IN8", EDID_MODE.DEFAULT, 1, 1, 0, 0, 0, 0, 0, 1),
         ];
         this.HDMIOutputs = [
             new OutputPort(1, "HDMI_OUT1", 1, "Unplug", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1),
@@ -199,8 +218,21 @@ try {
     intnernalState = JSON.parse(
         await readFile(saveStateFilePath)
       );
+    migrateSaveState(intnernalState);
 } catch {
     await storeSaveState(intnernalState);
+}
+
+// Older saveState.json files stored input EDID as {edidType: "default"|"user", edidIndex: 0-based}.
+// The device reports mode (0-3) and a 1-based slot, so normalise on load.
+function migrateSaveState(state) {
+    for (const input of state.Inputs ?? []) {
+        if (input.edidMode !== undefined) continue;
+        input.edidMode = input.edidType === "user" ? EDID_MODE.USER : EDID_MODE.DEFAULT;
+        input.edidData = (input.edidIndex ?? 0) + 1;
+        delete input.edidType;
+        delete input.edidIndex;
+    }
 }
 
 const handleVideoCommand = (commandArray) => {
@@ -274,6 +306,47 @@ const setAudioOutputSetting = async (output, iisOnOff, spdifOnOff) => {
 }
 
 
+// Resolves the EDID string an input is currently presenting to its source,
+// i.e. the value reported in the ied<n> block.
+const resolveInputEDID = (input) => {
+    const slot = (input.edidData ?? 1) - 1;
+    switch (input.edidMode) {
+        case EDID_MODE.USER: return intnernalState.edidConfig.user[slot]?.value    ?? "";
+        case EDID_MODE.HDMI: return intnernalState.HDMIOutputs[slot]?.edid         ?? "Unplug";
+        case EDID_MODE.HDBT: return intnernalState.HDBTOutputs[slot]?.edid         ?? "Unplug";
+        default:             return intnernalState.edidConfig.default[slot]?.value ?? "";
+    }
+}
+
+// edid_d in<N>   mode=<0-3> data=<1-8>   assign an EDID to input N
+// edid_d user<N> mode=<2|3> data=<1-8>   copy an output's EDID into user slot N
+const handleEdidCommand = async (commandArray) => {
+    const operation = commandArray[0].charAt(commandArray[0].length - 1);
+    if (operation !== "d") return false; // "l" (lock) / "s" (save) not emulated
+
+    const target = commandArray[1];
+    const mode   = parseInt(commandArray[2]?.split("=")[1], 10);
+    const data   = parseInt(commandArray[3]?.split("=")[1], 10);
+    const port   = parseInt(target.replace(/^(in|user)/, ""), 10);
+    if (!(port >= 1 && port <= 8) || !(mode >= 0 && mode <= 3) || !(data >= 1 && data <= 8)) {
+        return false;
+    }
+
+    if (target.startsWith("in")) {
+        intnernalState.Inputs[port - 1].edidMode = mode;
+        intnernalState.Inputs[port - 1].edidData = data;
+    } else if (target.startsWith("user")) {
+        // Only the copy-from-output modes are valid here
+        if (mode === EDID_MODE.HDMI)      intnernalState.edidConfig.user[port - 1].value = intnernalState.HDMIOutputs[data - 1].edid;
+        else if (mode === EDID_MODE.HDBT) intnernalState.edidConfig.user[port - 1].value = intnernalState.HDBTOutputs[data - 1].edid;
+        else return false;
+    } else {
+        return false;
+    }
+    await storeSaveState(intnernalState);
+    return true;
+}
+
 const handleSceneCommand = (commandArray) => {
     // operation[0] is the command. The last character will indicate the operation type
    var operationTarget = commandArray[0].charAt(commandArray[0].length-1);
@@ -325,24 +398,33 @@ const saveScene = async (scene) => {
     return await storeSceneConfig(savedScenes);
 }
 
+// Port and scene names live inside a ';'-delimited response, and each field is
+// introduced by ':', so those characters (and '#', the command separator) can
+// never appear in a stored name. Non-ASCII is dropped: the device is ASCII-only.
+// The stock web UI caps entry at 12 characters, but real units are seen holding
+// longer names (e.g. "Presentation PC 1"), so cap generously rather than at 12.
+const sanitiseName = (name) =>
+    name.replace(/[^\u0020-\u007E]/g, "").replace(/[;:#]/g, "").substring(0, 20);
+
 const renameScene = async (scene, name) => {
-    // BL Matrix only supports names up to 15 characters of visible characters, so sanitise and set:
-    let newName = name.replace(/[^\u0000-\u007E]/g, "").substring(0,15);
-    intnernalState.Scenes[scene - 1] = newName;
+    intnernalState.Scenes[scene - 1] = sanitiseName(name);
     await storeSaveState(intnernalState);
     return true;
 }
 
 const handlePortRename = async (commandArray) => {
-    // commandArray[1] is the target type and numer (e.g. in1 or hdmi4).
-   var targetType = commandArray[1].substring(0,commandArray[0].length-2);
+    // commandArray[1] is the target type and number (e.g. in1 or hdmi4).
+   var targetType = commandArray[1].slice(0, -1);
    var targetPort = commandArray[1].charAt(commandArray[1].length-1);
    if (targetPort < 1 || targetPort > 8){ return false;}
-   if(!["in","hdmi","hdbt"].includes(targetType) || !commandArray[2].startsWith("name")) {
+   if(!["in","hdmi","hdbt"].includes(targetType)) {
     return false;
    }
-   if (commandArray[2].split("=")[0] !== "name") {return false};
-   let newName = commandArray[2].split("=")[1].replace(/[^\u0000-\u007E]/g, "").substring(0,15);
+   // Names may contain spaces ("Side Stage TV"), so rejoin every token after the
+   // target instead of reading commandArray[2] alone.
+   const nameArg = commandArray.slice(2).join(" ");
+   if (!nameArg.startsWith("name=")) { return false; }
+   let newName = sanitiseName(nameArg.substring("name=".length));
    var target = "Inputs";
    switch (targetType){
         case "in":   target = "Inputs";       break;
@@ -357,7 +439,7 @@ const handlePortRename = async (commandArray) => {
 
 const changeUserLogin = async (userIndex, userName, password) => {
     const regex = /^[a-zA-Z0-9_]{0,15}$/;
-    if ( userIndex < 0 || userIndex >= 5 || !userName.test(regex) || !password.test(regex)) {
+    if ( userIndex < 0 || userIndex >= 5 || !regex.test(userName) || !regex.test(password)) {
         return false;
     }
     intnernalState.Users[userIndex].username = userName;
@@ -366,11 +448,21 @@ const changeUserLogin = async (userIndex, userName, password) => {
     return true;
 }
 
+// register<N> id=<username> psd=<password>  — N is 0-based (slots 0-4)
+const handleRegisterCommand = async (commandArray) => {
+    const userIndex = parseInt(commandArray[0].substring("register".length), 10);
+    const id  = commandArray[1]?.split("=")[1];
+    const psd = commandArray[2]?.split("=")[1];
+    if (Number.isNaN(userIndex) || id === undefined || psd === undefined) return false;
+    return await changeUserLogin(userIndex, id, psd);
+}
+
 const generateStateStatusString = () => {
     var outputString = "";
     for(var i=1; i<=8; i++){ // Generate the Video Output status block
         outputString += "VO:" + i + "IN:" + intnernalState.HDMIOutputs[i-1].input + ";"
-            + "E:" + i + "M:0D:1"  + ";" // Need to figure out what on earth goes here for M and D
+            // E:<input>M:<edid mode 0-3>D:<slot 1-8> — the EDID assigned to input i
+            + "E:" + i + "M:" + intnernalState.Inputs[i-1].edidMode + "D:" + intnernalState.Inputs[i-1].edidData + ";"
             + "AI:" + i + "M:" + intnernalState.Inputs[i-1].audio + ";"
             + "AO:" + i + "HDMI:" + intnernalState.HDMIOutputs[i-1].hdmi + ";"
             + "AO:" + i + "iis:" + intnernalState.HDMIOutputs[i-1].iis + ";"
@@ -383,8 +475,8 @@ const generateStateStatusString = () => {
     for(var i=1; i<=8; i++){ // Generate the EDID User config block
         outputString += "ued" + i + ":" + intnernalState.edidConfig.user[i-1].value + ";";
     }
-    for(var i=1; i<=8; i++){ // Generate the EDID Input status block
-        outputString += "ied" + i + ":" + intnernalState.edidConfig[intnernalState.Inputs[i-1].edidType][intnernalState.Inputs[i-1].edidIndex].value + ";";
+    for(var i=1; i<=8; i++){ // Generate the EDID Input status block (resolved value each input presents)
+        outputString += "ied" + i + ":" + resolveInputEDID(intnernalState.Inputs[i-1]) + ";";
     }
     for(var i=1; i<=8; i++){ // Generate the EDID HDMI Output status block - triggered by misspelled "oed_hdim"...
         outputString += "oed_hdim" + i + ":" + intnernalState.HDMIOutputs[i-1].edid + ";";
@@ -437,9 +529,11 @@ const generateStateStatusString = () => {
         outputString += "rat="  + intnernalState.HDBTOutputs[i-1].rat + ","; 
         outputString += "col="  + intnernalState.HDBTOutputs[i-1].col + ","; 
         outputString += "hdcp=" + intnernalState.HDBTOutputs[i-1].hdcp + ","; 
-        outputString += "bit="  + intnernalState.HDBTOutputs[i-1].bit + ";"; 
+        outputString += "bit="  + intnernalState.HDBTOutputs[i-1].bit + ";";
     }
-    return outputString;
+    // The real device does not terminate the response with a separator, so the
+    // string splits into exactly 160 segments. Drop the trailing ';'.
+    return outputString.slice(0, -1);
 }
 
 // const express = require('express');
@@ -451,15 +545,31 @@ import internal from 'stream';
 import cors from 'cors';
 const app = express();
 const port = 3000;
-app.use(bodyParser.text());
-app.use(express.static('public'));
-app.use(cors())
 
-app.get('/', async (req, res) => {
-    res.writeHeader(200, {"Content-Type": 'text/html'});
-    res.write(await readFile('./public/original.html'));
-    res.end();
-})
+// ── MIDDLEWARE ────────────────────────────────────────────────────────────────
+// Registration order is the matching order: the first handler that matches a
+// request answers it, so anything registered here runs before the routes below.
+app.use(cors());
+// JSON first (the /controller/* API), then treat every other content type as
+// plain text: the device ignores Content-Type on /video.set and /ip.set.
+app.use(express.json());
+app.use(bodyParser.text({ type: () => true }));
+
+// ── PAGE ROUTES ───────────────────────────────────────────────────────────────
+//   /  and  /index.html   → the visualiser/controller
+//   /simple.html          → the tile UI matching the Laravel and React Native builds
+//   /original.html        → the real device's own web UI, captured from a live unit
+//
+// These are declared explicitly, and before express.static, so the URL each page
+// answers on is stated here rather than left to static-file defaults.
+const page = (file) => (req, res) => res.sendFile(resolve('public', file));
+
+app.get(['/', '/index.html'], page('index.html'));
+app.get('/simple.html',       page('simple.html'));
+app.get('/original.html',     page('original.html'));
+
+// Everything else in public/ — tile icons and any other asset — is served as-is.
+app.use(express.static('public'));
 
 // app.get('/all_dat.get*', cors(), (req, res) => {
 app.get('/all_dat.get*', (req, res) => {
@@ -485,13 +595,15 @@ app.post('/video.set', (req, res) => {
                 handleAudioCommand(body);
                 break;
             case body[0].startsWith("edid_"):
+                handleEdidCommand(body);
                 break;
             case body[0] === "lcd":
                 break;
             case body[0].startsWith("group"):
                 handleSceneCommand(body);
                 break;
-            case body[0] === "register":
+            case body[0].startsWith("register"): // register<N> — N is part of the token
+                handleRegisterCommand(body);
                 break;
             case body[0] === "login":
                 break;
@@ -548,6 +660,38 @@ app.post('/hw-proxy/video.set', async (req, res) => {
     } catch (e) {
         res.status(502).send(`Proxy error: ${e.message}`);
     }
+});
+
+// ── Controller settings API ───────────────────────────────────────────────────
+app.get('/controller/settings', (req, res) => {
+    const settings = Object.fromEntries(
+        controllerDb.prepare('SELECT key, value FROM settings').all().map(r => [r.key, r.value])
+    );
+    const labels = { inputs: {}, outputs: {}, scenes: {} };
+    for (const row of controllerDb.prepare('SELECT type, idx, name FROM labels').all()) {
+        if (labels[row.type]) labels[row.type][row.idx] = row.name;
+    }
+    res.json({ settings, labels });
+});
+
+app.post('/controller/settings', (req, res) => {
+    const { settings, labels } = req.body || {};
+    if (settings) {
+        const stmt = controllerDb.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)');
+        for (const key of ['matrix_ip', 'matrix_port']) {
+            if (key in settings) stmt.run(key, String(settings[key]));
+        }
+    }
+    if (labels) {
+        const stmt = controllerDb.prepare('INSERT OR REPLACE INTO labels (type, idx, name) VALUES (?, ?, ?)');
+        for (const [type, entries] of Object.entries(labels)) {
+            if (!['inputs', 'outputs', 'scenes'].includes(type)) continue;
+            for (const [idx, name] of Object.entries(entries)) {
+                stmt.run(type, parseInt(idx), String(name).substring(0, 50));
+            }
+        }
+    }
+    res.json({ ok: true });
 });
 
 app.listen(port, () => {

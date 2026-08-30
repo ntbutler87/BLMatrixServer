@@ -1,3 +1,8 @@
 node_modules
+
+# Emulated device state and controller settings — created on first run
 saveState.json
 scenes.json
+controller.db
+
+.DS_Store
