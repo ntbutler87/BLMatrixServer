@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Matrix Controller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────────────────────────────────────────
+       Visual match for the Laravel (Inertia/React) and React Native builds of
+       this controller. Values are ported from those projects:
+         resources/js/components2/CommonStyles.tsx   — tile styles
+         resources/js/Pages/Matrix.tsx               — shell + MUI tab bar
+         resources/js/Pages/Tabs/*.tsx               — tab layouts and mappers
+       MUI defaults are inlined where those projects rely on them (AppBar
+       primary #1976d2, secondary indicator #9c27b0, tab typography).
+       ───────────────────────────────────────────────────────────────────────── */
+    :root {
+      --page:        #006DB2;  /* app background            */
+      --appbar:      #1976d2;  /* MUI primary.main          */
+      --indicator:   #9c27b0;  /* MUI secondary.main        */
+      --tile:        #FFF;
+      --tile-name:   #303030;
+      --icon-bg:     #E8F6FF;
+      --connected:   #24D015;
+      --disconnected:#E31010;
+      --patched:     #72f2b0;
+      --deep:        #00568C;
+      --cancel-bd:   #83CBFA;
+      --cancel-tx:   #0496FF;
+      --mapper-bg:   rgb(245,245,245);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--page);
+      min-height: 100svh;
+      font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      color: var(--tile-name);
+    }
+
+    /* ── App bar ─────────────────────────────────────────────────────────────
+       The other builds render an MUI <AppBar> holding a full-width <Tabs>.
+       The thin utility row above the tabs is specific to this build: it holds
+       the matrix connection status and the settings entry point, which the
+       Laravel app keeps on a separate authenticated page.                     */
+    .appbar {
+      background: var(--appbar);
+      color: #fff;
+      box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .utility {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      height: 40px;
+      border-bottom: 1px solid rgba(255,255,255,.16);
+    }
+    .status-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: rgba(255,255,255,.35);
+      flex-shrink: 0;
+      transition: background .3s, box-shadow .3s;
+    }
+    .status-dot.connected { background: #5ef08a; box-shadow: 0 0 6px #5ef08a; }
+    .status-dot.error     { background: #ff6b6b; }
+    .status-text { font-size: 14px; font-weight: 500; letter-spacing: .01em; }
+    .utility-title {
+      flex: 1; text-align: center;
+      font-size: 15px; font-weight: 600; white-space: nowrap;
+    }
+    .settings-btn {
+      background: none; border: none; color: #fff; font: inherit;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 4px; border-radius: 4px;
+      opacity: .9; transition: opacity .15s;
+    }
+    .settings-btn:hover { opacity: 1; }
+    .settings-btn img { width: 16px; height: 16px; filter: brightness(0) invert(1); }
+
+    /* MUI Tabs: variant="fullWidth", textColor="inherit", indicatorColor="secondary" */
+    .tabs { display: flex; position: relative; min-height: 48px; }
+    .tab {
+      flex: 1;
+      background: none; border: none; color: inherit; font: inherit;
+      font-size: 0.875rem; font-weight: 500; line-height: 1.25;
+      letter-spacing: .02857em; text-transform: uppercase;
+      min-height: 48px; padding: 12px 16px;
+      cursor: pointer; opacity: .6;
+      transition: opacity .18s;
+    }
+    .tab.active { opacity: 1; }
+    .tab-indicator {
+      position: absolute; bottom: 0; left: 0;
+      height: 2px; width: 33.3333%;
+      background: var(--indicator);
+      transition: left .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Shell ───────────────────────────────────────────────────────────────
+       Matrix.tsx: <Box sx={{width:'90%', margin:'0 auto'}}> with TabPanel p:3  */
+    .shell { width: 90%; margin: 0 auto; }
+    .panel { display: none; padding: 24px; }
+    .panel.active { display: block; }
+
+    .tile-rows { display: flex; flex-direction: column; }
+    .tile-row  { display: flex; flex-direction: row; flex-wrap: wrap; }
+
+    /* ── Tile (CommonStyles.Tile) ────────────────────────────────────────── */
+    .tile {
+      display: flex;
+      flex: 1;
+      flex-basis: 200px;
+      flex-direction: column;
+      place-content: center;
+      place-items: center;
+      margin: 5px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background: var(--tile);
+      height: 300px;
+      cursor: pointer;
+      user-select: none;
+      overflow: hidden;
+    }
+    .tile.disabled { filter: brightness(0.5); cursor: default; }
+    .tile.scene { padding-top: 2em; padding-bottom: 1em; justify-content: space-between; }
+
+    /* CommonStyles.TilePortImageContainer (+Large for scenes) */
+    .tile-icon {
+      width: 50px; height: 50px;
+      padding: 10px; margin: 15px;
+      border-radius: 50px;
+      background: var(--icon-bg);
+      display: flex; place-items: center; place-content: center;
+      flex-shrink: 0;
+    }
+    .tile-icon.large { width: 140px; height: 140px; border-radius: 140px; }
+    .tile-icon img { width: 90%; height: 90%; align-self: center; object-fit: contain; }
+
+    /* CommonStyles.TilePortName */
+    .tile-name {
+      color: var(--tile-name);
+      align-self: center;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    /* CommonStyles.TilePortConnectionStatus*Text */
+    .tile-status {
+      color: var(--connected);
+      align-self: center;
+      font-size: 14px;
+    }
+    .tile-status.off { color: var(--disconnected); }
+
+    /* CommonStyles.VerticalList / HorizontalList / TilePortConnectionText */
+    .tile-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      width: 100%;
+      overflow-y: auto;
+    }
+    .tile-list-row {
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      column-gap: 8px;
+      padding: 5px;
+      flex-wrap: nowrap;
+    }
+    .tile-list-row img { width: 15px; height: 15px; align-self: center; flex-shrink: 0; }
+    .tile-list-row span {
+      color: var(--tile-name);
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    /* ── Mapper overlay (InputTab / OutputTab) ───────────────────────────── */
+    .mapper {
+      display: none;
+      position: fixed; inset: 0;
+      place-items: center; place-content: center;
+      background: rgba(0,0,0,0.5);
+      border-radius: 10px;
+      z-index: 40;
+      overflow-y: auto;
+    }
+    .mapper.open { display: grid; }
+    .mapper-inner {
+      display: flex;
+      padding: 40px;
+      margin: 40px 150px;
+      align-content: center; align-items: center; justify-content: center;
+      background: var(--mapper-bg);
+      border-radius: 10px;
+      box-shadow: 4px 4px 15px rgba(20,20,20,.7);
+    }
+    @media (max-width: 900px) { .mapper-inner { margin: 24px; padding: 24px; } }
+    .mapper-list {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      row-gap: 10px;
+      min-width: 320px;
+    }
+    .mapper-title {
+      display: flex; align-self: center;
+      font-size: 28px; font-weight: 600; padding: 10px;
+      text-align: center;
+    }
+    .mapper-desc {
+      display: flex; align-self: center;
+      font-size: 16px; font-weight: 300; font-style: italic;
+      text-align: center;
+    }
+
+    /* InputSelectTile / OutputSelectTile */
+    .select-tile {
+      display: flex; flex-direction: row;
+      border-radius: 8px;
+      padding: 5px 20px;
+      background: #fff;
+      justify-content: space-between;
+      align-items: center;
+      border: 2px solid transparent;
+      cursor: pointer;
+      min-height: 34px;
+    }
+    .select-tile span { font-size: 11px; color: #777; }
+    .select-tile.selected { border-color: var(--deep); }
+    .select-tile.selected span { color: var(--deep); }
+    .select-tile.patched { border-color: var(--patched); cursor: default; }
+    .select-tile.patched .tag { color: var(--patched); }
+
+    /* btn / saveBtn / cancelBtn */
+    .mbtn {
+      display: flex; flex-direction: row;
+      border-radius: 8px;
+      padding: 10px 20px;
+      background: #fff;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--deep);
+    }
+    .mbtn.save   { background: var(--deep); color: #fff; }
+    .mbtn.cancel { background: var(--icon-bg); color: var(--cancel-tx); border: 1px solid var(--cancel-bd); }
+
+    /* ── Settings (this build only, styled to the mapper) ────────────────── */
+    .settings-section + .settings-section { margin-top: 22px; }
+    .settings-section h3 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--deep); margin-bottom: 10px;
+    }
+    .settings-fields { display: flex; flex-direction: column; gap: 8px; }
+    .field-row { display: flex; align-items: center; gap: 12px; }
+    .field-lbl { font-size: 13px; color: #777; width: 76px; flex-shrink: 0; }
+    .field-input {
+      flex: 1; min-width: 0;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.2);
+      border-radius: 5px;
+      color: var(--tile-name);
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 14px;
+    }
+    .field-input:focus { outline: none; border-color: var(--deep); box-shadow: 0 0 0 3px rgba(0,86,140,.15); }
+    .field-input::placeholder { color: #aaa; }
+    .conn-row { display: grid; grid-template-columns: 1fr 90px; gap: 8px; }
+    .settings-scroll { max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+
+    /* ── Toast ───────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(0,30,70,.88);
+      color: rgba(255,255,255,.92);
+      padding: 10px 22px;
+      border-radius: 22px;
+      font-size: 14px; font-weight: 500;
+      opacity: 0; pointer-events: none; z-index: 100; white-space: nowrap;
+      transition: opacity .2s, transform .2s;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.ok  { background: rgba(28,110,60,.9); }
+    .toast.err { background: rgba(150,30,30,.9); }
+  </style>
+</head>
+<body>
+
+  <div class="appbar">
+    <div class="utility">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-text" id="statusText">Connecting</span>
+      <div class="utility-title">Operation</div>
+      <button class="settings-btn" id="settingsBtn">
+        <img src="assets/setting.png" alt="">Settings
+      </button>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="scenes">Scenes</button>
+      <button class="tab" data-tab="inputs">Inputs</button>
+      <button class="tab" data-tab="outputs">Outputs</button>
+      <div class="tab-indicator" id="tabIndicator"></div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="panel active" id="panel-scenes"><div class="tile-rows" id="scenesRows"></div></div>
+    <div class="panel"        id="panel-inputs"><div class="tile-rows" id="inputsRows"></div></div>
+    <div class="panel"        id="panel-outputs"><div class="tile-rows" id="outputsRows"></div></div>
+  </div>
+
+  <!-- Output mapper: pick the input feeding one output (Outputs tab) -->
+  <div class="mapper" id="outputMapper">
+    <div class="mapper-inner">
+      <div class="mapper-list">
+        <span class="mapper-title" id="outputMapperTitle"></span>
+        <span class="mapper-desc">Select the input to route to this output</span>
+        <div id="outputMapperOptions"></div>
+        <button class="mbtn save"   id="outputMapperSave">Save</button>
+        <button class="mbtn cancel" id="outputMapperCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input mapper: pick the outputs fed by one input (Inputs tab) -->
+  <div class="mapper" id="inputMapper">
+    <div class="mapper-inner">
+      <div class="mapper-list">
+        <span class="mapper-title" id="inputMapperTitle"></span>
+        <div id="inputMapperOptions"></div>
+        <button class="mbtn save"   id="inputMapperSave">Save</button>
+        <button class="mbtn cancel" id="inputMapperCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="mapper" id="settingsMapper">
+    <div class="mapper-inner">
+      <div class="mapper-list">
+        <span class="mapper-title">Settings</span>
+        <div class="settings-scroll">
+          <div class="settings-section">
+            <h3>Matrix Connection</h3>
+            <div class="conn-row">
+              <input class="field-input" type="text" id="cfgIP"   placeholder="IP address (e.g. 192.168.1.100)">
+              <input class="field-input" type="text" id="cfgPort" placeholder="Port">
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>Scene Names</h3>
+            <div class="settings-fields" id="sceneFields"></div>
+          </div>
+          <div class="settings-section">
+            <h3>Input Names</h3>
+            <div class="settings-fields" id="inputFields"></div>
+          </div>
+          <div class="settings-section">
+            <h3>Output Names</h3>
+            <div class="settings-fields" id="outputFields"></div>
+          </div>
+        </div>
+        <button class="mbtn save"   id="saveBtn">Save Settings</button>
+        <button class="mbtn cancel" id="closeBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── State ─────────────────────────────────────────────────────────────────
+    let cfg    = { matrix_ip: '', matrix_port: '80' };
+    let labels = { inputs: {}, outputs: {}, scenes: {} };   // local name overrides
+    let pollTimer = null;
+
+    // Device state, as reported by GET /all_dat.get. Field meanings and the
+    // connection rules below are documented in API_SPEC.md.
+    let state = {
+      connected:   false,
+      routing:     {},   // output 1-8 → input 1-8
+      inputNames:  {},
+      hdmiNames:   {},   // HDMI output names
+      hdbtNames:   {},   // HDBT output names
+      sceneNames:  {},
+      inSig:       {},   // input  → sig  (1 = a source is connected and sending video)
+      hdmiHpd:     {},   // output → hpd  (1 = a display is attached to the HDMI half)
+      hdbtHpd:     {},   // output → hpd  (1 = a display is attached to the HDBT half)
+      hdmiEdid:    {},   // output → sink EDID, "Unplug" when nothing is attached
+      hdbtEdid:    {},
+    };
+
+    // ── Names ─────────────────────────────────────────────────────────────────
+    // The other builds show the device's own port name unless a local override
+    // is set (MatrixPort.overrideName), so do the same here.
+    const iName = i => (labels.inputs[i]  || '').trim() || state.inputNames[i] || `Input ${i}`;
+    const oName = i => (labels.outputs[i] || '').trim() || state.hdmiNames[i]  || `Output ${i}`;
+    const sName = i => (labels.scenes[i]  || '').trim() || state.sceneNames[i] || `Scene ${i}`;
+
+    // Outputs are listed as "HDMI name / HDBT name" when the two halves of one
+    // output are named differently — matching MatrixSDK.getJoinedOutputPort().
+    function oNameJoined(i) {
+      const hdmi = oName(i);
+      const hdbt = (labels.outputs[i] || '').trim() || state.hdbtNames[i] || '';
+      return (hdbt && hdbt !== hdmi) ? `${hdmi} / ${hdbt}` : hdmi;
+    }
+
+    // ── Icons ─────────────────────────────────────────────────────────────────
+    // Port of AppSettings.getImage()'s automatic mode: the icon is chosen from
+    // the port name. Assets are the same PNGs the other two projects use.
+    const IMG = n => `assets/${n}.png`;
+    const NUMBERS = ['one','two','three','four','five','six','seven','eight'];
+
+    function autoIcon(name, isScene) {
+      const n = (name || '').toUpperCase();
+      if (isScene) {
+        for (let d = 1; d <= 8; d++) {
+          if (n.includes(String(d))) return IMG(NUMBERS[d - 1]);
+        }
+      }
+      if (n.includes('PC') || n.includes('COMPUTER'))  return IMG('monitor');
+      if (n.includes('PROJ'))                          return IMG('projector');
+      if (n.includes('CHURCH'))                        return IMG('church');
+      if (n.includes('CAMERA'))                        return IMG('camera');
+      if (n.includes('TV') || n.includes('TELEVISION'))return IMG('television');
+      if (n.includes('STREAM'))                        return IMG('video-player');
+      if (n.includes('UNUSED') || n.includes('NONE') || n.includes('DISCONNECTED')) return IMG('no-parking');
+      return IMG('hdmi');
+    }
+
+    // ── Connection tests ──────────────────────────────────────────────────────
+    // An input has a source when it reports sig=1 — pw5v reads 1 even on empty
+    // ports. An output has a display when it asserts hot-plug detect, or when a
+    // sink EDID came back; output sig reads 0 on ports that are working fine.
+    const inputConnected  = i => state.inSig[i] === 1;
+    const outputConnected = o =>
+      state.hdmiHpd[o] === 1 || state.hdbtHpd[o] === 1 ||
+      (state.hdmiEdid[o] && state.hdmiEdid[o] !== 'Unplug') ||
+      (state.hdbtEdid[o] && state.hdbtEdid[o] !== 'Unplug');
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function buildTarget() {
+      const ip   = (cfg.matrix_ip   || '').trim();
+      const port = (cfg.matrix_port || '80').trim();
+      if (!ip) return null;
+      return (port === '80' || port === '') ? `http://${ip}` : `http://${ip}:${port}`;
+    }
+
+    function setStatus(s) {
+      document.getElementById('statusDot').className = `status-dot ${s}`;
+      document.getElementById('statusText').textContent =
+        s === 'connected' ? 'Connected' : s === 'error' ? 'Offline' : 'Connecting';
+      state.connected = (s === 'connected');
+    }
+
+    let toastTimer;
+    function toast(msg, type = '') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = `toast show ${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.className = 'toast'; }, 2600);
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Device state ──────────────────────────────────────────────────────────
+    // Ports 2-8 of each status block carry no key, so the block is read
+    // positionally from the raw string (see API_SPEC.md §3.7).
+    function parsePortBlock(raw, key) {
+      const at = raw.indexOf(key + ':');
+      if (at === -1) return {};
+      const ports = {};
+      raw.slice(at + key.length + 1).split(';').slice(0, 8).forEach((seg, i) => {
+        const fields = {};
+        for (const pair of seg.split(',')) {
+          const [k, v] = pair.split('=');
+          if (k) fields[k.trim()] = parseInt(v, 10);
+        }
+        ports[i + 1] = fields;
+      });
+      return ports;
+    }
+
+    function parseState(raw) {
+      const s = {
+        routing: {}, inputNames: {}, hdmiNames: {}, hdbtNames: {}, sceneNames: {},
+        inSig: {}, hdmiHpd: {}, hdbtHpd: {}, hdmiEdid: {}, hdbtEdid: {},
+      };
+
+      for (const part of raw.split(';')) {
+        const p = part.trim();
+        if (!p) continue;
+        let m;
+        if ((m = p.match(/^VO:(\d+)IN:(\d+)$/)))       { s.routing[+m[1]]    = +m[2]; continue; }
+        if ((m = p.match(/^port_i(\d+):(.*)$/)))       { s.inputNames[+m[1]] = m[2];  continue; }
+        if ((m = p.match(/^port_ohdmi(\d+):(.*)$/)))   { s.hdmiNames[+m[1]]  = m[2];  continue; }
+        if ((m = p.match(/^port_ohdbt(\d+):(.*)$/)))   { s.hdbtNames[+m[1]]  = m[2];  continue; }
+        if ((m = p.match(/^grp(\d+):(.*)$/)))          { s.sceneNames[+m[1]] = m[2];  continue; }
+        // "oed_hdim" is misspelled in the device firmware — match it exactly.
+        if ((m = p.match(/^oed_hdim(\d+):(.*)$/)))     { s.hdmiEdid[+m[1]]   = m[2];  continue; }
+        if ((m = p.match(/^oed_hdbt(\d+):(.*)$/)))     { s.hdbtEdid[+m[1]]   = m[2];  continue; }
+      }
+
+      const inPorts   = parsePortBlock(raw, 'INPORT');
+      const hdmiPorts = parsePortBlock(raw, 'OUTHDMIPORT');
+      const hdbtPorts = parsePortBlock(raw, 'OUTHDBTPORT');
+      for (let i = 1; i <= 8; i++) {
+        s.inSig[i]   = inPorts[i]?.sig;
+        s.hdmiHpd[i] = hdmiPorts[i]?.hpd;
+        s.hdbtHpd[i] = hdbtPorts[i]?.hpd;
+      }
+
+      Object.assign(state, s);
+    }
+
+    async function loadSettings() {
+      try {
+        const r    = await fetch('/controller/settings');
+        const data = await r.json();
+        if (data.settings) cfg    = { ...cfg, ...data.settings };
+        if (data.labels)   labels = { inputs: {}, outputs: {}, scenes: {}, ...data.labels };
+      } catch (e) {
+        console.warn('Could not load settings:', e);
+      }
+    }
+
+    async function poll() {
+      const target = buildTarget();
+      if (!target) { setStatus('error'); render(); return; }
+      try {
+        const r = await fetch(`/hw-proxy/all_dat.get?target=${encodeURIComponent(target)}`);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        parseState(await r.text());
+        setStatus('connected');
+      } catch {
+        setStatus('error');
+      }
+      render();
+    }
+
+    function startPolling() {
+      clearInterval(pollTimer);
+      pollTimer = setInterval(poll, 5000);
+    }
+
+    // ── Commands ──────────────────────────────────────────────────────────────
+    async function send(body) {
+      const target = buildTarget();
+      if (!target) { toast('Not connected to matrix', 'err'); return false; }
+      try {
+        await fetch(`/hw-proxy/video.set?target=${encodeURIComponent(target)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body,
+        });
+        return true;
+      } catch {
+        toast('Command failed', 'err');
+        return false;
+      }
+    }
+
+    async function recallScene(n) {
+      const ok = confirm('You are about to load a new configuration.\n\n This process can take 15-20 seconds.\n\n Are you SURE you want to continue?');
+      if (!ok) return;
+      if (await send(`#group${n} exe=2`)) {
+        toast(`${sName(n)} recalled`, 'ok');
+        setTimeout(poll, 600);
+      }
+    }
+
+    // Routes one or more outputs to a single input, batched into one request.
+    async function setOutputSources(inputPort, outputPorts) {
+      if (!outputPorts.length) return;
+      const body = outputPorts.map(o => `#video_d out${o} matrix=${inputPort}`).join('');
+      if (await send(body)) {
+        for (const o of outputPorts) state.routing[o] = inputPort;
+        toast(outputPorts.length === 1
+          ? `${oName(outputPorts[0])} now showing ${iName(inputPort)}`
+          : `${outputPorts.length} outputs now showing ${iName(inputPort)}`, 'ok');
+        render();
+        setTimeout(poll, 600);
+      }
+    }
+
+    // ── Rendering ─────────────────────────────────────────────────────────────
+    function tileMarkup({ icon, large, name, connected, rows, disabled, scene }) {
+      const status = scene ? '' :
+        `<div class="tile-status ${connected ? '' : 'off'}">${connected ? 'Connected' : 'Disconnected'}</div>`;
+      const list = scene ? '' : `<div class="tile-list">${(rows || []).map(r => `
+            <div class="tile-list-row">
+              <img src="${IMG('input')}" alt="">
+              <span>${escHtml(r)}</span>
+            </div>`).join('')}</div>`;
+      return `<div class="tile-icon ${large ? 'large' : ''}"><img src="${icon}" alt=""></div>
+              <div class="tile-name">${escHtml(name)}</div>
+              ${status}${list}`;
+    }
+
+    // The other builds lay the eight tiles out as two rows of four.
+    function renderTileRows(containerId, items) {
+      const wrap = document.getElementById(containerId);
+      wrap.innerHTML = '';
+      for (const slice of [[0, 4], [4, 8]]) {
+        const row = document.createElement('div');
+        row.className = 'tile-row';
+        for (const item of items.slice(slice[0], slice[1])) {
+          const tile = document.createElement('div');
+          tile.className = 'tile' + (item.scene ? ' scene' : '') + (item.disabled ? ' disabled' : '');
+          tile.innerHTML = tileMarkup(item);
+          if (!item.disabled) tile.addEventListener('click', item.onPress);
+          row.appendChild(tile);
+        }
+        wrap.appendChild(row);
+      }
+    }
+
+    function render() {
+      const off = !state.connected;
+
+      renderTileRows('scenesRows', Array.from({ length: 8 }, (_, i) => {
+        const n = i + 1;
+        return {
+          scene: true, large: true, disabled: off,
+          name: sName(n), icon: autoIcon(sName(n), true),
+          onPress: () => recallScene(n),
+        };
+      }));
+
+      renderTileRows('inputsRows', Array.from({ length: 8 }, (_, i) => {
+        const n = i + 1;
+        const fed = [1,2,3,4,5,6,7,8].filter(o => state.routing[o] === n);
+        return {
+          disabled: off,
+          name: iName(n), icon: autoIcon(iName(n), false),
+          connected: inputConnected(n),
+          rows: fed.map(o => `${o}: ${oNameJoined(o)}`),
+          onPress: () => openInputMapper(n),
+        };
+      }));
+
+      renderTileRows('outputsRows', Array.from({ length: 8 }, (_, i) => {
+        const n   = i + 1;
+        const src = state.routing[n];
+        return {
+          disabled: off,
+          name: oName(n), icon: autoIcon(oName(n), false),
+          connected: outputConnected(n),
+          rows: src ? [`${src}: ${iName(src)}`] : [],
+          onPress: () => openOutputMapper(n),
+        };
+      }));
+    }
+
+    // ── Output mapper (Outputs tab): one output, one input ───────────────────
+    let mapperOutput = null;
+    let mapperInput  = null;
+
+    function openOutputMapper(o) {
+      mapperOutput = o;
+      mapperInput  = state.routing[o] || null;
+      document.getElementById('outputMapperTitle').textContent = `Output ${o}: ${oName(o)}`;
+      renderOutputMapperOptions();
+      document.getElementById('outputMapper').classList.add('open');
+    }
+
+    function renderOutputMapperOptions() {
+      const el = document.getElementById('outputMapperOptions');
+      el.innerHTML = '';
+      el.style.display = 'flex';
+      el.style.flexDirection = 'column';
+      el.style.rowGap = '10px';
+      for (let i = 1; i <= 8; i++) {
+        const selected = mapperInput === i;
+        const row = document.createElement('div');
+        row.className = 'select-tile' + (selected ? ' selected' : '');
+        row.innerHTML = `<span>${i}: ${escHtml(iName(i))}</span>` +
+                        (selected ? `<span class="tag">Selected</span>` : '');
+        row.addEventListener('click', () => { mapperInput = i; renderOutputMapperOptions(); });
+        el.appendChild(row);
+      }
+    }
+
+    // ── Input mapper (Inputs tab): one input, many outputs ───────────────────
+    let mapperInputPort   = null;
+    let mapperOutputs     = [];   // currently ticked
+    let mapperPatched     = [];   // already fed by this input — locked
+
+    function openInputMapper(i) {
+      mapperInputPort = i;
+      mapperPatched   = [1,2,3,4,5,6,7,8].filter(o => state.routing[o] === i);
+      mapperOutputs   = [...mapperPatched];
+      document.getElementById('inputMapperTitle').textContent = `Input ${i}: ${iName(i)}`;
+      renderInputMapperOptions();
+      document.getElementById('inputMapper').classList.add('open');
+    }
+
+    function renderInputMapperOptions() {
+      const el = document.getElementById('inputMapperOptions');
+      el.innerHTML = '';
+      el.style.display = 'flex';
+      el.style.flexDirection = 'column';
+      el.style.rowGap = '10px';
+      for (let o = 1; o <= 8; o++) {
+        const selected = mapperOutputs.includes(o);
+        const patched  = mapperPatched.includes(o);
+        const row = document.createElement('div');
+        row.className = 'select-tile' + (selected ? ' selected' : '') + (patched ? ' patched' : '');
+        row.innerHTML = `<span>${o}: ${escHtml(oName(o))}</span>` +
+                        (selected ? `<span class="tag">${patched ? 'Patched' : 'Selected'}</span>` : '');
+        // An output already fed by this input can't be un-picked here — route it
+        // somewhere else from its own tile instead.
+        if (!patched) {
+          row.addEventListener('click', () => {
+            mapperOutputs = selected ? mapperOutputs.filter(x => x !== o) : [...mapperOutputs, o];
+            renderInputMapperOptions();
+          });
+        }
+        el.appendChild(row);
+      }
+    }
+
+    function closeMapper(id) { document.getElementById(id).classList.remove('open'); }
+
+    document.getElementById('outputMapperCancel').addEventListener('click', () => closeMapper('outputMapper'));
+    document.getElementById('inputMapperCancel') .addEventListener('click', () => closeMapper('inputMapper'));
+
+    document.getElementById('outputMapperSave').addEventListener('click', async () => {
+      closeMapper('outputMapper');
+      if (mapperInput && mapperOutput && state.routing[mapperOutput] !== mapperInput) {
+        await setOutputSources(mapperInput, [mapperOutput]);
+      }
+    });
+
+    document.getElementById('inputMapperSave').addEventListener('click', async () => {
+      closeMapper('inputMapper');
+      const added = mapperOutputs.filter(o => !mapperPatched.includes(o));
+      if (mapperInputPort && added.length) await setOutputSources(mapperInputPort, added);
+    });
+
+    // ── Settings ──────────────────────────────────────────────────────────────
+    function openSettings() {
+      document.getElementById('cfgIP').value   = cfg.matrix_ip   || '';
+      document.getElementById('cfgPort').value = cfg.matrix_port || '80';
+      buildLabelFields('sceneFields',  'scene',  labels.scenes,  sName);
+      buildLabelFields('inputFields',  'input',  labels.inputs,  iName);
+      buildLabelFields('outputFields', 'output', labels.outputs, oName);
+      document.getElementById('settingsMapper').classList.add('open');
+    }
+
+    function buildLabelFields(containerId, type, store, deviceName) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      for (let i = 1; i <= 8; i++) {
+        const row = document.createElement('div');
+        row.className = 'field-row';
+        row.innerHTML = `
+          <span class="field-lbl">${type[0].toUpperCase() + type.slice(1)} ${i}</span>
+          <input class="field-input" type="text" data-type="${type}" data-idx="${i}"
+                 value="${escHtml(store[i] || '')}" placeholder="${escHtml(deviceName(i))}">`;
+        el.appendChild(row);
+      }
+    }
+
+    async function saveSettings() {
+      const ip   = document.getElementById('cfgIP').value.trim();
+      const port = document.getElementById('cfgPort').value.trim() || '80';
+      const newLabels = { inputs: {}, outputs: {}, scenes: {} };
+      for (const input of document.querySelectorAll('.field-input[data-type]')) {
+        const val = input.value.trim();
+        const idx = parseInt(input.dataset.idx);
+        if (input.dataset.type === 'scene')  newLabels.scenes[idx]  = val;
+        if (input.dataset.type === 'input')  newLabels.inputs[idx]  = val;
+        if (input.dataset.type === 'output') newLabels.outputs[idx] = val;
+      }
+      try {
+        await fetch('/controller/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ settings: { matrix_ip: ip, matrix_port: port }, labels: newLabels }),
+        });
+        cfg.matrix_ip = ip; cfg.matrix_port = port; labels = newLabels;
+        closeMapper('settingsMapper');
+        toast('Settings saved', 'ok');
+        await poll();
+        startPolling();
+      } catch {
+        toast('Failed to save settings', 'err');
+      }
+    }
+
+    document.getElementById('settingsBtn').addEventListener('click', openSettings);
+    document.getElementById('closeBtn')   .addEventListener('click', () => closeMapper('settingsMapper'));
+    document.getElementById('saveBtn')    .addEventListener('click', saveSettings);
+
+    // ── Tabs ──────────────────────────────────────────────────────────────────
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    tabs.forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
+        const ind = document.getElementById('tabIndicator');
+        ind.style.width = `${100 / tabs.length}%`;
+        ind.style.left  = `${(100 / tabs.length) * i}%`;
+      });
+    });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    async function init() {
+      setStatus('connecting');
+      await loadSettings();
+      render();
+      await poll();
+      startPolling();
+    }
+
+    init();
+  </script>
+</body>
+</html>
