@@ -8,5 +8,8 @@
   "scripts": {
     "start": "node server.js"
   },
-  "type": "module"
+  "type": "module",
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
+  }
 }

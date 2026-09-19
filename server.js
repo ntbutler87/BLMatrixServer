@@ -635,14 +635,22 @@ app.get('/ip.get', (req, res) => {
 //   GET /hw-proxy/all_dat.get?target=http%3A%2F%2F192.168.1.100
 //   POST /hw-proxy/video.set?target=http%3A%2F%2F192.168.1.100
 
+// Logging: /video.set is logged in full — it is the only channel that changes the
+// device, it is fire-and-forget (the unit answers 200 even for a command it ignored,
+// see API_SPEC.md §1.3), and it is low-volume. /all_dat.get is polled once a second
+// per client, so it is logged only when it fails.
+const hwLog = (...args) => console.log(`[hw-proxy ${new Date().toISOString()}]`, ...args);
+
 app.get('/hw-proxy/all_dat.get', async (req, res) => {
     const target = req.query.target;
     if (!target) return res.status(400).send('Missing target parameter');
     try {
         const r = await fetch(`${target}/all_dat.get`);
         const text = await r.text();
-        res.send(text);
+        if (!r.ok) hwLog(`GET ${target}/all_dat.get -> ${r.status} ${r.statusText}`);
+        res.status(r.status).send(text);
     } catch (e) {
+        hwLog(`GET ${target}/all_dat.get -> FAILED: ${e.message}`);
         res.status(502).send(`Proxy error: ${e.message}`);
     }
 });
@@ -650,14 +658,24 @@ app.get('/hw-proxy/all_dat.get', async (req, res) => {
 app.post('/hw-proxy/video.set', async (req, res) => {
     const target = req.query.target;
     if (!target) return res.status(400).send('Missing target parameter');
+    // req.body is a string (bodyParser.text), but an empty or JSON-typed body can
+    // leave it as '' or an object — send the raw text either way.
+    const body = typeof req.body === 'string' ? req.body : String(req.body ?? '');
+    hwLog(`POST ${target}/video.set  body=${JSON.stringify(body)}`);
+    if (!body.startsWith('#')) {
+        hwLog('  WARNING: body has no leading "#". Hardware answers 200 and ignores it.');
+    }
     try {
-        await fetch(`${target}/video.set`, {
+        const r = await fetch(`${target}/video.set`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
-            body: req.body,
+            body,
         });
-        res.end();
+        const text = await r.text();
+        hwLog(`  -> ${r.status} ${r.statusText}${text ? ` body=${JSON.stringify(text)}` : ' (empty body)'}`);
+        res.status(r.status).send(text);
     } catch (e) {
+        hwLog(`  -> FAILED: ${e.message}`);
         res.status(502).send(`Proxy error: ${e.message}`);
     }
 });

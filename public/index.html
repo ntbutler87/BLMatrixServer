@@ -18,6 +18,7 @@
             --green:   #30c060;
             --red:     #f04040;
             --blue:    #4080ff;
+            --amber:   #e0a020;
 
             --c1: #e74c3c;
             --c2: #e67e22;
@@ -123,17 +124,19 @@
         }
         .mx-corner { /* spacer */ }
         .mx-chdr {
-            text-align: center; padding: 5px 2px; border-radius: 4px;
-            background: var(--surf2); font-size: 10px; font-weight: 700;
-            font-family: monospace; color: var(--c, var(--txt2));
+            text-align: center; padding: 4px 2px; border-radius: 4px;
+            background: var(--surf2); display: flex; flex-direction: column;
+            justify-content: center; gap: 1px; min-height: 38px; overflow: hidden;
         }
+        .mx-chdr .cl { font-size: 10px; font-weight: 700; font-family: monospace; color: var(--c, var(--txt2)); }
+        .mx-chdr .cn { font-size: 12px; color: var(--txt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .mx-rhdr {
             padding: 4px 8px; border-radius: 4px; background: var(--surf2);
             display: flex; flex-direction: column; justify-content: center; gap: 1px;
             min-height: 38px;
         }
         .mx-rhdr .rl  { font-size: 10px; font-weight: 700; font-family: monospace; color: var(--txt2); }
-        .mx-rhdr .rn  { font-size: 9px; color: var(--txt3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mx-rhdr .rn  { font-size: 12px; color: var(--txt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .mx-cell {
             min-height: 38px; border-radius: 4px;
             background: var(--surf2); border: 1px solid transparent;
@@ -164,6 +167,11 @@
         .mx-cell.pending .mx-dot { display: block; background: transparent; border: 2px solid var(--c); box-shadow: none; }
         .mx-cell:not(.active):not(.pending):hover .mx-dot { display: block; background: var(--txt3); width: 5px; height: 5px; }
 
+        /* ── CONNECTOR STRIP (input → output routing lines) ── */
+        /* Real height so each line has room to run through its own horizontal lane
+           instead of being crushed into a near-diagonal over 1px of space. */
+        .conn-strip { position: relative; height: 124px; overflow: visible; pointer-events: none; }
+
         /* ── COMMIT BAR ── */
         .sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .sec-hdr .sec-lbl { margin-bottom: 0; }
@@ -192,6 +200,11 @@
         .out-src  { font-size: 10px; font-weight: 700; color: var(--c, var(--txt3)); font-family: monospace; }
         .out-num  { font-size: 10px; color: var(--txt2); font-family: monospace; }
         .out-name { font-size: 10px; color: var(--txt3); text-align: center; word-break: break-all; }
+        .out-names { width: 100%; display: flex; flex-direction: column; gap: 1px; }
+        .onm-row   { display: flex; align-items: center; gap: 3px; }
+        .onm-tag   { font-family: monospace; font-size: 7px; font-weight: 700; letter-spacing: .3px;
+                     color: var(--txt3); width: 22px; flex-shrink: 0; }
+
 
         /* ── FRONT PANEL ── */
         .panel {
@@ -252,7 +265,21 @@
             background: var(--surf2); border: 1px solid var(--bdr);
             border-radius: 8px; padding: 10px 8px; text-align: center;
         }
-        .sc-name { font-size: 10px; color: var(--txt); margin-bottom: 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sc-name { font-size: 10px; color: var(--txt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sc-sub  { font-size: 8px; color: var(--txt3); font-family: monospace; margin: 1px 0 5px;
+                   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* ── INLINE EDITABLE NAME ── */
+        /* Reads as plain text until hovered or focused, so the cards stay calm. */
+        .nm {
+            width: 100%; text-align: center; font-family: inherit;
+            background: transparent; border: 1px solid transparent; border-radius: 4px;
+            color: inherit; font-size: inherit; padding: 2px 3px; outline: none;
+        }
+        .nm:hover  { border-color: var(--bdr); background: var(--surf3); }
+        .nm:focus  { border-color: var(--blue); background: var(--surf3); color: var(--txt); text-align: left; }
+        .nm.bad    { border-color: var(--red); color: var(--red); }
+
         .sc-btns { display: flex; gap: 4px; }
         .sc-btn {
             flex: 1; background: var(--surf3); border: 1px solid var(--bdr);
@@ -262,7 +289,74 @@
         .sc-btn.recall:hover { background: color-mix(in srgb, var(--blue) 15%, var(--surf3)); border-color: var(--blue); color: var(--blue); }
         .sc-btn.save:hover   { background: color-mix(in srgb, var(--green) 15%, var(--surf3)); border-color: var(--green); color: var(--green); }
 
+        /* ── EDID ── */
+        .edid-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+        @media (max-width: 1100px) { .edid-wrap { grid-template-columns: 1fr; } }
+        .edid-col {
+            background: var(--surf); border: 1px solid var(--bdr);
+            border-radius: 10px; padding: 12px 16px;
+        }
+        .sel {
+            background: var(--surf2); border: 1px solid var(--bdr); color: var(--txt);
+            border-radius: 4px; padding: 3px 6px; font-size: 10px; font-family: inherit;
+            outline: none; cursor: pointer; max-width: 100%;
+        }
+        .sel:hover  { border-color: var(--bdr2); }
+        .sel:focus  { border-color: var(--blue); }
+        .sel.wide   { max-width: 210px; }
+        .sel option:disabled { color: var(--txt3); }
+        .btn-sm { padding: 3px 9px; font-size: 10px; }
+
+        /* ── SEGMENTED TOGGLES (audio) ── */
+        .seg-wrap { display: inline-flex; gap: 3px; }
+        .seg {
+            background: var(--surf2); border: 1px solid var(--bdr); color: var(--txt3);
+            border-radius: 4px; padding: 3px 8px; cursor: pointer;
+            font-family: monospace; font-size: 9px; font-weight: 700; letter-spacing: .3px;
+            transition: background .12s, color .12s, border-color .12s;
+        }
+        .seg:hover { border-color: var(--bdr2); color: var(--txt2); }
+        .seg.on {
+            background: color-mix(in srgb, var(--green) 16%, var(--surf3));
+            border-color: color-mix(in srgb, var(--green) 55%, transparent);
+            color: var(--green);
+        }
+
+
+        /* ── PORT DIAGNOSTICS ── */
+
+        .diag { background: var(--surf); border: 1px solid var(--bdr); border-radius: 10px; padding: 12px 16px; }
+        .diag > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+        .diag > summary::-webkit-details-marker { display: none; }
+        .diag > summary::before {
+            content: '▸'; color: var(--txt3); font-size: 10px; transition: transform .15s;
+        }
+        .diag[open] > summary::before { transform: rotate(90deg); }
+        .diag > summary .sec-lbl { margin-bottom: 0; }
+        .diag-body { margin-top: 14px; display: flex; flex-direction: column; gap: 16px; }
+        .diag-note { font-size: 10px; color: var(--txt3); line-height: 1.6; }
+        .diag-note code { font-family: monospace; color: var(--txt2); }
+        .dt-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+                  color: var(--txt2); margin-bottom: 6px; }
+        table.dt { width: 100%; border-collapse: collapse; font-family: monospace; font-size: 10px; }
+        table.dt th {
+            text-align: left; font-weight: 700; color: var(--txt3); padding: 4px 8px;
+            border-bottom: 1px solid var(--bdr); white-space: nowrap;
+        }
+        /* The two fields §3.7 marks certain; the rest are unconfirmed and read muted. */
+        table.dt th.key { color: var(--txt); }
+        table.dt th.soft { color: var(--txt3); opacity: .65; }
+        table.dt td { padding: 4px 8px; border-bottom: 1px solid var(--surf2); color: var(--txt2); white-space: nowrap; }
+        table.dt td.soft { opacity: .55; }
+        table.dt tr:last-child td { border-bottom: none; }
+        table.dt td.nm-col { font-family: inherit; color: var(--txt3); max-width: 140px;
+                             overflow: hidden; text-overflow: ellipsis; }
+        .v-yes { color: var(--green); }
+        .v-no  { color: var(--txt3); }
+        .v-warn { color: var(--amber); }
+
         /* ── TOAST ── */
+
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             background: var(--surf3); border: 1px solid var(--bdr2);
@@ -287,6 +381,14 @@
         }
         .target-input:focus { border-color: var(--bdr2); }
         .target-input.hw-active { border-color: var(--blue); color: var(--blue); }
+        /* Edited but not yet applied — the field no longer reflects what we're polling. */
+        .target-input.dirty { border-color: var(--amber); color: var(--amber); }
+        .btn-target { padding: 4px 10px; }
+        .btn-target.dirty {
+            background: color-mix(in srgb, var(--amber) 20%, var(--surf3));
+            border-color: var(--amber); color: var(--amber);
+        }
+        .btn-target.dirty:hover { background: color-mix(in srgb, var(--amber) 35%, var(--surf3)); }
     </style>
 </head>
 <body>
@@ -301,8 +403,10 @@
         <span class="target-lbl">Device IP</span>
         <input class="target-input" id="target-input" type="text"
                placeholder="emulator (local)"
-               title="Leave blank to control the local emulator. Enter a hardware unit IP (e.g. 192.168.1.100) to control real hardware via proxy."
-               oninput="onTargetChange()">
+               title="Leave blank to control the local emulator. Enter a hardware unit IP (e.g. 192.168.1.100) to control real hardware via proxy. Press Enter or click Apply to connect; Esc cancels."
+               oninput="onTargetInput()" onkeydown="onTargetKey(event)">
+        <button class="btn btn-target" id="target-save" onclick="applyTarget()"
+                title="Connect to the address in the field">Apply</button>
     </div>
     <div class="status">
         <div class="led" id="led"></div>
@@ -311,17 +415,29 @@
     <span id="ts" style="font-size:10px;color:var(--txt3);font-family:monospace;"></span>
     <button class="btn" onclick="poll()">Refresh</button>
     <a class="btn" href="/simple.html" target="_blank">Simple UI</a>
-    <a class="btn" href="/original.html" target="_blank">Legacy UI</a>
+    <!-- <a class="btn" href="/original.html" target="_blank">Legacy UI</a> -->
 </header>
 
 <div class="page">
 
     <section>
+        <div class="sec-hdr">
+            <div class="sec-lbl">Routing Matrix — click cells to queue changes</div>
+            <div class="commit-bar" id="commit-bar">
+                <span class="commit-count" id="commit-count"></span>
+                <button class="btn" onclick="discardChanges()">Discard</button>
+                <button class="btn btn-commit" onclick="commitChanges()">Commit Changes</button>
+            </div>
+        </div>
+        <div class="mx-wrap"><div class="mx" id="mx"></div></div>
+    </section>
+    
+    <section>
         <div class="sec-lbl">Input Sources</div>
         <div class="cards8" id="in-row"></div>
     </section>
 
-    <div id="conn-strip" style="position:relative;height:1px;overflow:visible;pointer-events:none;"></div>
+    <div id="conn-strip" class="conn-strip"></div>
 
     <section>
         <div class="sec-lbl">Output Displays</div>
@@ -356,21 +472,29 @@
     </section>
 
     <section>
-        <div class="sec-hdr">
-            <div class="sec-lbl">Routing Matrix — click cells to queue changes</div>
-            <div class="commit-bar" id="commit-bar">
-                <span class="commit-count" id="commit-count"></span>
-                <button class="btn" onclick="discardChanges()">Discard</button>
-                <button class="btn btn-commit" onclick="commitChanges()">Commit Changes</button>
-            </div>
-        </div>
-        <div class="mx-wrap"><div class="mx" id="mx"></div></div>
-    </section>
-
-    <section>
         <div class="sec-lbl">Scenes</div>
         <div class="cards8" id="scenes"></div>
     </section>
+
+    <section>
+        <div class="sec-lbl">EDID</div>
+        <div class="edid-wrap" id="edid"></div>
+    </section>
+
+    <section>
+        <div class="sec-lbl">Audio</div>
+        <div class="edid-wrap" id="audio"></div>
+    </section>
+
+
+    <section>
+        <details class="diag">
+
+            <summary><span class="sec-lbl">Port Diagnostics</span></summary>
+            <div class="diag-body" id="diag"></div>
+        </details>
+    </section>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -383,21 +507,65 @@ const COLORS = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c','#3498db','#9b
 // hwTarget: base URL of real hardware (e.g. "http://192.168.1.100"), or null for emulator.
 // When set, all requests are sent through the server-side proxy at /hw-proxy/* which
 // avoids browser CORS restrictions against the hardware unit.
-let hwTarget = null;
+//
+// The field is only applied on demand — via Apply, or Enter. Typing must not touch
+// hwTarget: the 1s poll below would otherwise chase every half-typed address
+// ("http://192.", "http://192.168.") on its way to the real one. Until the edit is
+// applied, polling stays on the previously applied target and the field shows as
+// dirty; Esc restores it.
+let hwTarget = null;    // applied target, or null for the emulator
+let targetText = '';    // field text that produced hwTarget
 
-function onTargetChange() {
-    const raw = document.getElementById('target-input').value.trim();
-    const inp = document.getElementById('target-input');
-    if (raw) {
-        // Normalise: add http:// if no scheme present
-        hwTarget = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`;
-        inp.classList.add('hw-active');
-    } else {
-        hwTarget = null;
-        inp.classList.remove('hw-active');
+const targetInput = () => document.getElementById('target-input');
+
+// "192.168.8.97" → "http://192.168.8.97"; blank → null (emulator).
+function normaliseTarget(raw) {
+    if (!raw) return null;
+    return /^https?:\/\//i.test(raw) ? raw : `http://${raw}`;
+}
+
+function onTargetInput() {
+    refreshTargetUi();
+}
+
+function onTargetKey(e) {
+    if (e.key === 'Enter') {
+        applyTarget();
+    } else if (e.key === 'Escape') {
+        targetInput().value = targetText;
+        refreshTargetUi();
+        targetInput().blur();
     }
+}
+
+function applyTarget() {
+    const inp = targetInput();
+    const raw = inp.value.trim();
+    inp.value = raw;              // drop stray whitespace so the field matches what we poll
+    if (raw === targetText) { refreshTargetUi(); return; }
+
+    targetText = raw;
+    hwTarget = normaliseTarget(raw);
+    refreshTargetUi();
+    toast(hwTarget ? `Connecting to ${hwTarget}` : 'Connecting to local emulator', 'ok');
+
+    // Remember it, so the address survives a reload instead of being retyped.
+    const { ip, port } = splitTarget(raw);
+    cfg.matrix_ip = ip; cfg.matrix_port = port;
+    saveSettings({ settings: { matrix_ip: ip, matrix_port: port } });
+
     lastSnapshot = null; // force re-render after target change
     poll();
+}
+
+
+// Blue = controlling hardware, amber = edited but not applied.
+function refreshTargetUi() {
+    const inp   = targetInput();
+    const dirty = inp.value.trim() !== targetText;
+    inp.classList.toggle('hw-active', !dirty && hwTarget !== null);
+    inp.classList.toggle('dirty', dirty);
+    document.getElementById('target-save').classList.toggle('dirty', dirty);
 }
 
 // Returns the URL to use for a given path, routing through the proxy for hardware units.
@@ -479,8 +647,63 @@ const ICONS = [
     </svg>`,
 ];
 
+// ── CONTROLLER SETTINGS ──────────────────────────────────────────────────────
+// server.js keeps the target address and a set of local labels in SQLite
+// (/controller/settings), shared with simple.html — which stores host and port as
+// separate keys, so this page splits and rejoins them rather than storing a URL.
+//
+// Labels are a local overlay, not device state. Scenes are the reason they exist:
+// the device reports scene names (grp1-8) but exposes no command to change them
+// (API_SPEC.md §3.5), so a rename has nowhere to go but here.
+let cfg    = { matrix_ip: '', matrix_port: '80' };
+let labels = { inputs: {}, outputs: {}, scenes: {} };
+
+function splitTarget(raw) {
+    const bare = raw.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+    const m = bare.match(/^(.*?):(\d+)$/);
+    return m ? { ip: m[1], port: m[2] } : { ip: bare, port: '80' };
+}
+
+function joinTarget(ip, port) {
+    if (!ip) return '';
+    return (!port || port === '80') ? ip : `${ip}:${port}`;
+}
+
+async function loadSettings() {
+    try {
+        const r = await fetch('/controller/settings');
+        if (!r.ok) throw new Error(r.status);
+        const data = await r.json();
+        if (data.settings) cfg    = { ...cfg, ...data.settings };
+        if (data.labels)   labels = { inputs: {}, outputs: {}, scenes: {}, ...data.labels };
+    } catch (e) {
+        console.warn('Could not load controller settings:', e);
+    }
+}
+
+async function saveSettings(patch) {
+    try {
+        const r = await fetch('/controller/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(patch),
+        });
+        if (!r.ok) throw new Error(r.status);
+        return true;
+    } catch (e) {
+        toast('Could not save settings', 'err');
+        return false;
+    }
+}
+
+// Local label if one is set, otherwise whatever the device reports.
+function sceneLabel(n) {
+    return labels.scenes[n] || appState?.sceneNames[n] || `scene${String(n).padStart(2, '0')}`;
+}
+
 // ── STATE ────────────────────────────────────────────────────────────────────
 let appState  = null;  // parsed state object
+
 let selOutput = null;  // 1-based index of the output selected on the front panel
 let selInput  = null;  // 1-based index of the input selected on the front panel
 let pending   = {};    // queued routing changes: outputIndex → inputIndex
@@ -515,6 +738,14 @@ function parseStateStr(raw) {
         sceneNames:  {},   // sceneIndex → name string
         hdmiEdid:    {},   // outputIndex → EDID read from the HDMI sink, or "Unplug"
         hdbtEdid:    {},   // outputIndex → EDID read from the HDBT sink, or "Unplug"
+        edidAssign:  {},   // inputIndex → {mode, slot} — which EDID input N is assigned
+        edidDefault: {},   // 1-8 → built-in preset EDID string   (ded)
+        edidUser:    {},   // 1-8 → user-slot EDID string         (ued)
+        edidInput:   {},   // inputIndex → EDID the input is presenting to its source (ied)
+        audioIn:     {},   // inputIndex  → 0 mute / 1 HDMI embedded / 2 analog
+        audioOut:    {},   // outputIndex → {hdmi, iis, spdif} enable flags
+
+
         // Port status blocks: {pw5v,sig,rat,col,hdcp,bit} for inputs,
         //                     {hpd,sig,rat,col,hdcp,bit} for outputs.
         inStatus:    parsePortBlock(raw, 'INPORT'),
@@ -554,7 +785,33 @@ function parseStateStr(raw) {
             s.sceneNames[+m[1]] = m[2];
             continue;
         }
+        // Audio input mode:  AI:1M:1  — indexed by INPUT.
+        if ((m = p.match(/^AI:(\d+)M:(\d+)$/))) {
+            s.audioIn[+m[1]] = +m[2];
+            continue;
+        }
+        // Audio output flags:  AO:1HDMI:1 / AO:1iis:1 / AO:1spdif:1  — indexed by
+        // OUTPUT, and note the key really is capitalised 'HDMI' but lower-case
+        // 'iis'/'spdif'. Three segments per output, so accumulate rather than assign.
+        if ((m = p.match(/^AO:(\d+)(HDMI|iis|spdif):(\d+)$/))) {
+            const o = +m[1];
+            (s.audioOut[o] ||= {})[m[2] === 'HDMI' ? 'hdmi' : m[2]] = +m[3];
+            continue;
+        }
+        // Input EDID assignment:  E:1M:0D:1  — input 1, mode 0, slot 1 (§2.4).
+
+        // Note the index here is the INPUT, while VO:'s index is the output (§6.6).
+        if ((m = p.match(/^E:(\d+)M:(\d+)D:(\d+)$/))) {
+            s.edidAssign[+m[1]] = { mode: +m[2], slot: +m[3] };
+            continue;
+        }
+        // EDID tables. ded = built-in presets, ued = user slots, ied = the EDID each
+        // input is currently presenting (derived by resolving E: through its table).
+        if ((m = p.match(/^ded(\d+):(.*)$/))) { s.edidDefault[+m[1]] = m[2]; continue; }
+        if ((m = p.match(/^ued(\d+):(.*)$/))) { s.edidUser[+m[1]]    = m[2]; continue; }
+        if ((m = p.match(/^ied(\d+):(.*)$/))) { s.edidInput[+m[1]]   = m[2]; continue; }
         // Sink EDID:  oed_hdim1:1920x1080P60 444 LPCM2.0  (reads "Unplug" with no sink).
+
         // "oed_hdim" is misspelled in the device firmware — match it exactly.
         if ((m = p.match(/^oed_hdim(\d+):(.*)$/))) {
             s.hdmiEdid[+m[1]] = m[2];
@@ -591,53 +848,205 @@ function outputSink(o) {
 // ── FETCH ────────────────────────────────────────────────────────────────────
 let lastSnapshot = null;  // JSON string of previous state; used to detect changes
 
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+// True while the user is mid-interaction with a control the poll must not blow away.
+function isEditing() {
+    const el = document.activeElement;
+    return !!el && (el.classList.contains('nm') || el.tagName === 'SELECT');
+}
+
+
+// Reads and parses device state. Throws on any failure — callers that need to
+// know whether the read succeeded (write verification) rely on that.
+async function fetchState() {
+    const r = await fetch(apiUrl('/all_dat.get'));
+    if (!r.ok) throw new Error(r.status);
+    return parseStateStr(await r.text());
+}
+
+// Adopts a freshly read state, re-rendering only when something actually changed.
+function applyState(newState) {
+    setLed('on', 'Connected');
+    document.getElementById('ts').textContent = new Date().toLocaleTimeString();
+
+    const snapshot = JSON.stringify(newState);
+    if (snapshot !== lastSnapshot) {
+        lastSnapshot = snapshot;
+        appState = newState;
+        // Re-rendering mid-interaction would destroy the field being typed into or
+        // close an open dropdown, so hold off while one has focus. The state is
+        // still adopted; only the repaint waits, and finishing the edit repaints.
+        if (!isEditing()) render();
+    }
+}
+
+
+
 async function poll() {
     try {
-        const r = await fetch(apiUrl('/all_dat.get'));
-        if (!r.ok) throw new Error(r.status);
-        const text = await r.text();
-        const newState = parseStateStr(text);
-        const snapshot = JSON.stringify(newState);
-
-        setLed('on', 'Connected');
-        document.getElementById('ts').textContent = new Date().toLocaleTimeString();
-
-        if (snapshot !== lastSnapshot) {
-            lastSnapshot = snapshot;
-            appState = newState;
-            render();
-        }
+        applyState(await fetchState());
     } catch (e) {
         setLed('err', 'Disconnected');
     }
 }
 
+// ── WRITE VERIFICATION ───────────────────────────────────────────────────────
+// The device never acknowledges a command: it answers 200 whether it acted on it,
+// ignored it, or could not parse it (API_SPEC.md §1.3, §6.10). Reading the state
+// back is the only way to know a write landed, so every routing write is followed
+// by one. Retried a few times because the unit intermittently refuses the very
+// next connection after a POST, and because a switch is not instantaneous.
+//
+// Re-reads state until `check(state)` passes or the tries run out. Throws only when
+// the device could not be read at all — a readable device that simply did not apply
+// the write comes back as {ok: false}, which is the case worth reporting.
+async function verifyUntil(check, tries = 4) {
+    let latest = null;
+    for (let i = 0; i < tries; i++) {
+        await sleep(i === 0 ? 250 : 400);
+        try {
+            latest = await fetchState();
+            applyState(latest);
+            if (check(latest)) return { ok: true, state: latest };
+        } catch (e) {
+            // Usually transient: the unit drops the connection right after a write.
+            // Logged rather than swallowed so a genuine fault here is not mistaken
+            // for the device being slow.
+            console.debug('state read failed during verification:', e);
+        }
+
+    }
+    if (!latest) throw new Error('could not read state back');
+    return { ok: false, state: latest };
+}
+
+// `expected` is {output: input}. Returns the entries that did NOT take.
+async function verifyRouting(expected, tries = 4) {
+    const missed = (st) =>
+        Object.entries(expected).filter(([o, inp]) => st.routing[o] !== Number(inp));
+    const { state } = await verifyUntil((st) => missed(st).length === 0, tries);
+    return missed(state);
+}
+
+
+
 // ── SEND COMMANDS ────────────────────────────────────────────────────────────
+// Every command must be introduced by '#', and batches are concatenated with no
+// other separator ('#a#b', not 'a#b'). The emulator tolerates a missing leading
+// '#'; real hardware does not — it answers 200 and silently ignores the command.
+// Posts a command batch. Throws if the request itself fails — note that a 200
+// still says nothing about whether the device acted (§1.3); verify separately.
+async function sendCmd(body) {
+    const r = await fetch(apiUrl('/video.set'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body
+    });
+    if (!r.ok) throw new Error(r.status);
+}
+
 async function route(out, inp) {
     try {
-        await fetch(apiUrl('/video.set'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: `video_d out${out} matrix=${inp}`
-        });
-        toast(`IN${inp} → OUT${out}`, 'ok');
-        await poll();
+        await sendCmd(`#video_d out${out} matrix=${inp}`);
+        const failed = await verifyRouting({ [out]: inp });
+        if (failed.length) toast(`OUT${out} unchanged — device ignored the command`, 'err');
+        else               toast(`IN${inp} → OUT${out}`, 'ok');
     } catch (e) { toast('Command failed', 'err'); }
 }
 
 async function sceneCmd(n, action) {
     try {
-        await fetch(apiUrl('/video.set'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: `group${n} exe=${action}`
-        });
-        toast(action === 1 ? `Scene ${n} saved` : `Scene ${n} recalled`, 'ok');
+        await sendCmd(`#group${n} exe=${action}`);
+        // A recall's target mapping is only known to the device, so there is
+        // nothing to verify against — re-read and show what we ended up with.
+        toast(action === 1 ? `Scene ${sceneLabel(n)} saved` : `Scene ${sceneLabel(n)} recalled`, 'ok');
+        await sleep(250);
         await poll();
     } catch (e) { toast('Command failed', 'err'); }
 }
 
+
+// ── INLINE NAME EDITING ──────────────────────────────────────────────────────
+// One mechanism for every editable name on the page. `kind` decides where a commit
+// goes: 'scene' is a local label (the device has no scene-rename command), while
+// 'in' / 'hdmi' / 'hdbt' are real port renames sent to the device.
+//
+// Enter commits, Esc reverts, blur commits. Each field carries its original value
+// in data-orig so a no-op edit sends nothing.
+function nmKey(e, el) {
+    if (e.key === 'Enter')  { e.preventDefault(); el.blur(); }
+    if (e.key === 'Escape') { e.preventDefault(); el.value = el.dataset.orig; el.blur(); }
+}
+
+async function nmCommit(el) {
+    const kind = el.dataset.kind;
+    const idx  = Number(el.dataset.idx);
+    const val  = el.value.trim();
+    el.value = val;
+
+    if (val === el.dataset.orig) { render(); return; }
+
+    if (kind === 'scene') {
+        const name = val.slice(0, 50);   // server truncates at 50
+        labels.scenes[idx] = name;
+        el.dataset.orig = name;
+        if (await saveSettings({ labels: { scenes: { [idx]: name } } })) {
+            toast(`Scene ${idx} renamed`, 'ok');
+        }
+        render();
+        return;
+    }
+
+    await renamePort(kind, idx, val, el);
+}
+
+// ── PORT RENAMING ────────────────────────────────────────────────────────────
+// API_SPEC.md §2.6: a name may contain spaces, but not ';', ':' or '#' — those are
+// the response and command delimiters and the format has no escaping, so one of
+// them would corrupt the state string rather than fail cleanly. Non-ASCII is not
+// supported. The stock UI stops at 12 characters and a live unit was seen holding
+// 17; the emulator truncates at 20, which is the limit used here.
+const NAME_MAX = 20;
+
+function nameError(v) {
+    if (!v)                  return 'Name cannot be empty';
+    if (/[;:#]/.test(v))     return 'Name cannot contain ;  :  or  #';
+    if (!/^[ -~]*$/.test(v)) return 'Name must be plain ASCII';
+    return null;
+}
+
+const NAME_FIELD = { in: 'inputNames', hdmi: 'outputNames', hdbt: 'hdbtNames' };
+
+async function renamePort(kind, idx, val, el) {
+    const problem = nameError(val);
+    if (problem) {
+        el.classList.add('bad');
+        toast(problem, 'err');
+        el.focus();
+        return;
+    }
+    el.classList.remove('bad');
+
+    const field = NAME_FIELD[kind];
+    try {
+        await sendCmd(`#port ${kind}${idx} name=${val}`);
+        const { ok, state } = await verifyUntil((st) => (st[field][idx] || '') === val);
+        if (ok) {
+            el.dataset.orig = val;
+            toast(`Renamed to "${val}"`, 'ok');
+        } else {
+            toast(`Rename not applied — still "${state[field][idx] ?? ''}"`, 'err');
+        }
+    } catch (e) {
+        toast('Rename failed', 'err');
+    }
+    render();
+}
+
+
 // ── RENDER ───────────────────────────────────────────────────────────────────
+
 function render() {
     if (!appState) return;
     renderInputs();
@@ -646,7 +1055,13 @@ function render() {
     renderConnectors();
     renderPanel();
     renderScenes();
+    renderEdid();
+    renderAudio();
+    renderDiag();
+
+
     updateCommitBar();
+
 }
 
 function renderConnectors() {
@@ -655,20 +1070,44 @@ function renderConnectors() {
     const outCards = Array.from(document.getElementById('out-row').children);
     if (!inCards.length || !outCards.length || !appState) { strip.innerHTML = ''; return; }
 
-    const sr = strip.getBoundingClientRect();
-    const lines = [];
+    const sr     = strip.getBoundingClientRect();
+    const R      = 7;                                     // corner radius
+    const pad    = 18;                                     // clear space above the top lane / below the bottom lane
+    const laneGap = (sr.height - pad * 2) / 7;             // 8 lanes, evenly spaced
+    const lines  = [];
 
     for (let o = 0; o < 8; o++) {
         const srcIdx = (appState.routing[o + 1] || 1) - 1;  // 0-based input index
-        const ir = inCards[srcIdx].getBoundingClientRect();
+        const ir  = inCards[srcIdx].getBoundingClientRect();
         const or_ = outCards[o].getBoundingClientRect();
 
-        const x1 = (ir.left + ir.width  / 2 - sr.left).toFixed(1);
-        const y1 = (ir.bottom - sr.top).toFixed(1);
-        const x2 = (or_.left + or_.width / 2 - sr.left).toFixed(1);
-        const y2 = (or_.top  - sr.top).toFixed(1);
+        const x1 = +(ir.left + ir.width  / 2 - sr.left).toFixed(1);
+        const y1 = +(ir.bottom - sr.top).toFixed(1);
+        const x2 = +(or_.left + or_.width / 2 - sr.left).toFixed(1);
+        const y2 = +(or_.top  - sr.top).toFixed(1);
+        const color = COLORS[srcIdx];
 
-        lines.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${COLORS[srcIdx]}" stroke-width="1.5" opacity="0.4" stroke-linecap="round"/>`);
+        // Each output owns a fixed lane (by its own index), so its line always runs
+        // at the same y-level and never rides along another output's line.
+        const laneY = +(pad + o * laneGap).toFixed(1);
+
+        let d;
+        if (Math.abs(x2 - x1) < 1) {
+            d = `M ${x1} ${y1} L ${x2} ${y2}`;             // input directly above output: straight drop
+        } else {
+            const dir    = x2 > x1 ? 1 : -1;
+            const r      = Math.min(R, Math.abs(x2 - x1) / 2, laneY - y1, y2 - laneY);
+            const sweep1 = dir > 0 ? 0 : 1;
+            const sweep2 = dir > 0 ? 1 : 0;
+            // down from the input, quarter-turn into the lane, across, quarter-turn down into the output
+            d = `M ${x1} ${y1} L ${x1} ${(laneY - r).toFixed(1)} `
+              + `A ${r} ${r} 0 0 ${sweep1} ${(x1 + dir * r).toFixed(1)} ${laneY} `
+              + `L ${(x2 - dir * r).toFixed(1)} ${laneY} `
+              + `A ${r} ${r} 0 0 ${sweep2} ${x2} ${(laneY + r).toFixed(1)} `
+              + `L ${x2} ${y2}`;
+        }
+
+        lines.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="2" opacity="0.6" stroke-linecap="round"/>`);
     }
 
     strip.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" style="position:absolute;overflow:visible;">${lines.join('')}</svg>`;
@@ -687,7 +1126,11 @@ function renderInputs() {
         return `<div class="in-card" style="--c:${c(n)}">
             <div class="in-icon">${icon(n)}</div>
             <div class="in-num">IN ${n}</div>
-            <div class="in-name">${esc(name)}</div>
+            <input class="nm in-name" value="${esc(name)}" data-orig="${esc(name)}"
+                   data-kind="in" data-idx="${n}" maxlength="${NAME_MAX}" spellcheck="false"
+                   title="Click to rename input ${n} on the device. Spaces allowed; ; : # are not."
+                   onkeydown="nmKey(event,this)" onblur="nmCommit(this)">
+
             <div class="tags" title="${live ? 'Source signal detected (sig=1)' : 'No source signal (sig=0)'}">
                 <div class="tag ${live ? 'on' : ''}">${live ? 'SIGNAL' : 'NO SIG'}</div>
             </div>
@@ -700,7 +1143,10 @@ function renderMatrix() {
 
     // Column headers (inputs)
     for (let i = 1; i <= 8; i++) {
-        h += `<div class="mx-chdr" style="--c:${c(i)}">IN${i}</div>`;
+        const name = appState.inputNames[i] || `HDMI_IN${i}`;
+        h += `<div class="mx-chdr" style="--c:${c(i)}" title="${esc(name)}">
+            <div class="cl">IN${i}</div><div class="cn">${esc(name)}</div>
+        </div>`;
     }
 
     // Rows (outputs)
@@ -738,11 +1184,25 @@ function renderOutputs() {
         const name = appState.outputNames[o] || `HDMI_OUT${o}`;
         const hdbt = appState.hdbtNames[o]   || `HDBT_OUT${o}`;
         const sink = outputSink(o);
-        return `<div class="out-card" style="--c:${c(src)}" title="HDMI: ${esc(name)}&#10;HDBT: ${esc(hdbt)}">
+        // HDMI output o and HDBT output o switch as one but carry separate names
+        // (§3.4), so both are shown and both are separately editable.
+        return `<div class="out-card" style="--c:${c(src)}">
             <div class="out-thumb">${icon(src)}</div>
             <div class="out-src">← IN${src}</div>
             <div class="out-num">OUT ${o}</div>
-            <div class="out-name">${esc(name)}</div>
+            <div class="out-names">
+                <div class="onm-row"><span class="onm-tag">HDMI</span>
+                    <input class="nm out-name" value="${esc(name)}" data-orig="${esc(name)}"
+                           data-kind="hdmi" data-idx="${o}" maxlength="${NAME_MAX}" spellcheck="false"
+                           title="Click to rename HDMI output ${o}"
+                           onkeydown="nmKey(event,this)" onblur="nmCommit(this)"></div>
+                <div class="onm-row"><span class="onm-tag">HDBT</span>
+                    <input class="nm out-name" value="${esc(hdbt)}" data-orig="${esc(hdbt)}"
+                           data-kind="hdbt" data-idx="${o}" maxlength="${NAME_MAX}" spellcheck="false"
+                           title="Click to rename HDBT output ${o}"
+                           onkeydown="nmKey(event,this)" onblur="nmCommit(this)"></div>
+            </div>
+
             <div class="tags" title="Display attached (hot-plug detect)">
                 <div class="tag ${sink.hdmi ? 'on' : ''}">HDMI</div>
                 <div class="tag ${sink.hdbt ? 'on' : ''}">HDBT</div>
@@ -776,12 +1236,326 @@ function renderPanel() {
     updateDisplay();
 }
 
-function renderScenes() {
-    document.getElementById('scenes').innerHTML = Array.from({ length: 8 }, (_, i) => {
+// ── EDID ─────────────────────────────────────────────────────────────────────
+// Each input presents an EDID to whatever is plugged into it, which is what tells
+// the source what resolutions and audio formats to send. The assignment is a
+// (mode, slot) pair: mode picks the table, slot indexes into it (§2.4).
+const EDID_MODES = [
+    { m: 0, label: 'Default', table: 'edidDefault', hint: 'Built-in preset EDIDs (ded1-8)' },
+    { m: 1, label: 'User',    table: 'edidUser',    hint: 'User-defined slots (ued1-8)' },
+    { m: 2, label: 'HDMI out', table: 'hdmiEdid',   hint: 'Copy of the EDID read from an HDMI output sink' },
+    { m: 3, label: 'HDBT out', table: 'hdbtEdid',   hint: 'Copy of the EDID read from an HDBT output sink' },
+];
+const edidModeName = (m) => EDID_MODES.find(x => x.m === m)?.label ?? `mode ${m}`;
+
+// The label for slot `d` under `mode` — the value it resolves to, so the choice
+// reads as an EDID rather than a bare number.
+function edidSlotLabel(mode, d) {
+    const table = EDID_MODES.find(x => x.m === mode)?.table;
+    const val   = appState?.[table]?.[d];
+    const prefix = mode === 2 ? `HDMI OUT${d}` : mode === 3 ? `HDBT OUT${d}` : `${d}`;
+    return val ? `${prefix} — ${val}` : `${prefix}`;
+}
+
+function renderEdid() {
+    const rows = Array.from({ length: 8 }, (_, i) => {
+        const n = i + 1;
+        const a = appState.edidAssign[n] || { mode: 0, slot: 1 };
+        const name = appState.inputNames[n] || `HDMI_IN${n}`;
+
+        const modeOpts = EDID_MODES.map(o =>
+            `<option value="${o.m}" ${o.m === a.mode ? 'selected' : ''} title="${esc(o.hint)}">${o.label}</option>`
+        ).join('');
+        const slotOpts = Array.from({ length: 8 }, (_, k) => {
+            const d = k + 1;
+            return `<option value="${d}" ${d === a.slot ? 'selected' : ''}>${esc(edidSlotLabel(a.mode, d))}</option>`;
+        }).join('');
+
+        return `<tr>
+            <td>IN${n}</td>
+            <td class="nm-col" title="${esc(name)}">${esc(name)}</td>
+            <td><select class="sel" id="edid-mode-${n}" onchange="setInputEdid(${n})">${modeOpts}</select></td>
+            <td><select class="sel wide" id="edid-slot-${n}" onchange="setInputEdid(${n})">${slotOpts}</select></td>
+            <td class="nm-col" title="${esc(appState.edidInput[n] ?? '')}">${esc(appState.edidInput[n] ?? '–')}</td>
+        </tr>`;
+    }).join('');
+
+    // Copying a sink's EDID into a user slot is the other half of edid_d (§2.3):
+    // read what a display actually supports, then hand that to a source.
+    const sinkOpts = [2, 3].flatMap(mode =>
+        Array.from({ length: 8 }, (_, k) => {
+            const d = k + 1;
+            const val = mode === 2 ? appState.hdmiEdid[d] : appState.hdbtEdid[d];
+            const tag = mode === 2 ? `HDMI OUT${d}` : `HDBT OUT${d}`;
+            const dead = !val || val === 'Unplug';
+            return `<option value="${mode}:${d}" ${dead ? 'disabled' : ''}>${tag} — ${esc(val || 'Unplug')}</option>`;
+        })
+    ).join('');
+
+    const userRows = Array.from({ length: 8 }, (_, i) => {
+        const n = i + 1;
+        return `<tr>
+            <td>USER${n}</td>
+            <td class="nm-col" title="${esc(appState.edidUser[n] ?? '')}">${esc(appState.edidUser[n] ?? '–')}</td>
+            <td><select class="sel wide" id="edid-src-${n}"><option value="">Copy from…</option>${sinkOpts}</select></td>
+            <td><button class="btn btn-sm" onclick="copyEdidToUser(${n})">Copy</button></td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('edid').innerHTML = `
+        <div class="edid-col">
+            <div class="dt-lbl">Input EDID assignment</div>
+            <table class="dt">
+                <thead><tr>
+                    <th>Input</th><th>Name</th><th>Source</th><th>Slot</th><th>Presenting (ied)</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+        <div class="edid-col">
+            <div class="dt-lbl">User EDID slots</div>
+            <table class="dt">
+                <thead><tr><th>Slot</th><th>Current (ued)</th><th>Copy source</th><th></th></tr></thead>
+                <tbody>${userRows}</tbody>
+            </table>
+            <div class="diag-note" style="margin-top:8px;">
+                Copies the EDID a display reported into a user slot, which any input can then
+                present. Outputs with no display attached read <code>Unplug</code> and cannot
+                be copied from.
+            </div>
+        </div>`;
+}
+
+async function setInputEdid(n) {
+    const mode = Number(document.getElementById(`edid-mode-${n}`).value);
+    const slot = Number(document.getElementById(`edid-slot-${n}`).value);
+    try {
+        await sendCmd(`#edid_d in${n} mode=${mode} data=${slot}`);
+        const { ok, state } = await verifyUntil((st) =>
+            st.edidAssign[n]?.mode === mode && st.edidAssign[n]?.slot === slot);
+        if (ok) {
+            toast(`IN${n} EDID → ${edidModeName(mode)} ${slot}`, 'ok');
+        } else {
+            const a = state.edidAssign[n];
+            toast(`IN${n} EDID unchanged — still ${edidModeName(a?.mode)} ${a?.slot ?? '?'}`, 'err');
+        }
+    } catch (e) { toast('EDID command failed', 'err'); }
+    render();
+}
+
+async function copyEdidToUser(n) {
+    const sel = document.getElementById(`edid-src-${n}`);
+    const raw = sel.value;
+    if (!raw) { toast('Pick an output to copy from', 'err'); return; }
+    const [mode, d] = raw.split(':').map(Number);
+
+    const source = mode === 2 ? appState.hdmiEdid[d] : appState.hdbtEdid[d];
+    if (!source || source === 'Unplug') {
+        toast('That output has no display attached', 'err');
+        return;
+    }
+    try {
+        await sendCmd(`#edid_d user${n} mode=${mode} data=${d}`);
+        const { ok } = await verifyUntil((st) => st.edidUser[n] === source);
+        if (ok) toast(`Copied to user slot ${n}`, 'ok');
+        else    toast(`User slot ${n} unchanged`, 'err');
+    } catch (e) { toast('EDID copy failed', 'err'); }
+    render();
+}
+
+// ── AUDIO ────────────────────────────────────────────────────────────────────
+// Two independent things share the `audio_d` command: where each INPUT takes its
+// audio from, and which physical outputs each OUTPUT feeds. The index means a
+// different port in each case (§6.6) — AI: is input-indexed, AO: is output-indexed.
+const AUDIO_IN_MODES = [
+    { v: 0, label: 'MUTE',   hint: 'No audio from this input' },
+    { v: 1, label: 'HDMI',   hint: 'Audio embedded in the HDMI stream' },
+    { v: 2, label: 'ANALOG', hint: 'Audio from the analog input' },
+];
+
+function renderAudio() {
+    const inRows = Array.from({ length: 8 }, (_, i) => {
         const n    = i + 1;
-        const name = appState.sceneNames[n] || `scene${String(n).padStart(2,'0')}`;
+        const mode = appState.audioIn[n];
+        const name = appState.inputNames[n] || `HDMI_IN${n}`;
+        const btns = AUDIO_IN_MODES.map(o =>
+            `<button class="seg ${o.v === mode ? 'on' : ''}" title="${esc(o.hint)}"
+                     onclick="setAudioIn(${n},${o.v})">${o.label}</button>`
+        ).join('');
+        return `<tr>
+            <td>IN${n}</td>
+            <td class="nm-col" title="${esc(name)}">${esc(name)}</td>
+            <td><div class="seg-wrap">${btns}</div></td>
+        </tr>`;
+    }).join('');
+
+    const outRows = Array.from({ length: 8 }, (_, i) => {
+        const o    = i + 1;
+        const f    = appState.audioOut[o] || {};
+        const name = appState.outputNames[o] || `HDMI_OUT${o}`;
+        const tog  = (key, label, hint) =>
+            `<button class="seg ${f[key] === 1 ? 'on' : ''}" title="${esc(hint)}"
+                     onclick="toggleAudioOut(${o},'${key}')">${label}</button>`;
+        return `<tr>
+            <td>OUT${o}</td>
+            <td class="nm-col" title="${esc(name)}">${esc(name)}</td>
+            <td><div class="seg-wrap">
+                ${tog('iis',   'ANALOG', 'Analog / I²S output enable')}
+                ${tog('spdif', 'S/PDIF', 'Coax / optical output enable')}
+            </div></td>
+            <td class="soft" title="Reported by the device but not settable — the firmware's own UI parses this field and then discards it (§3.2)">${f.hdmi ?? '–'}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('audio').innerHTML = `
+        <div class="edid-col">
+            <div class="dt-lbl">Input audio source</div>
+            <table class="dt">
+                <thead><tr><th>Input</th><th>Name</th><th>Source</th></tr></thead>
+                <tbody>${inRows}</tbody>
+            </table>
+        </div>
+        <div class="edid-col">
+            <div class="dt-lbl">Output audio</div>
+            <table class="dt">
+                <thead><tr><th>Output</th><th>Name</th><th>Enabled</th><th class="soft">HDMI</th></tr></thead>
+                <tbody>${outRows}</tbody>
+            </table>
+            <div class="diag-note" style="margin-top:8px;">
+                <code>iis</code> is the analog output and <code>spdif</code> the coax/optical one;
+                the device takes both flags in a single command, so toggling one re-sends the
+                other unchanged. The <code>HDMI</code> column is read-only — the device reports it
+                but the stock UI drives nothing from it and its purpose is unconfirmed.
+            </div>
+        </div>`;
+}
+
+async function setAudioIn(n, mode) {
+    if (appState.audioIn[n] === mode) return;
+    try {
+        await sendCmd(`#audio_d in${n} enc=${mode}`);
+        const { ok, state } = await verifyUntil((st) => st.audioIn[n] === mode);
+        if (ok) toast(`IN${n} audio → ${AUDIO_IN_MODES.find(o => o.v === mode).label}`, 'ok');
+        else    toast(`IN${n} audio unchanged (still ${state.audioIn[n] ?? '?'})`, 'err');
+    } catch (e) { toast('Audio command failed', 'err'); }
+    render();
+}
+
+// The stock UI always sends iis and spdif together, in that order (§2.3), so a
+// single toggle re-sends its neighbour's current value alongside the new one.
+async function toggleAudioOut(o, key) {
+    const f     = appState.audioOut[o] || {};
+    const iis   = key === 'iis'   ? (f.iis   === 1 ? 0 : 1) : (f.iis   ?? 0);
+    const spdif = key === 'spdif' ? (f.spdif === 1 ? 0 : 1) : (f.spdif ?? 0);
+    try {
+        await sendCmd(`#audio_d out${o} iis=${iis} spdif=${spdif}`);
+        const { ok } = await verifyUntil((st) =>
+            st.audioOut[o]?.iis === iis && st.audioOut[o]?.spdif === spdif);
+        if (ok) toast(`OUT${o} audio: analog ${iis ? 'on' : 'off'}, S/PDIF ${spdif ? 'on' : 'off'}`, 'ok');
+        else    toast(`OUT${o} audio unchanged`, 'err');
+    } catch (e) { toast('Audio command failed', 'err'); }
+    render();
+}
+
+// ── PORT DIAGNOSTICS ─────────────────────────────────────────────────────────
+
+
+// The status blocks carry six fields per port; the page's connection tags use two
+// of them and the stock UI ignores the other four entirely (API_SPEC.md §3.7).
+// They are read anyway, so show them — with the spec's confidence levels attached,
+// because guessing at `rat`/`col`/`bit` is how this API gets misread.
+const DIAG_COLS = [
+    { k: 'rat',  t: 'RAT',  soft: true },
+    { k: 'col',  t: 'COL',  soft: true },
+    { k: 'hdcp', t: 'HDCP', soft: true },
+    { k: 'bit',  t: 'BIT',  soft: true },
+];
+
+function diagTable(kind) {
+    const isInput = kind === 'in';
+    const status  = isInput ? appState.inStatus
+                  : kind === 'hdmi' ? appState.hdmiStatus : appState.hdbtStatus;
+    const names   = isInput ? appState.inputNames
+                  : kind === 'hdmi' ? appState.outputNames : appState.hdbtNames;
+    const edid    = kind === 'hdmi' ? appState.hdmiEdid
+                  : kind === 'hdbt' ? appState.hdbtEdid : null;
+    const fallback = { in: 'HDMI_IN', hdmi: 'HDMI_OUT', hdbt: 'HDBT_OUT' }[kind];
+    const title    = { in: 'Inputs — INPORT', hdmi: 'HDMI outputs — OUTHDMIPORT',
+                       hdbt: 'HDBT outputs — OUTHDBTPORT' }[kind];
+
+    const rows = Array.from({ length: 8 }, (_, i) => {
+        const n = i + 1;
+        const f = status[n] || {};
+        const flag = (v, on) => `<span class="${v === undefined ? 'v-no' : v === on ? 'v-yes' : 'v-no'}">${v ?? '–'}</span>`;
+
+        // Inputs report the +5V rail; outputs report hot-plug detect in its place.
+        const first = isInput ? flag(f.pw5v, 1) : flag(f.hpd, 1);
+        const sig   = flag(f.sig, 1);
+        // §3.7: hdcp=2 was observed on every port with no sink — worth flagging.
+        const cells = DIAG_COLS.map(({ k }) => {
+            const v = f[k];
+            const warn = k === 'hdcp' && !isInput && v === 2;
+            return `<td class="soft">${warn ? `<span class="v-warn" title="Observed on ports with no sink">${v}</span>` : (v ?? '–')}</td>`;
+        }).join('');
+
+        const edidCell = edid
+            ? `<td class="nm-col" title="${esc(edid[n] ?? '')}">${esc(edid[n] ?? '–')}</td>`
+            : '';
+
+        return `<tr>
+            <td>${kind === 'in' ? 'IN' : 'OUT'}${n}</td>
+            <td class="nm-col" title="${esc(names[n] || '')}">${esc(names[n] || `${fallback}${n}`)}</td>
+            <td>${first}</td>
+            <td>${sig}</td>
+            ${cells}
+            ${edidCell}
+        </tr>`;
+    }).join('');
+
+    return `<div>
+        <div class="dt-lbl">${title}</div>
+        <table class="dt">
+            <thead><tr>
+                <th>Port</th><th>Name</th>
+                <th class="${isInput ? 'soft' : 'key'}">${isInput ? 'PW5V' : 'HPD'}</th>
+                <th class="${isInput ? 'key' : 'soft'}">SIG</th>
+                ${DIAG_COLS.map(c => `<th class="soft">${c.t}</th>`).join('')}
+                ${edid ? '<th>SINK EDID</th>' : ''}
+            </tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+    </div>`;
+}
+
+function renderDiag() {
+    document.getElementById('diag').innerHTML = `
+        <div class="diag-note">
+            Only two of these fields are authoritative (API_SPEC.md §3.7): an input has a source
+            when <code>sig=1</code> — <code>pw5v</code> reads 1 even on an empty port — and an
+            output has a display when <code>hpd=1</code>, while output <code>sig=0</code> is
+            normal on a working port. <code>rat</code>, <code>col</code> and <code>bit</code> are
+            unconfirmed and shown dimmed; output <code>hdcp=2</code> is highlighted because it
+            was observed only alongside a missing sink.
+        </div>
+        ${diagTable('in')}
+        ${diagTable('hdmi')}
+        ${diagTable('hdbt')}`;
+}
+
+function renderScenes() {
+
+    document.getElementById('scenes').innerHTML = Array.from({ length: 8 }, (_, i) => {
+        const n      = i + 1;
+        const label  = sceneLabel(n);
+        const onDev  = appState.sceneNames[n] || '';
+        // A local label shadows the device's own grp name; show what it's hiding.
+        const sub    = labels.scenes[n] && onDev && onDev !== label ? onDev : '';
         return `<div class="sc-card">
-            <div class="sc-name">${esc(name)}</div>
+            <input class="nm sc-name" value="${esc(label)}" data-orig="${esc(label)}"
+                   data-kind="scene" data-idx="${n}" maxlength="50" spellcheck="false"
+                   title="Local label — the device has no scene-rename command, so this is stored by the controller"
+                   onkeydown="nmKey(event,this)" onblur="nmCommit(this)">
+            <div class="sc-sub">${sub ? esc(sub) : '&nbsp;'}</div>
             <div class="sc-btns">
                 <button class="sc-btn recall" onclick="sceneCmd(${n},2)">Recall</button>
                 <button class="sc-btn save"   onclick="sceneCmd(${n},1)">Save</button>
@@ -789,6 +1563,7 @@ function renderScenes() {
         </div>`;
     }).join('');
 }
+
 
 // ── MATRIX QUEUE & COMMIT ────────────────────────────────────────────────────
 function queueRoute(o, i) {
@@ -809,20 +1584,29 @@ function queueRoute(o, i) {
 async function commitChanges() {
     const entries = Object.entries(pending);
     if (entries.length === 0) return;
-    const body = entries.map(([out, inp]) => `video_d out${out} matrix=${inp}`).join('#');
+    const wanted = { ...pending };
+    const body = entries.map(([out, inp]) => `#video_d out${out} matrix=${inp}`).join('');
     try {
-        await fetch(apiUrl('/video.set'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body
-        });
-        const n = entries.length;
-        toast(`${n} routing change${n > 1 ? 's' : ''} committed`, 'ok');
+        await sendCmd(body);
         pending = {};
         updateCommitBar();
-        await poll();
+
+        // Read the routing back rather than trusting the 200 (§1.3). Anything the
+        // device did not apply goes back on the queue, so the matrix keeps showing
+        // it as outstanding instead of quietly claiming success.
+        const failed = await verifyRouting(wanted);
+        if (failed.length) {
+            for (const [o, inp] of failed) pending[o] = Number(inp);
+            renderMatrix();
+            updateCommitBar();
+            toast(`Not applied: ${failed.map(([o]) => `OUT${o}`).join(', ')} — still queued`, 'err');
+        } else {
+            const n = entries.length;
+            toast(`${n} routing change${n > 1 ? 's' : ''} confirmed`, 'ok');
+        }
     } catch (e) { toast('Commit failed', 'err'); }
 }
+
 
 function discardChanges() {
     pending = {};
@@ -914,8 +1698,25 @@ function esc(s) {
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
-poll();
-setInterval(poll, 1000);
+async function init() {
+    // A stored address was applied deliberately at some point, so adopt it as the
+    // active target. It also overrides anything the browser restored into the field
+    // on reload — an unapplied leftover there would otherwise show as a false dirty.
+    await loadSettings();
+    const stored = joinTarget(cfg.matrix_ip, cfg.matrix_port);
+    if (stored) {
+        targetInput().value = stored;
+        targetText = stored;
+        hwTarget = normaliseTarget(stored);
+    }
+    refreshTargetUi();
+
+    poll();
+    setInterval(poll, 1000);
+}
+
+init();
+
 </script>
 </body>
 </html>
